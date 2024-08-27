@@ -1,0 +1,36 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/Style.uss?fileID=7433441132597879392&amp;guid=c74988ca9fc784d5c88d28cc551a0444&amp;type=3#Style" />
+    <engine:VisualElement name="ref" class="view" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/References/MainGameRef.png?fileID=2800000&amp;guid=37061b8a54fab40a79453056ce4d6bd5&amp;type=3#MainGameRef&quot;);" />
+    <engine:VisualElement name="game-view" class="view" style="flex-grow: 1; align-items: center; justify-content: space-evenly;">
+        <engine:VisualElement name="words-div" class="words" style="display: none;">
+            <engine:VisualElement name="header" style="flex-grow: 1;" />
+            <engine:VisualElement name="words" style="flex-grow: 1;" />
+        </engine:VisualElement>
+        <engine:VisualElement name="game-board" class="board" style="top: 258px;">
+            <engine:VisualElement name="row" class="row">
+                <engine:Label text="A" name="letter" class="letter" style="-unity-font-style: bold;" />
+                <engine:Label text="A" name="letter" class="letter" style="-unity-font-style: bold;" />
+                <engine:Label text="A" name="letter" class="letter" style="-unity-font-style: bold;" />
+                <engine:Label text="A" name="letter" class="letter" style="-unity-font-style: bold;" />
+            </engine:VisualElement>
+            <engine:VisualElement name="row" class="row">
+                <engine:Label text="A" name="letter" class="letter" style="-unity-font-style: bold;" />
+                <engine:Label text="A" name="letter" class="letter" style="-unity-font-style: bold;" />
+                <engine:Label text="A" name="letter" class="letter" style="-unity-font-style: bold;" />
+                <engine:Label text="A" name="letter" class="letter" style="-unity-font-style: bold;" />
+            </engine:VisualElement>
+            <engine:VisualElement name="row" class="row">
+                <engine:Label text="A" name="letter" class="letter" style="-unity-font-style: bold;" />
+                <engine:Label text="A" name="letter" class="letter" style="-unity-font-style: bold;" />
+                <engine:Label text="A" name="letter" class="letter" style="-unity-font-style: bold;" />
+                <engine:Label text="A" name="letter" class="letter" style="-unity-font-style: bold;" />
+            </engine:VisualElement>
+            <engine:VisualElement name="row" class="row">
+                <engine:Label text="A" name="letter" class="letter" style="-unity-font-style: bold;" />
+                <engine:Label text="A" name="letter" class="letter" style="-unity-font-style: bold;" />
+                <engine:Label text="A" name="letter" class="letter" style="-unity-font-style: bold;" />
+                <engine:Label text="A" name="letter" class="letter" style="-unity-font-style: bold;" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>
