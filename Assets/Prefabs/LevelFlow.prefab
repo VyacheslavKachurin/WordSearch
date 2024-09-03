@@ -45,3 +45,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _linePrefab: {fileID: 6416335901612813488, guid: 8f668b45031ca4a44991d5105a1e4857, type: 3}
+  _lineRendererDistance: 0.25
+  _levelView: {fileID: 0}

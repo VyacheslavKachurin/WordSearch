@@ -2,7 +2,7 @@
 public class LevelData
 {
     public int Level;
-    public string Topic;
+    public string Theme;
     public string[] Words;
     public char[,] Matrix;
     public int Width;

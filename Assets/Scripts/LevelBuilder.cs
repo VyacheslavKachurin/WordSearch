@@ -7,6 +7,7 @@ public class LevelBuilder : MonoBehaviour
 
     [SerializeField] GameBoard _gameBoard;
     [SerializeField] LevelView _levelView;
+    [SerializeField] LevelLogic _levelLogic;
 
     private LevelData _levelData;
 
@@ -19,6 +20,6 @@ public class LevelBuilder : MonoBehaviour
         _gameBoard.BuildBoard(_levelData);
 
         _levelView.SetLevelData(_levelData);
-
+        _levelLogic.SetData(_levelData);
     }
 }

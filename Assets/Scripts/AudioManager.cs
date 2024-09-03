@@ -27,4 +27,11 @@ public class AudioManager : MonoBehaviour
     {
         Debug.Log($"Pitch Sound: {pitch}");
     }
+
+    public void PlaySound(Sound sound)
+    {
+
+    }
 }
+
+public enum Sound { Error, Found, Click }

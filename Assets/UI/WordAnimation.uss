@@ -1,0 +1,14 @@
+.word-big {
+    scale: 1.4 1.4;
+}
+
+.word {
+    font-size: 34px;
+    -unity-font-style: bold;
+    transition-property: scale, color;
+    transition-duration: 0.3s, 0.3s;
+}
+
+.word-gray {
+    color: rgb(195, 195, 195);
+}

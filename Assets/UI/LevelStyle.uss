@@ -1,0 +1,32 @@
+.view {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.board {
+    flex-grow: 0;
+    background-image: url("project://database/Assets/Sprites/BoardBg.png?fileID=2800000&guid=a4c7e836c21dc4084a57e771d6d56ed9&type=3#BoardBg");
+    width: 89%;
+    height: 44%;
+    justify-content: space-evenly;
+    opacity: 1;
+}
+
+.words-div {
+    flex-grow: 0;
+    height: 314px;
+    position: absolute;
+    top: 451px;
+    background-image: url("project://database/Assets/Sprites/WordsDivBg.png?fileID=2800000&guid=40fa458b6d5074bc79ea0f03812d473c&type=3#WordsDivBg");
+}
+
+.word-div {
+    flex-grow: 0;
+}
+
+.row-width {
+    flex-grow: 0;
+    width: 1047px;
+    flex-shrink: 0;
+}
