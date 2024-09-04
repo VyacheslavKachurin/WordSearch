@@ -5,11 +5,12 @@ using UnityEngine;
 
 public class InputHandler : MonoBehaviour
 {
-    public static event Action<LetterUnit> OnLetterClick;
-    public static event Action<Direction, Vector2> OnDrag;
+    public static event Action<LetterUnit> OnLetterHover;
+    public static event Action<Vector2> OnPointerDrag;
     public static event Action OnInputStop;
 
     private Camera _cam;
+
 
     private void Start()
     {
@@ -24,7 +25,7 @@ public class InputHandler : MonoBehaviour
         if (touch.phase == TouchPhase.Began)
         {
             if (!DoRay(out var letter)) return;
-            OnLetterClick?.Invoke(letter);
+            OnLetterHover?.Invoke(letter);
         }
 
 
@@ -32,7 +33,7 @@ public class InputHandler : MonoBehaviour
         {
             if (DoRay(out var letter))
             {
-                OnLetterClick?.Invoke(letter);
+                OnLetterHover?.Invoke(letter);
             }
             else
             {
@@ -40,8 +41,8 @@ public class InputHandler : MonoBehaviour
                 var lastTouchPos = _cam.ScreenToWorldPoint(touch.position - touch.deltaPosition);
                 Vector2 dirNormalized = (touchPos - lastTouchPos).normalized;
                 if (dirNormalized == Vector2.zero) return;
-                var direction = GetDirection(dirNormalized);
-                OnDrag?.Invoke(direction, lastTouchPos);
+
+                OnPointerDrag?.Invoke(lastTouchPos);
             }
         }
 
@@ -51,21 +52,28 @@ public class InputHandler : MonoBehaviour
         }
     }
 
-    private Direction GetDirection(Vector2 direction)
+    private Direction GetDirection(Vector2 touchPos, Vector2 lastTouchPos)
     {
-        switch (direction)
+        var dir = Direction.Up;
+
+        if (touchPos.x > lastTouchPos.x && touchPos.y == lastTouchPos.y)
         {
-            case { x: < 0 }:
-                return Direction.Left;
-            case { x: > 0 }:
-                return Direction.Right;
-            case { y: < 0 }:
-                return Direction.Up;
-            case { y: > 0 }:
-                return Direction.Down;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
+            dir = Direction.Right;
         }
+        else if (touchPos.x < lastTouchPos.x && touchPos.y < lastTouchPos.y)
+        {
+            dir = Direction.Left;
+        }
+        else if (touchPos.x < lastTouchPos.x && touchPos.y > lastTouchPos.y)
+        {
+            dir = Direction.Down;
+        }
+        else if (touchPos.x > lastTouchPos.x && touchPos.y > lastTouchPos.y)
+        {
+            dir = Direction.Up;
+        }
+        return dir;
+
     }
 
 
@@ -85,4 +93,3 @@ public class InputHandler : MonoBehaviour
     }
 }
 
-public enum Direction { Up, Down, Left, Right }

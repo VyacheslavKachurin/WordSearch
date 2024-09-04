@@ -5,12 +5,19 @@
     <engine:VisualElement name="ref" class="view" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/References/MainGameRef.png?fileID=2800000&amp;guid=37061b8a54fab40a79453056ce4d6bd5&amp;type=3#MainGameRef&quot;); display: none;" />
     <engine:VisualElement name="level-view" class="view" style="flex-grow: 1; align-items: center; justify-content: flex-start; opacity: 1;">
         <engine:VisualElement name="nav-row" class="row-width" style="flex-grow: 0; flex-direction: row; position: absolute; top: 215px;">
-            <engine:VisualElement name="left-part" class="nav-part" style="flex-grow: 1;">
+            <engine:VisualElement name="left-part" class="nav-part">
                 <engine:Button name="back-btn" style="background-image: url(&quot;project://database/Assets/Sprites/BackBtn.png?fileID=2800000&amp;guid=8ea480486dcfc4824a5b9bf4ff7fdbc3&amp;type=3#BackBtn&quot;); width: 82px; height: 98px;" />
                 <engine:Button name="settings-btn" style="background-image: url(&quot;project://database/Assets/Sprites/SettingsBtn.png?fileID=2800000&amp;guid=ea760a8fd10f04d6995e5b1605d253b4&amp;type=3#SettingsBtn&quot;); width: 97px; height: 98px; left: 9px;" />
             </engine:VisualElement>
-            <engine:VisualElement name="middle-part" class="nav-part" style="flex-grow: 1;" />
-            <engine:VisualElement name="right-part" class="nav-part" style="flex-grow: 1;" />
+            <engine:VisualElement name="middle-part" class="nav-part" style="flex-grow: 1; flex-shrink: 0;" />
+            <engine:VisualElement name="right-part" class="nav-part" style="flex-grow: 0;">
+                <engine:VisualElement name="coins-bg" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Sprites/CoinsBg.png?fileID=2800000&amp;guid=23909b6a7876f4ac3992f9cc1b7794bc&amp;type=3#CoinsBg&quot;); width: 259px; height: 95px; align-items: flex-start; justify-content: center; flex-direction: row; padding-top: 8px;">
+                    <engine:VisualElement style="flex-grow: 1;" />
+                    <engine:VisualElement style="flex-grow: 0;">
+                        <engine:VisualElement name="shop-cart" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/ShopIcon.png?fileID=2800000&amp;guid=aa47609c6b68645f299c02eccd0238d6&amp;type=3#ShopIcon&quot;); width: 59px; height: 59px;" />
+                    </engine:VisualElement>
+                </engine:VisualElement>
+            </engine:VisualElement>
         </engine:VisualElement>
         <engine:VisualElement name="words-div" class="words-div row-width" style="display: flex; align-items: stretch;">
             <engine:VisualElement name="header" style="flex-grow: 0; flex-shrink: 0; background-image: url(&quot;project://database/Assets/Sprites/WordsHeader.png?fileID=2800000&amp;guid=7554701caebd34311854e6b9a8a1fa51&amp;type=3#WordsHeader&quot;); height: 99px; display: flex; align-items: center; justify-content: center; opacity: 1; padding-top: 17px;">
@@ -25,6 +32,11 @@
                         <engine:Label text="Label" class="word" />
                     </engine:VisualElement>
                 </engine:VisualElement>
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement name="target-word-div" class="row-width" style="flex-grow: 0; position: relative; align-items: center; display: flex; bottom: -768px;">
+            <engine:VisualElement name="target-word" style="flex-grow: 0; background-color: rgb(157, 255, 13); border-top-left-radius: 25px; border-top-right-radius: 25px; border-bottom-right-radius: 25px; border-bottom-left-radius: 25px; align-items: center; justify-content: center; display: none;">
+                <engine:Label name="target-letters" class="target-letters lbl-shadow" style="margin-top: 10px; margin-right: 10px; margin-bottom: 10px; margin-left: 10px; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; -unity-font-style: bold;" />
             </engine:VisualElement>
         </engine:VisualElement>
     </engine:VisualElement>

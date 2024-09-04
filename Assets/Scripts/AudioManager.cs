@@ -25,7 +25,7 @@ public class AudioManager : MonoBehaviour
 
     public void PlayLetter(int pitch)
     {
-        Debug.Log($"Pitch Sound: {pitch}");
+//        Debug.Log($"Pitch Sound: {pitch}");
     }
 
     public void PlaySound(Sound sound)

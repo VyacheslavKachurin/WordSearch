@@ -8,7 +8,8 @@ public class LevelView : MonoBehaviour
     private VisualElement _root;
     private Label _levelTheme;
     private VisualElement _wordsHolder;
-
+    private VisualElement _targetWord;
+    private Label _targetLetters;
     private const string WORD_STYLE = "word";
     private const string WORD_DIV_STYLE = "word-div";
 
@@ -23,6 +24,9 @@ public class LevelView : MonoBehaviour
         _root = GetComponent<UIDocument>().rootVisualElement;
         _levelTheme = _root.Q<Label>("level-theme");
         _wordsHolder = _root.Q<VisualElement>("words-holder");
+
+        _targetWord = _root.Q<VisualElement>("target-word");
+        _targetLetters = _targetWord.Q<Label>("target-letters");
 
     }
 
@@ -53,6 +57,17 @@ public class LevelView : MonoBehaviour
         }
     }
 
+    public void AddLetter(char letter)
+    {
+        _targetLetters.text += letter;
+    }
+
+    public void ToggleWord(bool show)
+    {
+        _targetWord.Toggle(show);
+        if (!show) _targetLetters.text = string.Empty;
+    }
+
     public async void HideWord(string word)
     {
         var label = _words[word];
@@ -62,5 +77,18 @@ public class LevelView : MonoBehaviour
         await Task.Delay(_removeWordStyleDelay);
         label.RemoveFromClassList(WORD_BIG);
 
+    }
+}
+
+public static class Extensions
+{
+    public static void Toggle(this VisualElement element, bool value)
+    {
+        element.style.display = value ? DisplayStyle.Flex : DisplayStyle.None;
+    }
+
+    public static Vector2 Pos(this Transform trans)
+    {
+        return trans.position;
     }
 }

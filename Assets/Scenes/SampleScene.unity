@@ -260,7 +260,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &1816975360
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -443,6 +443,14 @@ PrefabInstance:
       propertyPath: _levelView
       value: 
       objectReference: {fileID: 1148785180}
+    - target: {fileID: 7508644550789951793, guid: d21a5ff31f2c647b68d33541c6086c2c, type: 3}
+      propertyPath: _lineRendererDistance
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 7508644550789951793, guid: d21a5ff31f2c647b68d33541c6086c2c, type: 3}
+      propertyPath: _lineRendererDrawStep
+      value: 0.05
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
