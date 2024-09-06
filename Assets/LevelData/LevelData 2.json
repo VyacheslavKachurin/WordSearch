@@ -1,18 +1,29 @@
 {
-  "Theme": "Animals",
-  "Words": ["WAKE", "BRUSH", "EAT", "WORK", "STUDY", "EXERCISE", "RELAX", "COOK", "CLEAN", "SLEEP", "READ"],
+  "Theme": "House",
+  "Words": [ "HOUSE",
+  "ROOM",
+  "PORCH",
+  "KITCHEN",
+  "COUCH",
+  "CHAIR",
+  "PATIO",
+  "SHELF",
+  "FLOOR",
+  "LIGHT"
+
+],
     
  "Width": 8,
   "Height": 8,
   "Matrix": [
-    [ "E" , "S" , "L" , "E" , "E" , "P" , "?" , "?" ],
-[ "B" , "S" , "S" , "?" , "?" , "E" , "K" , "?" ],
-[ "R" , "X" , "I" , "T" , "?" , "A" , "O" , "C" ],
-[ "U" , "W" , "A" , "C" , "U" , "T" , "O" , "L" ],
-[ "S" , "?" , "A" , "L" , "R" , "D" , "C" , "E" ],
-[ "H" , "?" , "?" , "K" , "E" , "E" , "Y" , "A" ],
-[ "R" , "E" , "A" , "D" , "E" , "R" , "X" , "N" ],
-[ "?" , "?" , "?" , "W" , "O" , "R" , "K" , "E" ]
+    [ "O" , "I" , "T" , "A" , "P" , "L" , "?" , "K" ],
+    [ "F" , "E" , "?" , "?" , "?" , "I" , "C" , "I" ],
+    [ "R" , "L" , "S" , "?" , "?" , "G" , "H" , "T" ],
+    [ "O" , "M" , "E" , "U" , "?" , "H" , "A" , "C" ],
+    [ "O" , "O" , "?" , "H" , "O" , "T" , "I" , "H" ],
+    [ "L" , "O" , "?" , "?" , "S" , "H" , "R" , "E" ],
+    [ "F" , "R" , "P" , "O" , "R" , "C" , "H" , "N" ],
+    [ "?" , "C" , "O" , "U" , "C" , "H" , "?" , "?" ]
   ]
 
 }

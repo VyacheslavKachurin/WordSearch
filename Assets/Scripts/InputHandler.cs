@@ -1,6 +1,4 @@
 using System;
-using System.Threading;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class InputHandler : MonoBehaviour
@@ -10,6 +8,7 @@ public class InputHandler : MonoBehaviour
     public static event Action OnInputStop;
 
     private Camera _cam;
+    private bool _isSelecting = false;
 
 
     private void Start()
@@ -26,10 +25,11 @@ public class InputHandler : MonoBehaviour
         {
             if (!DoRay(out var letter)) return;
             OnLetterHover?.Invoke(letter);
+            _isSelecting = true;
         }
 
 
-        if (touch.phase == TouchPhase.Moved)
+        if (touch.phase == TouchPhase.Moved && _isSelecting)
         {
             if (DoRay(out var letter))
             {
@@ -49,6 +49,7 @@ public class InputHandler : MonoBehaviour
         if (touch.phase == TouchPhase.Ended)
         {
             OnInputStop?.Invoke();
+            _isSelecting = false;
         }
     }
 

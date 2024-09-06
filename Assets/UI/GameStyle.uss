@@ -30,6 +30,8 @@
     border-bottom-left-radius: 0;
 }
 
-.nav-part {
-    flex-direction: row;
+.nav-lbl {
+    font-size: 40px;
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
 }

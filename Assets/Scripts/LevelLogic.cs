@@ -5,62 +5,47 @@ using UnityEngine;
 
 public class LevelLogic : MonoBehaviour
 {
-    [SerializeField] LineRenderer _linePrefab;
-    [SerializeField] float _lineRendererDrawStep = 1f;
+
 
     [SerializeField] LevelView _levelView;
+    [SerializeField] LineProvider _lineProvider;
+    [SerializeField] ColorData _colorData;
 
     private AudioManager _audio;
     private bool _isFirstLetter = true;
-    private string _word = string.Empty;
+    private string _tryWord = string.Empty;
     private List<LetterUnit> _tryWordLetterUnits = new List<LetterUnit>();
-    private LineRenderer _line = null;
+
 
     private List<string> _words;
-
     private Direction _direction;
-
-    private LevelData _levelData;
+    private Color _randomColor;
 
     private void Start()
     {
         InputHandler.OnLetterHover += HandleLetterHover;
         InputHandler.OnPointerDrag += HandleDrag;
         InputHandler.OnInputStop += CheckWord;
+
+        AbilityBtn.OnAbilityClicked += HandleAbility;
         _audio = AudioManager.Instance;
 
     }
 
+    private void HandleAbility(Ability ability, int price)
+    {
+       Debug.Log($"Ability clicked: {ability}, {price}");
+    }
+
     private void HandleDrag(Vector2 point)
     {
-        if (Vector2.Distance(_line.GetPosition(_line.positionCount - 1), point) > _lineRendererDrawStep)
-        {
-            Vector2 newPoint;
-            _direction = GetDirection();
-            switch (_direction)
-            {
-                case Direction.Left:
-                case Direction.Right:
-                    newPoint = new Vector2(point.x, _line.GetPosition(_line.positionCount - 1).y);
-                    break;
-                case Direction.Up:
-                case Direction.Down:
-                    newPoint = new Vector2(_line.GetPosition(_line.positionCount - 1).x, point.y);
-                    break;
-                case Direction.Diagonal:
+        _lineProvider.Draw(point, GetDirection(), GetNextDiagonalPoint(point));
 
-                    newPoint = GetNextDiagonalPoint(point);
-                    break;
-                default:
-                    newPoint = point;
-                    break;
-            }
-            _line.SetPosition(_line.positionCount - 1, newPoint);
-        }
     }
 
     private Vector2 GetNextDiagonalPoint(Vector2 point)
     {
+        if (_tryWordLetterUnits.Count < 2) return point;
         var distance = Vector2.Distance(_tryWordLetterUnits[^1].transform.position, point);
         var fullDistance = Vector2.Distance(_tryWordLetterUnits[0].transform.position, _tryWordLetterUnits[1].transform.position);
         var ratio = distance / fullDistance;
@@ -92,32 +77,31 @@ public class LevelLogic : MonoBehaviour
 
     private void CheckWord()
     {
-        Debug.Log($"Check word: {_word}");
+        Debug.Log($"Check word: {_tryWord}");
         _levelView.ToggleWord(false);
 
-        var isWord = _words.Contains(_word);
+        var isWord = _words.Contains(_tryWord);
+        _lineProvider.FinishDraw(isWord, _tryWordLetterUnits);
         var sound = isWord ? Sound.Found : Sound.Error;
         _audio.PlaySound(sound);
         _isFirstLetter = true;
         if (!isWord)
         {
-            if (_line != null)
-            {
-
-                Destroy(_line.gameObject);
-            }
-            _line = null;
             _tryWordLetterUnits.Clear();
             return;
         }
         else
         {
-            _levelView.HideWord(_word);
-            _words.Remove(_word);
+            _levelView.HideWord(_tryWord);
+            _words.Remove(_tryWord);
+
+            foreach (var letter in _tryWordLetterUnits)
+                letter.gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
         }
+
         _tryWordLetterUnits.Clear();
 
-        _word = string.Empty;
+        _tryWord = string.Empty;
 
     }
 
@@ -125,15 +109,14 @@ public class LevelLogic : MonoBehaviour
     {
         if (_isFirstLetter)
         {
-            _line = Instantiate(_linePrefab, letter.transform.position, Quaternion.identity);
-            _line.positionCount = 2;
-            _line.SetPosition(0, letter.transform.position);
-            _line.SetPosition(1, letter.transform.position);
-            _word = letter.Letter.ToString();
+            _randomColor = _colorData.GetRandom();
+            _lineProvider.CreateLine(letter.transform.position, _randomColor);
+
+            _tryWord = letter.Letter.ToString();
             _tryWordLetterUnits.Add(letter);
             _isFirstLetter = false;
             _levelView.AddLetter(letter.Letter);
-            _levelView.ToggleWord(true);
+            _levelView.ToggleWord(true, _randomColor);
         }
         else
         {
@@ -149,21 +132,14 @@ public class LevelLogic : MonoBehaviour
                 Debug.Log($"Letter not on direction: {letter.Letter}");
                 return;
             }
-            _word += letter.Letter.ToString();
+            _tryWord += letter.Letter.ToString();
             _tryWordLetterUnits.Add(letter);
-            _line.SetPosition(_line.positionCount - 1, letter.transform.position);
-            _line.positionCount++;
-            _line.SetPosition(_line.positionCount - 1, letter.transform.position);
+            _lineProvider.Append(letter.transform.position);
+
             _levelView.AddLetter(letter.Letter);
         }
 
-        if (_word.Length == 1)
-        {
-
-            return;
-        }
-
-        _audio.PlayLetter(_line.positionCount - 1);
+        _audio.PlayLetter(_tryWordLetterUnits.Count);
     }
 
     private bool IsLetterOnDirection(LetterUnit newLetter)

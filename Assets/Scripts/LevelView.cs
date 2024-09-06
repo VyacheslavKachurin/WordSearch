@@ -10,6 +10,7 @@ public class LevelView : MonoBehaviour
     private VisualElement _wordsHolder;
     private VisualElement _targetWord;
     private Label _targetLetters;
+    private Label _levelLbl;
     private const string WORD_STYLE = "word";
     private const string WORD_DIV_STYLE = "word-div";
 
@@ -28,12 +29,15 @@ public class LevelView : MonoBehaviour
         _targetWord = _root.Q<VisualElement>("target-word");
         _targetLetters = _targetWord.Q<Label>("target-letters");
 
+        _levelLbl = _root.Q<Label>("level-lbl");
+
     }
 
     public void SetLevelData(LevelData data)
     {
         _levelTheme.text = data.Theme;
         FillWords(data.Words);
+        _levelLbl.text = $"Level: {data.Level}";
 
         // country
         // level
@@ -62,10 +66,11 @@ public class LevelView : MonoBehaviour
         _targetLetters.text += letter;
     }
 
-    public void ToggleWord(bool show)
+    public void ToggleWord(bool show, Color color = default)
     {
         _targetWord.Toggle(show);
         if (!show) _targetLetters.text = string.Empty;
+        _targetWord.style.backgroundColor = color;
     }
 
     public async void HideWord(string word)
