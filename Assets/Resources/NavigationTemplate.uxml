@@ -1,0 +1,28 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/GameStyle.uss?fileID=7433441132597879392&amp;guid=52f028e2a9bbb43c6985398e87d12d27&amp;type=3#GameStyle" />
+    <Style src="project://database/Assets/UI/LevelStyle.uss?fileID=7433441132597879392&amp;guid=c74988ca9fc784d5c88d28cc551a0444&amp;type=3#LevelStyle" />
+    <engine:VisualElement name="nav-row" class="row-width" style="flex-grow: 0; flex-direction: row; position: absolute; top: 208px; display: flex; align-self: center;">
+        <engine:VisualElement name="left-part" class="nav-part">
+            <engine:Button name="back-btn" style="background-image: url(&quot;project://database/Assets/Sprites/BackBtn.png?fileID=2800000&amp;guid=8ea480486dcfc4824a5b9bf4ff7fdbc3&amp;type=3#BackBtn&quot;); width: 82px; height: 98px;" />
+            <engine:Button name="settings-btn" style="background-image: url(&quot;project://database/Assets/Sprites/SettingsBtn.png?fileID=2800000&amp;guid=ea760a8fd10f04d6995e5b1605d253b4&amp;type=3#SettingsBtn&quot;); width: 97px; height: 98px; left: 9px;" />
+        </engine:VisualElement>
+        <engine:VisualElement name="middle-part" class="nav-part" style="flex-grow: 1; flex-shrink: 0; display: flex;">
+            <engine:VisualElement name="level-div" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/LevelDivBg.png?fileID=2800000&amp;guid=d0505a9f353674b8999d319a881181a4&amp;type=3#LevelDivBg&quot;); width: 327px; height: 116px; align-items: center; justify-content: center; display: flex;">
+                <engine:Label text="Label" name="level-lbl" class="nav-lbl" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement name="right-part" class="nav-part" style="flex-grow: 0;">
+            <engine:VisualElement name="coins-bg" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Sprites/CoinsBg.png?fileID=2800000&amp;guid=23909b6a7876f4ac3992f9cc1b7794bc&amp;type=3#CoinsBg&quot;); width: 259px; height: 95px; align-items: stretch; justify-content: center; flex-direction: row; padding-left: 29px; padding-right: 23px;">
+                <engine:VisualElement name="coins-div" style="flex-grow: 1; flex-shrink: 0; background-color: rgba(255, 0, 0, 0); justify-content: flex-start; flex-direction: row;">
+                    <engine:VisualElement name="coin-pic" style="background-image: url(&quot;project://database/Assets/Sprites/Coin.png?fileID=2800000&amp;guid=cc92c5e188d60469d967d65f06b736e8&amp;type=3#Coin&quot;); width: 32px; height: 34px; flex-shrink: 0; top: 25px;" />
+                    <engine:VisualElement style="flex-grow: 1; align-items: flex-start; justify-content: flex-start;">
+                        <engine:Label text="350" name="coins-lbl" class="nav-lbl" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; top: 23px;" />
+                    </engine:VisualElement>
+                </engine:VisualElement>
+                <engine:VisualElement name="VisualElement" style="flex-grow: 0;">
+                    <engine:Button name="shop-btn" style="background-image: url(&quot;project://database/Assets/Sprites/ShopIcon.png?fileID=2800000&amp;guid=aa47609c6b68645f299c02eccd0238d6&amp;type=3#ShopIcon&quot;); width: 59px; height: 59px; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; top: 13px;" />
+                </engine:VisualElement>
+            </engine:VisualElement>
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>

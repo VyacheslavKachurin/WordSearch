@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -5,6 +6,7 @@ using UnityEngine.UIElements;
 
 public class LevelView : MonoBehaviour
 {
+    public static event Action<Ability> OnAbilityClick;
     private VisualElement _root;
     private Label _levelTheme;
     private VisualElement _wordsHolder;
@@ -18,7 +20,11 @@ public class LevelView : MonoBehaviour
     const string WORD_GRAY = "word-gray";
     [SerializeField] private int _removeWordStyleDelay = 300;
     private Dictionary<string, VisualElement> _words = new();
-
+    private AbilityBtn _lightingBtn;
+    private AbilityBtn _hintBtn;
+    private AbilityBtn _adsBtn;
+    private AbilityBtn _magnetBtn;
+    private AbilityBtn _fireworkBtn;
 
     private void Awake()
     {
@@ -44,6 +50,17 @@ public class LevelView : MonoBehaviour
         // words
 
 
+    }
+
+    private void InitButtons(){
+        _lightingBtn = _root.Q<AbilityBtn>("lighting-btn");
+        _hintBtn = _root.Q<AbilityBtn>("hint-btn");
+        _adsBtn = _root.Q<AbilityBtn>("ads-btn");
+        _magnetBtn = _root.Q<AbilityBtn>("magnet-btn");
+        _fireworkBtn = _root.Q<AbilityBtn>("firework-btn");
+
+        
+        
     }
 
 

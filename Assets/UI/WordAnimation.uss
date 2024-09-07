@@ -12,9 +12,3 @@
 .word-gray {
     color: rgb(195, 195, 195);
 }
-
-.nav-part {
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-}

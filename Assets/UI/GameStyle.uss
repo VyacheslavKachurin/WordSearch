@@ -35,3 +35,13 @@
     color: rgb(255, 255, 255);
     -unity-font-style: bold;
 }
+
+.nav-part {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.unity-button:active {
+    opacity: 0.6;
+}
