@@ -17,7 +17,7 @@
             </engine:VisualElement>
         </engine:VisualElement>
         <engine:VisualElement name="words-div" class="words-div row-width" style="display: flex; align-items: stretch;">
-            <engine:VisualElement name="header" style="flex-grow: 0; flex-shrink: 0; background-image: url(&quot;project://database/Assets/Sprites/WordsHeader.png?fileID=2800000&amp;guid=7554701caebd34311854e6b9a8a1fa51&amp;type=3#WordsHeader&quot;); height: 99px; display: flex; align-items: center; justify-content: center; opacity: 1; padding-top: 17px;">
+            <engine:VisualElement name="header" style="flex-grow: 0; flex-shrink: 0; background-image: url(&quot;project://database/Assets/Sprites/WordsHeader.png?fileID=2800000&amp;guid=7554701caebd34311854e6b9a8a1fa51&amp;type=3#WordsHeader&quot;); height: 99px; display: flex; align-items: center; justify-content: center; opacity: 1;">
                 <engine:Label text="topic" name="level-theme" enable-rich-text="true" class="lbl-shadow" style="font-size: 50px; color: rgb(255, 255, 255); -unity-font-style: bold; -unity-font-definition: url(&quot;project://database/Assets/Fonts/helvetica-neue-5/HelveticaNeueRoman%20SDF.asset?fileID=11400000&amp;guid=2a99dce4bc3f4406ba2276ce36b97de6&amp;type=2#HelveticaNeueRoman SDF&quot;); padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; margin-right: 0; margin-left: 0; margin-bottom: 0; margin-top: 0;" />
             </engine:VisualElement>
             <engine:VisualElement name="words" style="flex-grow: 1; align-items: center; justify-content: center; flex-direction: row; flex-wrap: wrap;">

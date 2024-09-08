@@ -8,7 +8,7 @@
         </engine:VisualElement>
         <engine:VisualElement name="middle-part" class="nav-part" style="flex-grow: 1; flex-shrink: 0; display: flex;">
             <engine:VisualElement name="level-div" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/LevelDivBg.png?fileID=2800000&amp;guid=d0505a9f353674b8999d319a881181a4&amp;type=3#LevelDivBg&quot;); width: 327px; height: 116px; align-items: center; justify-content: center; display: flex;">
-                <engine:Label text="Label" name="level-lbl" class="nav-lbl" />
+                <engine:Label text="Label" name="level-lbl" class="nav-lbl" style="-unity-font-definition: url(&quot;project://database/Assets/Fonts/helvetica-neue-5/HelveticaNeueRoman%20SDF.asset?fileID=11400000&amp;guid=2a99dce4bc3f4406ba2276ce36b97de6&amp;type=2#HelveticaNeueRoman SDF&quot;);" />
             </engine:VisualElement>
         </engine:VisualElement>
         <engine:VisualElement name="right-part" class="nav-part" style="flex-grow: 0;">
@@ -16,7 +16,7 @@
                 <engine:VisualElement name="coins-div" style="flex-grow: 1; flex-shrink: 0; background-color: rgba(255, 0, 0, 0); justify-content: flex-start; flex-direction: row;">
                     <engine:VisualElement name="coin-pic" style="background-image: url(&quot;project://database/Assets/Sprites/Coin.png?fileID=2800000&amp;guid=cc92c5e188d60469d967d65f06b736e8&amp;type=3#Coin&quot;); width: 32px; height: 34px; flex-shrink: 0; top: 25px;" />
                     <engine:VisualElement style="flex-grow: 1; align-items: flex-start; justify-content: flex-start;">
-                        <engine:Label text="350" name="coins-lbl" class="nav-lbl" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; top: 23px;" />
+                        <engine:Label text="350" name="coins-lbl" class="nav-lbl" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; top: 23px; -unity-text-align: middle-center; text-overflow: clip;" />
                     </engine:VisualElement>
                 </engine:VisualElement>
                 <engine:VisualElement name="VisualElement" style="flex-grow: 0;">

@@ -1,5 +1,5 @@
 <engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/UI/ControlBtn.uss?fileID=7433441132597879392&amp;guid=235fa992ca2ef473780d2e15e3dfd8dd&amp;type=3#ControlBtn" />
+    <Style src="project://database/Assets/UI/AbilityBtn.uss?fileID=7433441132597879392&amp;guid=235fa992ca2ef473780d2e15e3dfd8dd&amp;type=3#AbilityBtn" />
     <engine:VisualElement class="control-btn" style="align-items: center; justify-content: flex-start; opacity: 1;">
         <engine:VisualElement name="holder" style="flex-grow: 0; width: 130px; height: 139px; flex-shrink: 0; top: 12px;">
             <engine:VisualElement name="ability-icon-div" style="flex-grow: 1; align-items: center; justify-content: center;">
@@ -7,7 +7,7 @@
             </engine:VisualElement>
             <engine:VisualElement name="price-div" style="flex-grow: 0; flex-direction: row; justify-content: flex-start; left: 6px; display: flex;">
                 <engine:VisualElement name="coin" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/Coin.png?fileID=2800000&amp;guid=cc92c5e188d60469d967d65f06b736e8&amp;type=3#Coin&quot;); width: 36px; height: 37px;" />
-                <engine:VisualElement style="flex-grow: 1; left: 4px; margin-left: 4px;">
+                <engine:VisualElement style="flex-grow: 1; left: 0; margin-left: 4px; justify-content: flex-end; bottom: 4px;">
                     <engine:Label text="200" name="price-lbl" class="control-price lbl-shadow" />
                 </engine:VisualElement>
             </engine:VisualElement>

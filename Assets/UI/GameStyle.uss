@@ -1,5 +1,5 @@
 .unity-label {
-    -unity-font-definition: url("project://database/Assets/Fonts/helvetica-neue-5/HelveticaNeueRoman.otf?fileID=12800000&guid=895fd9dbec30e4512b290dc16f632c0a&type=3#HelveticaNeueRoman");
+    -unity-font-definition: url("project://database/Assets/Fonts/helvetica-neue-5/HelveticaNeueRoman%20SDF.asset?fileID=11400000&guid=2a99dce4bc3f4406ba2276ce36b97de6&type=2#HelveticaNeueRoman SDF");
     -unity-text-align: middle-center;
     letter-spacing: 5px;
 }
@@ -34,6 +34,14 @@
     font-size: 40px;
     color: rgb(255, 255, 255);
     -unity-font-style: bold;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
 }
 
 .nav-part {
