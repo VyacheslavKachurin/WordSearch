@@ -20,6 +20,7 @@ public class LevelLogic : MonoBehaviour
     private List<string> _words;
     private Direction _direction;
     private Color _randomColor;
+    [SerializeField] private LayerMask _ignoreRaycastLayer;
 
     private void Start()
     {
@@ -34,7 +35,7 @@ public class LevelLogic : MonoBehaviour
 
     private void HandleAbility(Ability ability, int price)
     {
-       Debug.Log($"Ability clicked: {ability}, {price}");
+        Debug.Log($"Ability clicked: {ability}, {price}");
     }
 
     private void HandleDrag(Vector2 point)
@@ -77,6 +78,7 @@ public class LevelLogic : MonoBehaviour
 
     private void CheckWord()
     {
+        if (_tryWord.Length == 0) return;
         Debug.Log($"Check word: {_tryWord}");
         _levelView.ToggleWord(false);
 
@@ -96,7 +98,7 @@ public class LevelLogic : MonoBehaviour
             _words.Remove(_tryWord);
 
             foreach (var letter in _tryWordLetterUnits)
-                letter.gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+                letter.gameObject.layer = _ignoreRaycastLayer;
         }
 
         _tryWordLetterUnits.Clear();

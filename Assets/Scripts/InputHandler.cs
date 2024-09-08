@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class InputHandler : MonoBehaviour
 {
+
+    [SerializeField] LayerMask _detectLayerMask;
     public static event Action<LetterUnit> OnLetterHover;
     public static event Action<Vector2> OnPointerDrag;
     public static event Action OnInputStop;
@@ -84,7 +86,7 @@ public class InputHandler : MonoBehaviour
         letter = null;
         var ray = _cam.ScreenPointToRay(Input.mousePosition);
 
-        var hit = Physics2D.Raycast(ray.origin, ray.direction);
+        var hit = Physics2D.Raycast(ray.origin, ray.direction, Mathf.Infinity, (int)_detectLayerMask);
         if (hit.collider != null)
         {
             letter = hit.collider.GetComponent<LetterUnit>();
