@@ -24,10 +24,7 @@ public class LetterUnit : MonoBehaviour
         _text.text = letter.ToString().ToUpper();
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        Debug.Log($"Letter collided with {collision.gameObject.name}");
-    }
+  
 
     internal void SetSize(Vector2 letterSize, float scale)
     {

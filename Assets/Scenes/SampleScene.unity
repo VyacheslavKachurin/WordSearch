@@ -222,6 +222,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &927455341 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6683193778254643701, guid: ad42d697363c9480a967da157ecda282, type: 3}
+  m_PrefabInstance: {fileID: 916487363140881407}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a45eff2c1f864a1ca97b887a3b0e6a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1148785180 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7295536969090361296, guid: 1b0b483e238b44b25b28c6fced1dac6a, type: 3}
@@ -389,10 +400,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6683193778254643701, guid: ad42d697363c9480a967da157ecda282, type: 3}
-      propertyPath: _detectLayerMask.m_Bits
-      value: 68
-      objectReference: {fileID: 0}
     - target: {fileID: 7659827079033710018, guid: ad42d697363c9480a967da157ecda282, type: 3}
       propertyPath: m_Name
       value: InputHandler
@@ -458,6 +465,10 @@ PrefabInstance:
       propertyPath: _levelView
       value: 
       objectReference: {fileID: 1148785180}
+    - target: {fileID: 7508644550789951793, guid: d21a5ff31f2c647b68d33541c6086c2c, type: 3}
+      propertyPath: _inputHandler
+      value: 
+      objectReference: {fileID: 927455341}
     - target: {fileID: 7508644550789951793, guid: d21a5ff31f2c647b68d33541c6086c2c, type: 3}
       propertyPath: _lineProvider
       value: 

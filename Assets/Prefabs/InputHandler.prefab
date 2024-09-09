@@ -46,4 +46,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _detectLayerMask:
     serializedVersion: 2
-    m_Bits: 4
+    m_Bits: 68
+  _inputTriggerPrefab: {fileID: 4379342638207532924, guid: 0759ba2eef8e747489872de20acf7bb4, type: 3}
