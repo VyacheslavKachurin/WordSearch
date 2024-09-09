@@ -16,4 +16,10 @@ public class InputTrigger : MonoBehaviour
     {
         OnLetterExit?.Invoke(letter.GetComponent<LetterUnit>());
     }
+
+    private void OnDestroy()
+    {
+        Debug.Log($"Input trigger destroyed: {name}");
+    }
+
 }

@@ -10,18 +10,29 @@ public class InputHandler : MonoBehaviour
     [SerializeField] InputTrigger _inputTriggerPrefab;
 
     public static event Action OnInputStop;
+    public static event Action<LetterUnit> OnLetterDeselect;
 
     private Camera _cam;
-    private bool _isSelecting = false;
 
     private InputTrigger _trigger;
     private Direction _direction;
+    private bool _isSelecting;
     private Diagonal _diagonalDir;
     private List<LetterUnit> _letterUnits;
+    private Touch _touch;
 
     private void Start()
     {
         _cam = Camera.main;
+        InputTrigger.OnLetterExit += HandleLetterExit;
+    }
+
+    private void HandleLetterExit(LetterUnit unit)
+    {
+        if (!_isSelecting) return;
+        var isOnDirection = GetCurrentDirection(ToWorldPosition(_touch.position));
+        if (!isOnDirection) OnLetterDeselect?.Invoke(unit);
+
     }
 
     public void SetLetterUnits(List<LetterUnit> letterUnits) => _letterUnits = letterUnits;
@@ -30,46 +41,56 @@ public class InputHandler : MonoBehaviour
     private void Update()
     {
         if (Input.touchCount == 0) return;
-        var touch = Input.GetTouch(0);
+        _touch = Input.GetTouch(0);
 
-        if (touch.phase == TouchPhase.Began)
+        if (_touch.phase == TouchPhase.Began)
         {
-            var pos = ToWorldPosition(touch.position);
+            if (!IsOnGameField(_touch.position)) return;
+            var pos = ToWorldPosition(_touch.position);
             _trigger = Instantiate(_inputTriggerPrefab, pos, Quaternion.identity);
             _direction = Direction.None;
+            _isSelecting = true;
         }
 
 
-        if (touch.phase == TouchPhase.Moved)
+        if (_touch.phase == TouchPhase.Moved && _isSelecting)
         {
+            if (!IsOnGameField(_touch.position)) return;
+
             Vector2 newPos;
             if (_letterUnits.Count < 2)
-                newPos = ToWorldPosition(touch.position);
+                newPos = ToWorldPosition(_touch.position);
             else
             {
                 _direction = _direction == Direction.None ? GetDirection() : _direction;
                 _diagonalDir = _diagonalDir == Diagonal.None ? GetDiagonalDirection() : _diagonalDir;
-                newPos = GetNextPos(ToWorldPosition(touch.position), _direction);
+                newPos = GetNextPos(ToWorldPosition(_touch.position), _direction);
             }
 
             _trigger.transform.position = newPos;
 
-            if (_direction == Direction.Diagonal && IsOnDiagonalDirection(ToWorldPosition(touch.position)))
+            if (_direction == Direction.Diagonal && IsOnDiagonalDirection(ToWorldPosition(_touch.position)))
                 OnInputDrag?.Invoke(newPos);
             else if (_direction != Direction.Diagonal)
                 OnInputDrag?.Invoke(newPos);
 
         }
 
-        if (touch.phase == TouchPhase.Ended)
+        if (_touch.phase == TouchPhase.Ended && _isSelecting)
         {
-            OnInputStop?.Invoke();
-            Destroy(_trigger.gameObject);
-            _trigger = null;
-            //_isSelecting = false;
-            _direction = Direction.None;
-            _diagonalDir = Diagonal.None;
+            StopSelecting();
         }
+    }
+
+    private void StopSelecting()
+    {
+        _isSelecting = false;
+        OnInputStop?.Invoke();
+        Destroy(_trigger.gameObject);
+        _trigger = null;
+        _direction = Direction.None;
+        _diagonalDir = Diagonal.None;
+        _touch = default;
     }
 
     private Diagonal GetDiagonalDirection()
@@ -82,6 +103,13 @@ public class InputHandler : MonoBehaviour
         if (a.x > b.x && a.y < b.y) return Diagonal.UpLeft;
         if (a.x > b.x && a.y > b.y) return Diagonal.DownLeft;
         return Diagonal.None;
+    }
+
+    private bool IsOnGameField(Vector2 point)
+    {
+        var ray = _cam.ScreenPointToRay(point);
+        if (Physics2D.Raycast(ray.origin, ray.direction, Mathf.Infinity, _detectLayerMask)) return true;
+        return false;
     }
 
     private Vector2 GetNextDiagonalPoint(Vector2 point)
@@ -145,6 +173,20 @@ public class InputHandler : MonoBehaviour
         else _direction = Direction.Diagonal;
 
         return _direction;
+    }
+
+    private bool GetCurrentDirection(Vector2 touchPos)
+    {
+        var lastLetter = _letterUnits[^1].transform.position;
+        if (touchPos.x > lastLetter.x && touchPos.y == lastLetter.y && _direction == Direction.Right) return true;
+        else if (touchPos.x < lastLetter.x && touchPos.y == lastLetter.y && _direction == Direction.Left) return true;
+        else if (touchPos.y > lastLetter.y && touchPos.x == lastLetter.x && _direction == Direction.Up) return true;
+        else if (touchPos.y < lastLetter.y && touchPos.x == lastLetter.x && _direction == Direction.Down) return true;
+        else if (touchPos.x > lastLetter.x && touchPos.y > lastLetter.y && _diagonalDir == Diagonal.UpRight) return true;
+        else if (touchPos.x > lastLetter.x && touchPos.y < lastLetter.y && _diagonalDir == Diagonal.DownRight) return true;
+        else if (touchPos.x < lastLetter.x && touchPos.y > lastLetter.y && _diagonalDir == Diagonal.UpLeft) return true;
+        else if (touchPos.x < lastLetter.x && touchPos.y < lastLetter.y && _diagonalDir == Diagonal.DownLeft) return true;
+        return false;
     }
 
     private Vector2 ToWorldPosition(Vector2 touchPos)
