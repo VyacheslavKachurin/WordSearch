@@ -27,26 +27,27 @@ public class LevelLogic : MonoBehaviour
 
     private void Start()
     {
-        //  InputHandler.OnLetterHover += HandleLetterHover;
-        // InputHandler.OnPointerDrag += HandleDrag;
+
         InputHandler.OnInputStop += CheckWord;
-
-
         InputTrigger.OnLetterEnter += HandleLetterEnter;
-        //InputTrigger.OnLetterExit += HandleLetterExit;
         InputHandler.OnInputDrag += HandleDrag;
-
+        InputHandler.OnLetterDeselect += HandleLetterDeselect;
         AbilityBtn.OnAbilityClicked += HandleAbility;
+
         _audio = AudioManager.Instance;
 
         _inputHandler.SetLetterUnits(_tryWordLetterUnits);
 
     }
 
-    private void HandleLetterExit(LetterUnit letter)
+    private void HandleLetterDeselect(LetterUnit letter)
     {
-
-
+        _tryWordLetterUnits.Remove(letter);
+        _tryWord = _tryWord.Substring(0, _tryWord.Length - 1);
+        Debug.Log($"tryWord deselect letter: {_tryWord}");
+        _levelView.RemoveLetter(letter.Letter);
+        _audio.PlayLetter(_tryWordLetterUnits.Count);
+        _lineProvider.RemovePoint();
     }
 
     private void HandleAbility(Ability ability, int price)
@@ -77,7 +78,7 @@ public class LevelLogic : MonoBehaviour
             _words.Remove(_tryWord);
 
             foreach (var letter in _tryWordLetterUnits)
-                letter.gameObject.layer = _ignoreRaycastLayer;
+                letter.Disable();
         }
 
         _tryWordLetterUnits.Clear();

@@ -11,10 +11,12 @@ public class LetterUnit : MonoBehaviour
 {
     private TextMeshPro _text;
     public char Letter => _text.text[0];
+    private BoxCollider2D _collider;
 
     void Awake()
     {
         _text = GetComponent<TextMeshPro>();
+        _collider = GetComponent<BoxCollider2D>();
     }
 
 
@@ -31,5 +33,10 @@ public class LetterUnit : MonoBehaviour
         var size = letterSize.x > letterSize.y ? letterSize.y : letterSize.x;
         size *= scale;
         transform.localScale = new Vector2(size, size);
+    }
+
+    internal void Disable()
+    {
+       _collider.enabled = false;
     }
 }

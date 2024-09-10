@@ -52,15 +52,16 @@ public class LevelView : MonoBehaviour
 
     }
 
-    private void InitButtons(){
+    private void InitButtons()
+    {
         _lightingBtn = _root.Q<AbilityBtn>("lighting-btn");
         _hintBtn = _root.Q<AbilityBtn>("hint-btn");
         _adsBtn = _root.Q<AbilityBtn>("ads-btn");
         _magnetBtn = _root.Q<AbilityBtn>("magnet-btn");
         _fireworkBtn = _root.Q<AbilityBtn>("firework-btn");
 
-        
-        
+
+
     }
 
 
@@ -81,6 +82,11 @@ public class LevelView : MonoBehaviour
     public void AddLetter(char letter)
     {
         _targetLetters.text += letter;
+    }
+    
+    public void RemoveLetter(char letter)
+    {
+        _targetLetters.text = _targetLetters.text.Remove(_targetLetters.text.Length - 1);
     }
 
     public void ToggleWord(bool show, Color color = default)

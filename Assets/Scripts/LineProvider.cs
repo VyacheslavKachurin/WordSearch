@@ -17,6 +17,7 @@ public class LineProvider : MonoBehaviour
         _line.SetPosition(_line.positionCount - 1, point);
     }
 
+
     internal void CreateLine(Vector3 point, Color color)
     {
         _line = Instantiate(_linePrefab, point, Quaternion.identity);
@@ -41,6 +42,12 @@ public class LineProvider : MonoBehaviour
         if (!keepLine && _line != null) Destroy(_line.gameObject);
         if (keepLine) CorrectLastPosition(letters);
         _line = null;
+    }
+
+    public void RemovePoint()
+    {
+        if (_line == null) return;
+        _line.positionCount--;
     }
 
     private void CorrectLastPosition(List<LetterUnit> letters)

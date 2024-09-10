@@ -30,8 +30,11 @@ public class InputHandler : MonoBehaviour
     private void HandleLetterExit(LetterUnit unit)
     {
         if (!_isSelecting) return;
-        var isOnDirection = GetCurrentDirection(ToWorldPosition(_touch.position));
-        if (!isOnDirection) OnLetterDeselect?.Invoke(unit);
+        var isOnDirection = IsOnDirection(_trigger.transform.position);
+        Debug.Log($"isOnDirection: {isOnDirection}");
+
+
+         if (!isOnDirection) OnLetterDeselect?.Invoke(unit);
 
     }
 
@@ -175,18 +178,24 @@ public class InputHandler : MonoBehaviour
         return _direction;
     }
 
-    private bool GetCurrentDirection(Vector2 touchPos)
+    private bool IsOnDirection(Vector2 triggerPos)
     {
+        if (_letterUnits.Count < 2) return true;
         var lastLetter = _letterUnits[^1].transform.position;
-        if (touchPos.x > lastLetter.x && touchPos.y == lastLetter.y && _direction == Direction.Right) return true;
-        else if (touchPos.x < lastLetter.x && touchPos.y == lastLetter.y && _direction == Direction.Left) return true;
-        else if (touchPos.y > lastLetter.y && touchPos.x == lastLetter.x && _direction == Direction.Up) return true;
-        else if (touchPos.y < lastLetter.y && touchPos.x == lastLetter.x && _direction == Direction.Down) return true;
-        else if (touchPos.x > lastLetter.x && touchPos.y > lastLetter.y && _diagonalDir == Diagonal.UpRight) return true;
-        else if (touchPos.x > lastLetter.x && touchPos.y < lastLetter.y && _diagonalDir == Diagonal.DownRight) return true;
-        else if (touchPos.x < lastLetter.x && touchPos.y > lastLetter.y && _diagonalDir == Diagonal.UpLeft) return true;
-        else if (touchPos.x < lastLetter.x && touchPos.y < lastLetter.y && _diagonalDir == Diagonal.DownLeft) return true;
-        return false;
+        if (triggerPos.x > lastLetter.x && triggerPos.y == lastLetter.y && _direction == Direction.Right) return true;
+        else if (triggerPos.x < lastLetter.x && triggerPos.y == lastLetter.y && _direction == Direction.Left) return true;
+        else if (triggerPos.y > lastLetter.y && triggerPos.x == lastLetter.x && _direction == Direction.Up) return true;
+        else if (triggerPos.y < lastLetter.y && triggerPos.x == lastLetter.x && _direction == Direction.Down) return true;
+        else if (triggerPos.x > lastLetter.x && triggerPos.y > lastLetter.y && _diagonalDir == Diagonal.UpRight) return true;
+        else if (triggerPos.x > lastLetter.x && triggerPos.y < lastLetter.y && _diagonalDir == Diagonal.DownRight) return true;
+        else if (triggerPos.x < lastLetter.x && triggerPos.y > lastLetter.y && _diagonalDir == Diagonal.UpLeft) return true;
+        else if (triggerPos.x < lastLetter.x && triggerPos.y < lastLetter.y && _diagonalDir == Diagonal.DownLeft) return true;
+
+        else
+        {
+            Debug.Log($"Not on direction: {_direction} \n triggerPos: {triggerPos} \n lastLetter: {lastLetter}");
+            return false;
+        }
     }
 
     private Vector2 ToWorldPosition(Vector2 touchPos)

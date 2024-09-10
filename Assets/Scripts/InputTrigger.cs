@@ -9,17 +9,14 @@ public class InputTrigger : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D letter)
     {
-        OnLetterEnter?.Invoke(letter.GetComponent<LetterUnit>());
+        var res = letter.TryGetComponent<LetterUnit>(out var letterUnit);
+        if (!res) return;
+        OnLetterEnter?.Invoke(letterUnit);
     }
 
     private void OnTriggerExit2D(Collider2D letter)
     {
         OnLetterExit?.Invoke(letter.GetComponent<LetterUnit>());
-    }
-
-    private void OnDestroy()
-    {
-        Debug.Log($"Input trigger destroyed: {name}");
     }
 
 }
