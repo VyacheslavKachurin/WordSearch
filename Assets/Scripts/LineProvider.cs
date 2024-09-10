@@ -11,10 +11,12 @@ public class LineProvider : MonoBehaviour
 
     internal void Append(Vector2 point)
     {
+        if (_line == null) return;
         _line.SetPosition(_line.positionCount - 1, point);
         _line.positionCount++;
         _line.SetPosition(_line.positionCount - 1, point);
     }
+
 
     internal void CreateLine(Vector3 point, Color color)
     {
@@ -27,31 +29,12 @@ public class LineProvider : MonoBehaviour
         _line.endColor = color;
     }
 
-    internal void Draw(Vector2 point, Direction direction, Vector2 diagonalPoint)
+    internal void Draw(Vector2 point)
     {
+        if (_line == null) return;
         if (Vector2.Distance(_line.GetPosition(_line.positionCount - 1), point) > _lineRendererDrawStep)
-        {
-            Vector2 newPoint;
+            _line.SetPosition(_line.positionCount - 1, point);
 
-            switch (direction)
-            {
-                case Direction.Left:
-                case Direction.Right:
-                    newPoint = new Vector2(point.x, _line.GetPosition(_line.positionCount - 1).y);
-                    break;
-                case Direction.Up:
-                case Direction.Down:
-                    newPoint = new Vector2(_line.GetPosition(_line.positionCount - 1).x, point.y);
-                    break;
-                case Direction.Diagonal:
-                    newPoint = diagonalPoint;
-                    break;
-                default:
-                    newPoint = point;
-                    break;
-            }
-            _line.SetPosition(_line.positionCount - 1, newPoint);
-        }
     }
 
     internal void FinishDraw(bool keepLine, List<LetterUnit> letters = null)
@@ -59,6 +42,12 @@ public class LineProvider : MonoBehaviour
         if (!keepLine && _line != null) Destroy(_line.gameObject);
         if (keepLine) CorrectLastPosition(letters);
         _line = null;
+    }
+
+    public void RemovePoint()
+    {
+        if (_line == null) return;
+        _line.positionCount--;
     }
 
     private void CorrectLastPosition(List<LetterUnit> letters)

@@ -12,6 +12,11 @@ public class LevelBuilder : MonoBehaviour
     private LevelData _levelData;
 
 
+    private void Start()
+    {
+        CreateLevel();
+    }
+
     [ContextMenu("Create Level")]
     public void CreateLevel()
     {

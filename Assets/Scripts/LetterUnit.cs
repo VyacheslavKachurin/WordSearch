@@ -11,10 +11,12 @@ public class LetterUnit : MonoBehaviour
 {
     private TextMeshPro _text;
     public char Letter => _text.text[0];
+    private BoxCollider2D _collider;
 
     void Awake()
     {
         _text = GetComponent<TextMeshPro>();
+        _collider = GetComponent<BoxCollider2D>();
     }
 
 
@@ -24,15 +26,17 @@ public class LetterUnit : MonoBehaviour
         _text.text = letter.ToString().ToUpper();
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        Debug.Log($"Letter collided with {collision.gameObject.name}");
-    }
+  
 
     internal void SetSize(Vector2 letterSize, float scale)
     {
         var size = letterSize.x > letterSize.y ? letterSize.y : letterSize.x;
         size *= scale;
         transform.localScale = new Vector2(size, size);
+    }
+
+    internal void Disable()
+    {
+       _collider.enabled = false;
     }
 }
