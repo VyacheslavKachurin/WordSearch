@@ -263,3 +263,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17a56d6ceb8e44522bed63a53141aabd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _disableColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
+  _activeColor: {r: 0, g: 0, b: 0, a: 1}
+  _foundColor: {r: 1, g: 1, b: 1, a: 1}
+  _disableDelay: 0.05
+  _rotationLimit: 30

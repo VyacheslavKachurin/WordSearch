@@ -6,7 +6,6 @@ using UnityEngine.UIElements;
 
 public class LevelView : MonoBehaviour
 {
-    public static event Action<Ability> OnAbilityClick;
     private VisualElement _root;
     private Label _levelTheme;
     private VisualElement _wordsHolder;
@@ -65,7 +64,7 @@ public class LevelView : MonoBehaviour
     }
 
 
-    private void FillWords(string[] words)
+    private void FillWords(List<string> words)
     {
         foreach (var word in words)
         {
@@ -83,7 +82,7 @@ public class LevelView : MonoBehaviour
     {
         _targetLetters.text += letter;
     }
-    
+
     public void RemoveLetter(char letter)
     {
         _targetLetters.text = _targetLetters.text.Remove(_targetLetters.text.Length - 1);
@@ -104,7 +103,12 @@ public class LevelView : MonoBehaviour
 
         await Task.Delay(_removeWordStyleDelay);
         label.RemoveFromClassList(WORD_BIG);
+    }
 
+    internal void SetState(LevelState levelState)
+    {
+        foreach (var word in levelState.FoundWords)
+            HideWord(word);
     }
 }
 

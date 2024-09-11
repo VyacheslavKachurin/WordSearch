@@ -1,13 +1,14 @@
 
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 [UxmlElement]
 public partial class AbilityBtn : Button
 {
-    public static event Action<Ability, int> OnAbilityClicked;
+    public static event Action<Ability, int, AbilityBtn> OnAbilityClicked;
     private Label _priceLbl;
     private VisualElement _priceDiv;
     private VisualElement _abilityIcon;
@@ -74,7 +75,7 @@ public partial class AbilityBtn : Button
 
     private void OnClicked(ClickEvent evt)
     {
-        OnAbilityClicked?.Invoke(_ability, _priceInt);
+        OnAbilityClicked?.Invoke(_ability, _priceInt, this);
     }
 }
 public enum Ability

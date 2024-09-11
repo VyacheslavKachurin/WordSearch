@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class LevelLogic : MonoBehaviour
 {
-
+    public static event Action<List<Point>> OnWordFound;
 
     [SerializeField] LevelView _levelView;
     [SerializeField] LineProvider _lineProvider;
@@ -27,17 +27,21 @@ public class LevelLogic : MonoBehaviour
 
     private void Start()
     {
-
         InputHandler.OnInputStop += CheckWord;
         InputTrigger.OnLetterEnter += HandleLetterEnter;
         InputHandler.OnInputDrag += HandleDrag;
         InputHandler.OnLetterDeselect += HandleLetterDeselect;
-        AbilityBtn.OnAbilityClicked += HandleAbility;
+
 
         _audio = AudioManager.Instance;
-
         _inputHandler.SetLetterUnits(_tryWordLetterUnits);
 
+    }
+
+    [ContextMenu("Save State")]
+    private void SaveState()
+    {
+        LevelStateService.SaveState();
     }
 
     private void HandleLetterDeselect(LetterUnit letter)
@@ -48,12 +52,9 @@ public class LevelLogic : MonoBehaviour
         _levelView.RemoveLetter(letter.Letter);
         _audio.PlayLetter(_tryWordLetterUnits.Count);
         _lineProvider.RemovePoint();
+        letter.AnimateSelection(false);
     }
 
-    private void HandleAbility(Ability ability, int price)
-    {
-        Debug.Log($"Ability clicked: {ability}, {price}");
-    }
 
     private void HandleDrag(Vector2 point)
     {
@@ -71,15 +72,10 @@ public class LevelLogic : MonoBehaviour
         var sound = isWord ? Sound.Found : Sound.Error;
         _audio.PlaySound(sound);
         _isFirstLetter = true;
-        if (isWord)
-        {
-
-            _levelView.HideWord(_tryWord);
-            _words.Remove(_tryWord);
-
+        if (isWord) RemoveWord();
+        else
             foreach (var letter in _tryWordLetterUnits)
-                letter.Disable();
-        }
+                letter.AnimateSelection(false);
 
         _tryWordLetterUnits.Clear();
 
@@ -87,8 +83,22 @@ public class LevelLogic : MonoBehaviour
 
     }
 
+    private void RemoveWord()
+    {
+        _levelView.HideWord(_tryWord);
+        _words.Remove(_tryWord);
+
+        foreach (var letter in _tryWordLetterUnits)
+            letter.Disable();
+
+        OnWordFound?.Invoke(_tryWordLetterUnits.Select(x => x.Point).ToList());
+
+        LevelStateService.AddFoundWord(_tryWord,_tryWordLetterUnits);
+    }
+
     private void HandleLetterEnter(LetterUnit letter)
     {
+        letter.AnimateSelection(true);
         if (_isFirstLetter)
         {
             _randomColor = _colorData.GetRandom();

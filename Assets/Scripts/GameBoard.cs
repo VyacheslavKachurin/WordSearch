@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,8 +13,18 @@ public class GameBoard : MonoBehaviour
 
     private LetterUnit[,] _letters;
 
+    public LetterUnit[,] Letters => _letters;
 
 
+    private void Start()
+    {
+        LevelLogic.OnWordFound += HandleWordFound;
+    }
+
+    private void HandleWordFound(List<Point> list)
+    {
+      
+    }
 
     [ContextMenu("Build Board")]
     public void BuildBoard(LevelData data)
@@ -33,7 +44,7 @@ public class GameBoard : MonoBehaviour
                 var letter = Instantiate(_letterPrefab, transform);
                 letter.transform.localPosition = new Vector3(X, Y, 0);
                 _letters[y, x] = letter;
-                letter.SetLetter(data[y, x]);
+                letter.SetLetter(data[y, x], new Point(x, y));
                 letter.SetSize(boardSize.LetterSize, _letterScale);
                 X += boardSize.LetterSize.x;
             }
@@ -61,6 +72,13 @@ public class GameBoard : MonoBehaviour
         return new BoardSize(renderer, width, height);
     }
 
+    internal void SetState(LevelState levelState)
+    {
+      foreach (var letter in levelState.FoundLetters)
+        {
+            _letters[letter.Y, letter.X].AnimateSelection(true);
+        }
+    }
 }
 
 public class BoardSize
