@@ -11,7 +11,7 @@ public class LevelBuilder : MonoBehaviour
     [SerializeField] AbilityLogic _abilityLogic;
 
     private LevelData _levelData;
-
+    [SerializeField] private LineProvider _lineProvider;
 
     private void Start()
     {
@@ -37,6 +37,7 @@ public class LevelBuilder : MonoBehaviour
         {
             _levelView.SetState(levelState);
             _gameBoard.SetState(levelState);
+            _lineProvider.SetState(levelState);
         }
         else
         {

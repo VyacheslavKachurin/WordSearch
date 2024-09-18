@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using UnityEngine;
 
 public class LevelStateService
 {
@@ -12,6 +13,8 @@ public class LevelStateService
 
     public static void SaveState()
     {
+       
+
         string json = JsonConvert.SerializeObject(State);
 
         System.IO.File.WriteAllText(prePath + fileName, json);
@@ -25,6 +28,7 @@ public class LevelStateService
         {
             string json = System.IO.File.ReadAllText(prePath + fileName);
             levelState = JsonConvert.DeserializeObject<LevelState>(json);
+            State = levelState;
             return true;
         }
         return false;
@@ -38,14 +42,18 @@ public class LevelStateService
 
     internal static void CreateState(LevelData levelData)
     {
-        State = new(false, levelData.FirstLetters, new List<string>(), new List<Point>());
+        State = new(false, levelData.FirstLetters, new List<string>(), new List<Point>(), new List<LineState>());
     }
 
-    internal static void AddFoundWord(string tryWord, List<LetterUnit> foundLetters)
+    internal static void AddFoundWord(string tryWord, List<LetterUnit> foundLetters, LineState lineState)
     {
         State.FoundWords.Add(tryWord);
 
         foreach (var letter in foundLetters)
             State.FoundLetters.Add(letter.Point);
+
+        State.Lines.Add(lineState);
+
+
     }
 }

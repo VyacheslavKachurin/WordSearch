@@ -23,7 +23,7 @@ public class GameBoard : MonoBehaviour
 
     private void HandleWordFound(List<Point> list)
     {
-      
+
     }
 
     [ContextMenu("Build Board")]
@@ -74,7 +74,7 @@ public class GameBoard : MonoBehaviour
 
     internal void SetState(LevelState levelState)
     {
-      foreach (var letter in levelState.FoundLetters)
+        foreach (var letter in levelState.FoundLetters)
         {
             _letters[letter.Y, letter.X].AnimateSelection(true);
         }

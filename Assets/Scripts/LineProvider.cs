@@ -59,4 +59,16 @@ public class LineProvider : MonoBehaviour
 
     }
 
+    internal void SetState(LevelState levelState)
+    {
+        for (int i = 0; i < levelState.Lines.Count; i++)
+        {
+            var line = Instantiate(_linePrefab);
+            line.positionCount = 2;
+            line.SetPosition(0, levelState.Lines[i].Positions[0]);
+            line.SetPosition(1, levelState.Lines[i].Positions[1]);
+            line.startColor = levelState.Lines[i].color;
+            line.endColor = levelState.Lines[i].color;
+        }
+    }
 }

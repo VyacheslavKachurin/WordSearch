@@ -107,8 +107,9 @@ public class LevelView : MonoBehaviour
 
     internal void SetState(LevelState levelState)
     {
-        foreach (var word in levelState.FoundWords)
-            HideWord(word);
+        if (levelState.FoundWords.Count > 0)
+            foreach (var word in levelState.FoundWords)
+                HideWord(word);
     }
 }
 

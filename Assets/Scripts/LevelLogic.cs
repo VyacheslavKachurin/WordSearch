@@ -92,8 +92,10 @@ public class LevelLogic : MonoBehaviour
             letter.Disable();
 
         OnWordFound?.Invoke(_tryWordLetterUnits.Select(x => x.Point).ToList());
+        var linePositions = new List<Vector2>() { _tryWordLetterUnits[0].transform.position, _tryWordLetterUnits[^1].transform.position };
 
-        LevelStateService.AddFoundWord(_tryWord,_tryWordLetterUnits);
+        var lineState = new LineState(linePositions, _randomColor);
+        LevelStateService.AddFoundWord(_tryWord, _tryWordLetterUnits, lineState);
     }
 
     private void HandleLetterEnter(LetterUnit letter)

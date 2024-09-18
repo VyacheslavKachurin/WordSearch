@@ -1,6 +1,8 @@
 
 using System.Collections.Generic;
 
+using UnityEngine;
+
 public class LevelData
 {
     public int Level;
@@ -30,5 +32,10 @@ public class Point
     {
         X = x;
         Y = y;
+    }
+
+    public Vector2 GetVector()
+    {
+        return new Vector2(X, Y);
     }
 }
