@@ -697,6 +697,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2689111377394687375, guid: c9ffc78136f9141d2a682d3e06d8cd19, type: 3}
+      propertyPath: _lineProvider
+      value: 
+      objectReference: {fileID: 454222631}
     - target: {fileID: 4637987767576037609, guid: c9ffc78136f9141d2a682d3e06d8cd19, type: 3}
       propertyPath: m_Name
       value: AbilityLogic

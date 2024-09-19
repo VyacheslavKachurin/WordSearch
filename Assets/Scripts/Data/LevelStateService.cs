@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class LevelStateService
 {
@@ -13,8 +15,6 @@ public class LevelStateService
 
     public static void SaveState()
     {
-       
-
         string json = JsonConvert.SerializeObject(State);
 
         System.IO.File.WriteAllText(prePath + fileName, json);
@@ -42,7 +42,7 @@ public class LevelStateService
 
     internal static void CreateState(LevelData levelData)
     {
-        State = new(false, levelData.FirstLetters, new List<string>(), new List<Point>(), new List<LineState>());
+        State = new(false, levelData.FirstLetters, new List<string>(), new List<Point>(), new List<LineState>(), new List<Point>());
     }
 
     internal static void AddFoundWord(string tryWord, List<LetterUnit> foundLetters, LineState lineState)
@@ -54,6 +54,16 @@ public class LevelStateService
 
         State.Lines.Add(lineState);
 
+        var firstLetter = foundLetters[0].Point;
+        State.ActiveFirstLetters.Remove(firstLetter);
+    }
 
+    internal static Point GetFirstPoint()
+    {
+        var index = Random.Range(0, State.ActiveFirstLetters.Count);
+        var point = State.ActiveFirstLetters[index];
+        State.ActiveFirstLetters.Remove(point);
+        State.OpenLetters.Add(point);
+        return point;
     }
 }

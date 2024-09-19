@@ -10,7 +10,7 @@ public class LevelLogic : MonoBehaviour
 
     [SerializeField] LevelView _levelView;
     [SerializeField] LineProvider _lineProvider;
-    [SerializeField] ColorData _colorData;
+
     [SerializeField] InputHandler _inputHandler;
 
     private AudioManager _audio;
@@ -21,7 +21,6 @@ public class LevelLogic : MonoBehaviour
 
     private List<string> _words;
     private Direction _direction;
-    private Color _randomColor;
     [SerializeField] private LayerMask _ignoreRaycastLayer;
 
 
@@ -94,7 +93,7 @@ public class LevelLogic : MonoBehaviour
         OnWordFound?.Invoke(_tryWordLetterUnits.Select(x => x.Point).ToList());
         var linePositions = new List<Vector2>() { _tryWordLetterUnits[0].transform.position, _tryWordLetterUnits[^1].transform.position };
 
-        var lineState = new LineState(linePositions, _randomColor);
+        var lineState = new LineState(linePositions, _tryWordLetterUnits[0].GetColor());
         LevelStateService.AddFoundWord(_tryWord, _tryWordLetterUnits, lineState);
     }
 
@@ -103,13 +102,13 @@ public class LevelLogic : MonoBehaviour
         letter.AnimateSelection(true);
         if (_isFirstLetter)
         {
-            _randomColor = _colorData.GetRandom();
-            _lineProvider.CreateLine(letter.transform.position, _randomColor);
+            var lineColor = letter.GetColor();
+            _lineProvider.CreateLine(letter.transform.position, lineColor);
             _tryWord = letter.Letter.ToString();
             _tryWordLetterUnits.Add(letter);
             _isFirstLetter = false;
             _levelView.AddLetter(letter.Letter);
-            _levelView.ToggleWord(true, _randomColor);
+            _levelView.ToggleWord(true, lineColor);
             _audio.PlayLetter(_tryWordLetterUnits.Count);
         }
         else

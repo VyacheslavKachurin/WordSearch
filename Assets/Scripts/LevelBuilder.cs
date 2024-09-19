@@ -37,7 +37,7 @@ public class LevelBuilder : MonoBehaviour
         {
             _levelView.SetState(levelState);
             _gameBoard.SetState(levelState);
-            _lineProvider.SetState(levelState);
+            _lineProvider.SetState(levelState,_gameBoard.Letters);
             _abilityLogic.SetState(levelState);
         }
         else

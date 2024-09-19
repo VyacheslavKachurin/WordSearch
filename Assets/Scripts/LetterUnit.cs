@@ -9,6 +9,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class LetterUnit : MonoBehaviour
 {
+    [SerializeField] ColorData _colorData;
     [SerializeField] Color _disableColor = new(0.5f, 0.5f, 0.5f, 0.5f);
     [SerializeField] Color _activeColor = new(0, 0, 0, 1);
     [SerializeField] Color _foundColor = new(1, 1, 1, 1);
@@ -20,6 +21,8 @@ public class LetterUnit : MonoBehaviour
     [SerializeField] private float _rotationLimit = 30;
 
     public Point Point;
+
+    private Color? _lineColor = null;
 
     void Awake()
     {
@@ -94,4 +97,11 @@ public class LetterUnit : MonoBehaviour
         Debug.Log($"Animate selection: {isSelected} color: {targetColor}");
         _text.color = targetColor;
     }
+
+    internal Color GetColor()
+    {
+        _lineColor ??= _colorData.GetRandom();
+        return (Color)_lineColor;
+    }
+
 }

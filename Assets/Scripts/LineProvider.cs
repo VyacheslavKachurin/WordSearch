@@ -59,7 +59,7 @@ public class LineProvider : MonoBehaviour
 
     }
 
-    internal void SetState(LevelState levelState)
+    internal void SetState(LevelState levelState, LetterUnit[,] letters)
     {
         for (int i = 0; i < levelState.Lines.Count; i++)
         {
@@ -69,6 +69,14 @@ public class LineProvider : MonoBehaviour
             line.SetPosition(1, levelState.Lines[i].Positions[1]);
             line.startColor = levelState.Lines[i].color;
             line.endColor = levelState.Lines[i].color;
+        }
+
+        for (int i = 0; i < levelState.OpenLetters.Count; i++)
+        {
+            var point = levelState.OpenLetters[i];
+            var letter = letters[point.Y, point.X];
+            CreateLine(letter.transform.position, letter.GetColor());
+
         }
     }
 }

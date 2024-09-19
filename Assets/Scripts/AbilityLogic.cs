@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class AbilityLogic : MonoBehaviour
 {
+    [SerializeField] LineProvider _lineProvider;
     private LevelData _data;
     private GameBoard _gameBoard;
 
@@ -60,12 +61,19 @@ public class AbilityLogic : MonoBehaviour
 
     private void RevealLetter(int amount)
     {
-        Debug.Log($"Revealing Letter: {amount}");
+        for (int i = 0; i < amount; i++)
+        {
+            var point = LevelStateService.GetFirstPoint();
+            var color = _gameBoard.Letters[point.Y, point.X].GetColor();
+            var position = _gameBoard.Letters[point.Y, point.X].transform.position;
+            _lineProvider.CreateLine(position, color);
+
+        }
     }
 
     public void HideFakeLetters()
     {
-       
+
         foreach (var point in _data.FakeLetters)
         {
             _gameBoard.Letters[point.Y, point.X].Hide();
