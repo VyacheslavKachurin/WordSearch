@@ -78,6 +78,12 @@ public class GameBoard : MonoBehaviour
         {
             _letters[letter.Y, letter.X].AnimateSelection(true);
         }
+        for (int i = 0; i < levelState.FoundLetters.Count; i++)
+        {
+
+            var point = levelState.FoundLetters[i];
+            _letters[point.Y, point.X].Disable();
+        }
     }
 }
 

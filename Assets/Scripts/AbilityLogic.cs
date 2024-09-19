@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class AbilityLogic : MonoBehaviour
@@ -44,6 +45,7 @@ public class AbilityLogic : MonoBehaviour
     {
         _data = levelData;
         _gameBoard = gameBoard;
+
     }
 
     private void ShowAd()
@@ -61,9 +63,9 @@ public class AbilityLogic : MonoBehaviour
         Debug.Log($"Revealing Letter: {amount}");
     }
 
-    private void HideFakeLetters()
+    public void HideFakeLetters()
     {
-        Debug.Log($"Hiding Fake Letters");
+       
         foreach (var point in _data.FakeLetters)
         {
             _gameBoard.Letters[point.Y, point.X].Hide();
@@ -71,4 +73,9 @@ public class AbilityLogic : MonoBehaviour
         LevelStateService.State.FakeLettersRemoved = true;
     }
 
+    internal void SetState(LevelState levelState)
+    {
+        if (levelState.FakeLettersRemoved)
+            HideFakeLetters();
+    }
 }
