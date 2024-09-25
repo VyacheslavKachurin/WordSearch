@@ -7,6 +7,8 @@ public class AbilityLogic : MonoBehaviour
     private LevelData _data;
     private GameBoard _gameBoard;
 
+    public static event Action OnFakeLettersRemoved;
+
     private void Start()
     {
         AbilityBtn.OnAbilityClicked += HandleAbility;
@@ -39,7 +41,7 @@ public class AbilityLogic : MonoBehaviour
                 break;
         }
 
-        btn.SetEnabled(false);
+       
     }
 
     public void SetData(LevelData levelData, GameBoard gameBoard)
@@ -67,18 +69,17 @@ public class AbilityLogic : MonoBehaviour
             var color = _gameBoard.Letters[point.Y, point.X].GetColor();
             var position = _gameBoard.Letters[point.Y, point.X].transform.position;
             _lineProvider.CreateLine(position, color);
-
         }
     }
 
     public void HideFakeLetters()
     {
-
         foreach (var point in _data.FakeLetters)
         {
             _gameBoard.Letters[point.Y, point.X].Hide();
         }
         LevelStateService.State.FakeLettersRemoved = true;
+        OnFakeLettersRemoved?.Invoke();
     }
 
     internal void SetState(LevelState levelState)

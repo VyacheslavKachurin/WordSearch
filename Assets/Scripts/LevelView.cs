@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -19,11 +20,7 @@ public class LevelView : MonoBehaviour
     const string WORD_GRAY = "word-gray";
     [SerializeField] private int _removeWordStyleDelay = 300;
     private Dictionary<string, VisualElement> _words = new();
-    private AbilityBtn _lightingBtn;
-    private AbilityBtn _hintBtn;
-    private AbilityBtn _adsBtn;
-    private AbilityBtn _magnetBtn;
-    private AbilityBtn _fireworkBtn;
+    private Dictionary<Ability, VisualElement> _abilityBtns;
 
     private void Awake()
     {
@@ -36,6 +33,27 @@ public class LevelView : MonoBehaviour
 
         _levelLbl = _root.Q<Label>("level-lbl");
 
+
+        InitButtons();
+
+        AbilityLogic.OnFakeLettersRemoved += HandleFakeLettersRemoved;
+        LevelStateService.OnActiveFirstLetterRemoved += HandleFirstLettersRemoved;
+
+    }
+
+    private void HandleFirstLettersRemoved(int lettersLeft)
+    {
+        if (lettersLeft < 3 && _abilityBtns[Ability.Lighting].enabledInHierarchy)
+            _abilityBtns[Ability.Lighting].SetEnabled(false);
+        if (lettersLeft == 0 && _abilityBtns[Ability.Hint].enabledInHierarchy)
+            _abilityBtns[Ability.Hint].SetEnabled(false);
+
+
+    }
+
+    private void HandleFakeLettersRemoved()
+    {
+        _abilityBtns[Ability.Magnet].SetEnabled(false);
     }
 
     public void SetLevelData(LevelData data)
@@ -53,14 +71,14 @@ public class LevelView : MonoBehaviour
 
     private void InitButtons()
     {
-        _lightingBtn = _root.Q<AbilityBtn>("lighting-btn");
-        _hintBtn = _root.Q<AbilityBtn>("hint-btn");
-        _adsBtn = _root.Q<AbilityBtn>("ads-btn");
-        _magnetBtn = _root.Q<AbilityBtn>("magnet-btn");
-        _fireworkBtn = _root.Q<AbilityBtn>("firework-btn");
-
-
-
+        _abilityBtns = new()
+        {
+            {Ability.Lighting, _root.Q<AbilityBtn>("lighting-btn")},
+            {Ability.Hint, _root.Q<AbilityBtn>("hint-btn")},
+            {Ability.Magnet, _root.Q<AbilityBtn>("magnet-btn")},
+            {Ability.Firework, _root.Q<AbilityBtn>("firework-btn")},
+            {Ability.Ads, _root.Q<AbilityBtn>("ads-btn")}
+        };
     }
 
 
@@ -110,6 +128,8 @@ public class LevelView : MonoBehaviour
         if (levelState.FoundWords.Count > 0)
             foreach (var word in levelState.FoundWords)
                 HideWord(word);
+
+        HandleFirstLettersRemoved(levelState.ActiveFirstLetters.Count);
     }
 }
 

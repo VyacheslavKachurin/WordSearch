@@ -8,7 +8,7 @@ using Random = UnityEngine.Random;
 public class LevelStateService
 {
     public static LevelState State;
-
+    public static event Action<int> OnActiveFirstLetterRemoved;
     private const string fileName = "PlayData.json";
     private const string prePath = "Assets/Resources/";
 
@@ -64,6 +64,7 @@ public class LevelStateService
         var point = State.ActiveFirstLetters[index];
         State.ActiveFirstLetters.Remove(point);
         State.OpenLetters.Add(point);
+        OnActiveFirstLetterRemoved?.Invoke(State.ActiveFirstLetters.Count);
         return point;
     }
 }
