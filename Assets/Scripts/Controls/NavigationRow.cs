@@ -5,12 +5,25 @@ using UnityEngine.UIElements;
 [UxmlElement]
 public partial class NavigationRow : VisualElement
 {
+    public static event Action OnBackBtnClicked;
+    public static event Action OnShopBtnClicked;
+    public static event Action OnSettingsBtnClicked;
+
     private Button _coinsLbl;
     private Button _shopBtn;
     private Button _settingsBtn;
     private Label _levelLbl;
     private VisualElement _levelDiv;
     private Button _backBtn;
+
+    [UxmlAttribute]
+    public bool IsLevelVisible
+    {
+        get => _levelDiv.style.display == DisplayStyle.Flex;
+        set => _levelDiv.Toggle(value);
+    }
+
+
 
     public NavigationRow()
     {
@@ -25,26 +38,29 @@ public partial class NavigationRow : VisualElement
         _levelLbl = this.Q<Label>("level-lbl");
         _levelDiv = this.Q<VisualElement>("level-div");
 
-        _backBtn.clicked += OnBackBtnClicked;
-        _shopBtn.clicked += OnShopBtnClicked;
-        _settingsBtn.clicked += OnSettingsBtnClicked;
+        _backBtn.clicked += HandleBackBtn;
+        _shopBtn.clicked += HandleShopBtn;
+        _settingsBtn.clicked += HandleSettingsBtn;
 
 
 
     }
 
-    private void OnSettingsBtnClicked()
+    private void HandleSettingsBtn()
     {
+        OnSettingsBtnClicked?.Invoke();
         Debug.Log($"Settings clicked");
     }
 
-    private void OnShopBtnClicked()
+    private void HandleShopBtn()
     {
+        OnShopBtnClicked?.Invoke();
         Debug.Log($"Shop clicked");
     }
 
-    private void OnBackBtnClicked()
+    private void HandleBackBtn()
     {
+        OnBackBtnClicked?.Invoke();
         Debug.Log($"Back clicked");
     }
 

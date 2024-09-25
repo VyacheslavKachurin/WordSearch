@@ -156,7 +156,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      FireworkIcon_0: -1501406068795932244
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

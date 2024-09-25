@@ -4,10 +4,6 @@
     letter-spacing: 5px;
 }
 
-.lbl-shadow {
-    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
-}
-
 .row-width {
     flex-grow: 0;
     width: 1047px;
@@ -50,6 +46,22 @@
     justify-content: center;
 }
 
+.view {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
 .unity-button:active {
     opacity: 0.6;
+}
+
+.lbl-shadow {
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+}
+
+.view {
+    position: absolute;
+    height: 100%;
+    width: 100%;
 }

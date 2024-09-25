@@ -1,0 +1,41 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/GameStyle.uss?fileID=7433441132597879392&amp;guid=52f028e2a9bbb43c6985398e87d12d27&amp;type=3#GameStyle" />
+    <Style src="project://database/Assets/UI/MenuStyle.uss?fileID=7433441132597879392&amp;guid=9d73d88b2ea5d4de08746f3f52fbf9a3&amp;type=3#MenuStyle" />
+    <engine:VisualElement name="bg" class="view" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Sprites/BG/bg_1.png?fileID=2800000&amp;guid=0ce2d902dba304ff2bda3ca1827943cf&amp;type=3#bg_1&quot;);" />
+    <engine:VisualElement name="main" style="flex-grow: 1;">
+        <NavigationRow is-level-visible="false" />
+        <engine:VisualElement name="top" style="flex-grow: 1; justify-content: space-between; flex-direction: column; align-items: stretch; margin-top: 341px; padding-bottom: 284px;">
+            <engine:VisualElement name="red-div" style="flex-grow: 0; align-items: flex-start; margin-left: 66px;">
+                <engine:VisualElement style="flex-grow: 1;">
+                    <engine:Button name="ads-btn" class="left-btn" />
+                    <engine:Button name="gift-btn" class="left-btn" style="background-image: url(&quot;project://database/Assets/Sprites/gift-btn.png?fileID=2800000&amp;guid=76c4cb3790fbd4400b22962375e1bdfb&amp;type=3#gift-btn&quot;);" />
+                </engine:VisualElement>
+            </engine:VisualElement>
+            <engine:VisualElement name="player-div" style="flex-grow: 0; align-items: center; justify-content: center;">
+                <engine:VisualElement name="greeting-div" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/greeting-bg.png?fileID=2800000&amp;guid=3bab088c8fb614af9a28a5913c25b6c6&amp;type=3#greeting-bg&quot;); width: 963px; height: 251px; align-items: center; justify-content: center;">
+                    <engine:Label text="Welcome, &lt;color=&quot;red&quot;&gt;Guest_123&lt;/color&gt;" name="greeting-lbl" emoji-fallback-support="false" style="font-size: 54px; -unity-font-style: bold;" />
+                    <engine:VisualElement name="icon-div" style="flex-grow: 1; position: absolute; background-image: url(&quot;project://database/Assets/Sprites/player-icon.png?fileID=2800000&amp;guid=f2b05b16e2901424cbfb9373c7c7927c&amp;type=3#player-icon&quot;); width: 246px; height: 249px; bottom: 159px;" />
+                </engine:VisualElement>
+            </engine:VisualElement>
+            <engine:VisualElement name="game-modes" style="flex-grow: 0; align-items: center; justify-content: center;">
+                <engine:VisualElement name="title-bg" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/mode-bg.png?fileID=2800000&amp;guid=28800cf4911c64aa5a6ab1636eca58fb&amp;type=3#mode-bg&quot;); width: 451px; height: 67px; margin-bottom: 30px;">
+                    <engine:Label text="GAME MODE:" name="title-lbl" selectable="true" style="font-size: 40px; color: rgb(255, 255, 255); margin-top: 18px; margin-bottom: 18px;" />
+                </engine:VisualElement>
+                <engine:VisualElement name="btns" style="flex-grow: 0;">
+                    <engine:Button name="classic-btn" text="CLASSIC" class="mode-btn lbl-shadow" style="background-image: url(&quot;project://database/Assets/Sprites/classic-mode.png?fileID=2800000&amp;guid=7f38683c5d84c46cbb83ca676710caed&amp;type=3#classic-mode&quot;);" />
+                    <engine:Button name="time-btn" text="TIME TRIAL" class="mode-btn lbl-shadow" />
+                </engine:VisualElement>
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement name="bottom" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/menu_bottom.png?fileID=2800000&amp;guid=95208a6ea25a741f39d0729090822450&amp;type=3#menu_bottom&quot;); width: 100%; height: 207px; align-items: center; justify-content: space-evenly; flex-direction: row; flex-shrink: 0;">
+            <engine:VisualElement style="flex-grow: 1; align-items: center;">
+                <engine:Button name="left-btn" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; background-image: url(&quot;project://database/Assets/Sprites/brn-left.png?fileID=2800000&amp;guid=bde19571a27ff4cf7a8dd83588a0b6a5&amp;type=3#brn-left&quot;); width: 126px; height: 126px;" />
+            </engine:VisualElement>
+            <engine:Button name="home-btn" style="background-image: url(&quot;project://database/Assets/Sprites/home-btn.png?fileID=2800000&amp;guid=88d49fd2495f7442e891eb4787ab9898&amp;type=3#home-btn&quot;); width: 246px; height: 249px; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; bottom: 47px;" />
+            <engine:VisualElement style="flex-grow: 1; align-items: center;">
+                <engine:Button name="right-btn" style="background-image: url(&quot;project://database/Assets/Sprites/btn-right.png?fileID=2800000&amp;guid=91877cab3d314452eb0ee13342cfc511&amp;type=3#btn-right&quot;); width: 125px; height: 129px;" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+    </engine:VisualElement>
+    <engine:VisualElement name="ref" class="view" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/References/2%20-%20menu.png?fileID=2800000&amp;guid=cc284c370053a49ac930fa6b082d0e88&amp;type=3#2 - menu&quot;); opacity: 0.65; display: none;" />
+</engine:UXML>

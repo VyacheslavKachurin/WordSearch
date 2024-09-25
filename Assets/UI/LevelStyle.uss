@@ -1,9 +1,3 @@
-.view {
-    position: absolute;
-    height: 100%;
-    width: 100%;
-}
-
 .board {
     flex-grow: 0;
     background-image: url("project://database/Assets/Sprites/BoardBg.png?fileID=2800000&guid=a4c7e836c21dc4084a57e771d6d56ed9&type=3#BoardBg");

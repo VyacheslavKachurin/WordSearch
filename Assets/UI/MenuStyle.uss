@@ -1,0 +1,16 @@
+.mode-btn {
+    background-image: url("project://database/Assets/Sprites/classic-mode.png?fileID=2800000&guid=7f38683c5d84c46cbb83ca676710caed&type=3#classic-mode");
+    width: 557px;
+    height: 165px;
+    margin-bottom: 22px;
+    color: rgb(255, 255, 255);
+    font-size: 44px;
+    text-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.left-btn {
+    background-image: url("project://database/Assets/Sprites/ads-btn.png?fileID=2800000&guid=4f9e86ee199ed4fb18fb67b2945640e5&type=3#ads-btn");
+    width: 198px;
+    height: 196px;
+    margin-bottom: 32px;
+}

@@ -4,7 +4,7 @@
     <Style src="project://database/Assets/UI/WordAnimation.uss?fileID=7433441132597879392&amp;guid=7bc8b23aea04943ef914a49fdff2d4d3&amp;type=3#WordAnimation" />
     <engine:VisualElement name="ref" class="view" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/References/MainGameRef.png?fileID=2800000&amp;guid=37061b8a54fab40a79453056ce4d6bd5&amp;type=3#MainGameRef&quot;); display: none; opacity: 1;" />
     <engine:VisualElement name="level-view" class="view" style="flex-grow: 1; align-items: center; justify-content: flex-start; opacity: 1; display: flex;">
-        <NavigationRow />
+        <NavigationRow is-level-visible="true" />
         <engine:VisualElement name="controls-row" class="row-width" style="flex-grow: 0; bottom: 198px; position: absolute;">
             <engine:VisualElement name="row" style="flex-grow: 1; align-items: center; justify-content: space-evenly; flex-direction: row;">
                 <AbilityBtn price="100" ability-value="Lighting" is-free="false" name="lighting-btn" price-data="project://database/Assets/Data/AbilityPriceData.asset?fileID=11400000&amp;guid=74b72cc2186bd4503927ea9377416f05&amp;type=2#AbilityPriceData" />
