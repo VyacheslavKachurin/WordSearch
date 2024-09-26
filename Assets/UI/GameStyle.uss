@@ -65,3 +65,17 @@
     height: 100%;
     width: 100%;
 }
+
+.close-btn {
+}
+
+.icon {
+    background-image: url("project://database/Assets/Sprites/Music-icon.png?fileID=2800000&guid=f83a9e8fe6f944e2a83ccc6bca4747e7&type=3#Music-icon");
+    width: 53px;
+    height: 53px;
+}
+
+.lbl {
+    font-size: 60px;
+    -unity-font-style: bold;
+}

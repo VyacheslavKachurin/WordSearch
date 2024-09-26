@@ -7,6 +7,8 @@ public class AbilityLogic : MonoBehaviour
     private LevelData _data;
     private GameBoard _gameBoard;
 
+    public static event Action OnCashRequested;
+
     public static event Action OnFakeLettersRemoved;
 
     private void Start()
@@ -18,7 +20,7 @@ public class AbilityLogic : MonoBehaviour
     {
         if (!Balance.UseAbility(price))
         {
-            Debug.Log($"Not enough money: {price}");
+            OnCashRequested?.Invoke();
             return;
         }
 

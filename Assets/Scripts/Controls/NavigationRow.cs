@@ -7,9 +7,9 @@ public partial class NavigationRow : VisualElement
 {
     public static event Action OnBackBtnClicked;
     public static event Action OnShopBtnClicked;
-    public static event Action OnSettingsBtnClicked;
+    public static event Action OnSettingsClicked;
 
-    private Button _coinsLbl;
+    private Label _coinsLbl;
     private Button _shopBtn;
     private Button _settingsBtn;
     private Label _levelLbl;
@@ -33,7 +33,7 @@ public partial class NavigationRow : VisualElement
         _backBtn = this.Q<Button>("back-btn");
         _shopBtn = this.Q<Button>("shop-btn");
 
-        _coinsLbl = this.Q<Button>("coins-lbl");
+        _coinsLbl = this.Q<Label>("coins-lbl");
         _settingsBtn = this.Q<Button>("settings-btn");
         _levelLbl = this.Q<Label>("level-lbl");
         _levelDiv = this.Q<VisualElement>("level-div");
@@ -42,13 +42,14 @@ public partial class NavigationRow : VisualElement
         _shopBtn.clicked += HandleShopBtn;
         _settingsBtn.clicked += HandleSettingsBtn;
 
-
+        SetBalance(Balance.GetBalance());
+        Balance.OnBalanceChanged += SetBalance;
 
     }
 
     private void HandleSettingsBtn()
     {
-        OnSettingsBtnClicked?.Invoke();
+        OnSettingsClicked?.Invoke();
         Debug.Log($"Settings clicked");
     }
 

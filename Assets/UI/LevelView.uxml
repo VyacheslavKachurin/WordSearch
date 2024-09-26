@@ -37,4 +37,5 @@
             </engine:VisualElement>
         </engine:VisualElement>
     </engine:VisualElement>
+    <PlateView picking-mode="Ignore" name="PlateView" class="view" />
 </engine:UXML>

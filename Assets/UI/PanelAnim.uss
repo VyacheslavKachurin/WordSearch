@@ -1,0 +1,7 @@
+.anim-in {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.base {
+    transition-duration: 300ms;
+}

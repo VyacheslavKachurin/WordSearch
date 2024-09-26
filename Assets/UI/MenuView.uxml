@@ -38,4 +38,5 @@
         </engine:VisualElement>
     </engine:VisualElement>
     <engine:VisualElement name="ref" class="view" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/References/2%20-%20menu.png?fileID=2800000&amp;guid=cc284c370053a49ac930fa6b082d0e88&amp;type=3#2 - menu&quot;); opacity: 0.65; display: none;" />
+    <PlateView picking-mode="Ignore" class="view" />
 </engine:UXML>
