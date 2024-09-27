@@ -156,7 +156,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      coin-big_0: 6332724082451018045
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
