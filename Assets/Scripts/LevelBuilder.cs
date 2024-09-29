@@ -1,5 +1,6 @@
 using UnityEngine;
 using Newtonsoft.Json;
+using System.Collections;
 
 public class LevelBuilder : MonoBehaviour
 {
@@ -29,7 +30,16 @@ public class LevelBuilder : MonoBehaviour
         _levelLogic.SetData(_levelData);
         _abilityLogic.SetData(_levelData, _gameBoard);
         LoadState();
+
+        StartCoroutine(SetLineSize());
     }
+
+    private IEnumerator SetLineSize()
+    {
+        yield return new WaitForEndOfFrame();
+        _lineProvider.SetLineSize(_gameBoard.GetLetterHeight());
+    }
+
 
     public void LoadState()
     {
@@ -37,7 +47,7 @@ public class LevelBuilder : MonoBehaviour
         {
             _levelView.SetState(levelState);
             _gameBoard.SetState(levelState);
-            _lineProvider.SetState(levelState,_gameBoard.Letters);
+            _lineProvider.SetState(levelState, _gameBoard.Letters);
             _abilityLogic.SetState(levelState);
         }
         else

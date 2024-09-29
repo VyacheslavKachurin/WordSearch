@@ -9,6 +9,9 @@ public class LineProvider : MonoBehaviour
     [SerializeField] float _lineRendererDrawStep = 0.1f;
     private LineRenderer _line = null;
 
+    private float _lineSize;
+    [SerializeField] private float _lineSizeMultiplier = 1.2f;
+
     internal void Append(Vector2 point)
     {
         if (_line == null) return;
@@ -20,7 +23,10 @@ public class LineProvider : MonoBehaviour
 
     internal void CreateLine(Vector3 point, Color color)
     {
+
         _line = Instantiate(_linePrefab, point, Quaternion.identity);
+        _line.startWidth = _lineSize;
+        _line.endWidth = _lineSize;
         _line.positionCount = 2;
         _line.SetPosition(0, point);
         _line.SetPosition(1, point);
@@ -78,5 +84,10 @@ public class LineProvider : MonoBehaviour
             CreateLine(letter.transform.position, letter.GetColor());
 
         }
+    }
+
+    internal void SetLineSize(float letterSize)
+    {
+        _lineSize = letterSize * _lineSizeMultiplier;
     }
 }

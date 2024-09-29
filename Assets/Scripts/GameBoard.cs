@@ -50,6 +50,7 @@ public class GameBoard : MonoBehaviour
             }
             Y -= boardSize.LetterSize.y;
         }
+        Debug.Log($"Game board built");
 
     }
 
@@ -85,7 +86,15 @@ public class GameBoard : MonoBehaviour
             _letters[point.Y, point.X].Disable();
         }
     }
+
+    public float GetLetterHeight()
+    {
+        return _letters[0, 0].GetComponent<Renderer>().bounds.size.y;
+    }
+
 }
+
+
 
 public class BoardSize
 {

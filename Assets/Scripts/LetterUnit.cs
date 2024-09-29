@@ -24,6 +24,7 @@ public class LetterUnit : MonoBehaviour
 
     private Color? _lineColor = null;
 
+
     void Awake()
     {
         _text = GetComponent<TextMeshPro>();
@@ -37,8 +38,6 @@ public class LetterUnit : MonoBehaviour
         _text.text = letter.ToString().ToUpper();
         Point = point;
     }
-
-
 
     internal void SetSize(Vector2 letterSize, float scale)
     {
@@ -94,7 +93,7 @@ public class LetterUnit : MonoBehaviour
     internal void AnimateSelection(bool isSelected)
     {
         var targetColor = isSelected ? _foundColor : _activeColor;
-       // Debug.Log($"Animate selection: {isSelected} color: {targetColor}");
+        // Debug.Log($"Animate selection: {isSelected} color: {targetColor}");
         _text.color = targetColor;
     }
 
