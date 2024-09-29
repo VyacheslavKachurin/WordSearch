@@ -94,7 +94,7 @@ public class LetterUnit : MonoBehaviour
     internal void AnimateSelection(bool isSelected)
     {
         var targetColor = isSelected ? _foundColor : _activeColor;
-        Debug.Log($"Animate selection: {isSelected} color: {targetColor}");
+       // Debug.Log($"Animate selection: {isSelected} color: {targetColor}");
         _text.color = targetColor;
     }
 

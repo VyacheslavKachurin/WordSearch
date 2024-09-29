@@ -63,7 +63,7 @@ public class LevelLogic : MonoBehaviour
     private void CheckWord()
     {
         if (_tryWord.Length == 0) return;
-        Debug.Log($"Check word: {_tryWord}");
+//        Debug.Log($"Check word: {_tryWord}");
         _levelView.ToggleWord(false);
 
         var isWord = _words.Contains(_tryWord);
@@ -95,6 +95,9 @@ public class LevelLogic : MonoBehaviour
 
         var lineState = new LineState(linePositions, _tryWordLetterUnits[0].GetColor());
         LevelStateService.AddFoundWord(_tryWord, _tryWordLetterUnits, lineState);
+
+        _levelView.AnimateWord(_tryWordLetterUnits);
+
     }
 
     private void HandleLetterEnter(LetterUnit letter)
@@ -121,7 +124,7 @@ public class LevelLogic : MonoBehaviour
                 return;
             }
 
-            Debug.Log($"adding letter: {letter.Letter}");
+//            Debug.Log($"adding letter: {letter.Letter}");
             _tryWord += letter.Letter.ToString();
             _tryWordLetterUnits.Add(letter);
             _lineProvider.Append(letter.transform.position);

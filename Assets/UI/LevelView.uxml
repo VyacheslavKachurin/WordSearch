@@ -38,4 +38,6 @@
         </engine:VisualElement>
     </engine:VisualElement>
     <PlateView picking-mode="Ignore" name="PlateView" class="view" />
+    <engine:VisualElement name="visuals-div" picking-mode="Ignore" class="view" style="flex-grow: 1;" />
+    <engine:VisualElement name="fx-div" picking-mode="Ignore" class="view" style="flex-grow: 1;" />
 </engine:UXML>

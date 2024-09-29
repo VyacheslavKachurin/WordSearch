@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
+using DG.Tweening;
 
 public class LevelView : MonoBehaviour
 {
@@ -13,14 +15,24 @@ public class LevelView : MonoBehaviour
     private VisualElement _targetWord;
     private Label _targetLetters;
     private Label _levelLbl;
+    private VisualElement _visualsDiv;
+    private VisualElement _fxDiv;
     private const string WORD_STYLE = "word";
     private const string WORD_DIV_STYLE = "word-div";
+    [SerializeField] float _letterAnimStyle = 70;
 
     private const string WORD_BIG = "word-big";
     const string WORD_GRAY = "word-gray";
     [SerializeField] private int _removeWordStyleDelay = 300;
-    private Dictionary<string, VisualElement> _words = new();
+    private Dictionary<string, Label> _words = new();
     private Dictionary<Ability, VisualElement> _abilityBtns;
+
+    [SerializeField] float _letterAnimDuration = 0.5f;
+
+    [SerializeField] private ParticleSystem _wordFoundFX;
+    [SerializeField] private RenderTexture _renderTexture;
+    private float _rootHeight;
+
 
     private void Awake()
     {
@@ -32,12 +44,27 @@ public class LevelView : MonoBehaviour
         _targetLetters = _targetWord.Q<Label>("target-letters");
 
         _levelLbl = _root.Q<Label>("level-lbl");
+        _visualsDiv = _root.Q<VisualElement>("visuals-div");
+        _fxDiv = _root.Q<VisualElement>("fx-div");
+
+        InitRenderTexture();
 
 
         InitButtons();
 
-        AbilityLogic.OnFakeLettersRemoved += HandleFakeLettersRemoved;
+        AbilityLogic.OnFakeLettersRemoved += DisableMagnet;
         LevelStateService.OnActiveFirstLetterRemoved += HandleFirstLettersRemoved;
+
+        _root.RegisterCallbackOnce<GeometryChangedEvent>((e) =>
+        {
+            _rootHeight = _root.layout.height;
+        });
+
+    }
+
+    private void InitRenderTexture()
+    {
+        _fxDiv.style.backgroundImage = new StyleBackground(Background.FromRenderTexture(_renderTexture));
 
     }
 
@@ -51,7 +78,7 @@ public class LevelView : MonoBehaviour
 
     }
 
-    private void HandleFakeLettersRemoved()
+    private void DisableMagnet()
     {
         _abilityBtns[Ability.Magnet].SetEnabled(false);
     }
@@ -67,6 +94,74 @@ public class LevelView : MonoBehaviour
         // words
 
 
+    }
+
+    public void AnimateWord(List<LetterUnit> letterUnits)
+    {
+        var key = new string(letterUnits.Select(x => x.Letter).ToArray());
+        var word = _words[key];
+
+        for (int i = 0; i < letterUnits.Count; i++)
+        {
+            var letter = letterUnits[i];
+            var viewPos = Camera.main.WorldToScreenPoint(letter.transform.position);
+            var letterLbl = new Label(letter.Letter.ToString());
+
+            letterLbl.style.fontSize = new StyleLength(_letterAnimStyle);
+            _visualsDiv.Add(letterLbl);
+            letterLbl.style.position = Position.Absolute;
+
+            var xStep = word.layout.width / (letterUnits.Count + 1);
+            var index = i;
+
+            letterLbl.RegisterCallbackOnce<GeometryChangedEvent>(e =>
+            {
+                var height = letterLbl.layout.height;
+                var width = letterLbl.layout.width;
+
+
+                letterLbl.style.top = _rootHeight - (viewPos.y + height / 1.5f);
+                letterLbl.style.left = viewPos.x - width / 2;
+
+                Vector2 targetPos;
+                targetPos.y = word.worldBound.position.y;
+
+                targetPos.x = word.worldBound.position.x + xStep * index;
+
+                MoveLetter(letterLbl, targetPos);
+            });
+
+        }
+
+
+    }
+
+    private void MoveLetter(Label letterLbl, Vector2 targetPos)
+    {
+        Debug.Log($"target pos x: {targetPos.x} y: {targetPos.y}");
+        var startPos = letterLbl.layout.position;
+        var endPos = targetPos;
+
+        var x = endPos.x;
+        var y = endPos.y - letterLbl.layout.height;
+        var fontSize = 34;
+
+        DOTween.To(() => letterLbl.style.left.value.value, x => letterLbl.style.left = x, endPos.x, _letterAnimDuration);
+        DOTween.To(() => letterLbl.style.top.value.value, y => letterLbl.style.top = y, endPos.y, _letterAnimDuration);
+        DOTween.To(() => letterLbl.style.fontSize.value.value, fontSize => letterLbl.style.fontSize = fontSize, fontSize, _letterAnimDuration).OnComplete(() =>
+        {
+            letterLbl.RemoveFromHierarchy();
+            PlayWordFoundFX(endPos);
+        });
+
+    }
+
+    private void PlayWordFoundFX(Vector2 endPos)
+    {
+        var worldPos = Camera.main.ScreenToWorldPoint(new Vector2(endPos.x, _rootHeight - endPos.y));
+
+        var fx = Instantiate(_wordFoundFX, worldPos, Quaternion.identity);
+        fx.Play();
     }
 
     private void InitButtons()
@@ -115,7 +210,10 @@ public class LevelView : MonoBehaviour
 
     public async void HideWord(string word)
     {
+        await Task.Delay((int)_letterAnimDuration * 1000);
         var label = _words[word];
+        if (label.ClassListContains(WORD_GRAY)) return;
+
         label.AddToClassList(WORD_BIG);
         label.AddToClassList(WORD_GRAY);
 
