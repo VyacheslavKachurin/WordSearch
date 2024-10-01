@@ -1,0 +1,19 @@
+.coins-anim {
+    transition-duration: 0.5s;
+    opacity: 0;
+    position: absolute;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.coins-up {
+    translate: 0 -50px;
+    opacity: 1;
+}
+
+.coins-hide {
+    opacity: 0;
+    transition-delay: 1s;
+    translate: 0 50px;
+}

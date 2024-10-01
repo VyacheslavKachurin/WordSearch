@@ -1,4 +1,5 @@
 using System;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -15,6 +16,13 @@ public partial class NavigationRow : VisualElement
     private Label _levelLbl;
     private VisualElement _levelDiv;
     private Button _backBtn;
+    public Label CoinsLbl => _coinsLbl;
+    private VisualElement _coinsAnimDiv;
+
+    private CoinsFX _coinsFX;
+
+    private CoinsAnim _coinsAnim;
+
 
     [UxmlAttribute]
     public bool IsLevelVisible
@@ -45,6 +53,25 @@ public partial class NavigationRow : VisualElement
         SetBalance(Balance.GetBalance());
         Balance.OnBalanceChanged += SetBalance;
 
+
+    }
+
+    public void SetCoinsAnim(CoinsAnim coinsAnim)
+    {
+        _coinsAnim = coinsAnim;
+        CoinsAnim.CoinsShown += ShowCoinsFX;
+        _coinsFX = _coinsFX != null ? _coinsFX : CoinsFX.Instance;
+
+        _coinsLbl.RegisterCallbackOnce<GeometryChangedEvent>(e =>
+        {
+            var worldPos = _coinsLbl.worldTransform.GetPosition();
+            Debug.Log($"World Pos: {worldPos}");
+            Debug.Log($"screen to world Point: {Camera.main.ScreenToWorldPoint(worldPos)}");
+            _coinsFX.SetForceField(Camera.main.ScreenToWorldPoint(worldPos));
+
+        });
+
+
     }
 
     private void HandleSettingsBtn()
@@ -58,6 +85,8 @@ public partial class NavigationRow : VisualElement
         OnShopBtnClicked?.Invoke();
         Debug.Log($"Shop clicked");
     }
+
+
 
     private void HandleBackBtn()
     {
@@ -75,6 +104,17 @@ public partial class NavigationRow : VisualElement
     {
         string text = balance < 1000 ? balance.ToString("F0") : (balance / 1000).ToString("0.#") + " K";
         _coinsLbl.text = text;
+    }
+
+    private void ShowCoinsFX(Vector2 startPos, int amount)
+    {
+        _coinsFX.CreateAnim(startPos, amount);
+    }
+
+    public void AnimateAddCoins(Vector2 startPos, int amount, Action callback)
+    {
+        _coinsAnim.ShowCoinsLbl(startPos, amount, callback);
+
     }
 
 }

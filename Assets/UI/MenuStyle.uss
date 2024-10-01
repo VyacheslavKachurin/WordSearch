@@ -14,3 +14,56 @@
     height: 196px;
     margin-bottom: 32px;
 }
+
+.box {
+    width: 250px;
+    height: 210px;
+    background-image: url("project://database/Assets/Sprites/gift.png?fileID=2800000&guid=bed651ce5066c4f9fa2acde842a42a63&type=3#gift");
+    -unity-background-image-tint-color: rgb(47, 255, 0);
+    margin-top: 45px;
+    margin-right: 45px;
+    margin-bottom: 45px;
+    margin-left: 45px;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    transition-duration: 0.7s;
+    opacity: 1;
+    scale: 1 1;
+    transition-timing-function: ease-out-back;
+}
+
+.gift-anim {
+    flex-grow: 0;
+    width: 80%;
+    display: none;
+    transition-duration: 0.7s;
+    scale: 0 0;
+    transition-timing-function: ease-in;
+}
+
+.gift-anim-in {
+    scale: 1 1;
+}
+
+.box-hide {
+    width: 0;
+    height: 0;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+}
+
+.box-win {
+    width: 300px;
+    height: 300px;
+}
+
+.gift-anim-out {
+    scale: 1 1;
+    transition-delay: 0.6s;
+    opacity: 0;
+    transition-timing-function: ease-in;
+}

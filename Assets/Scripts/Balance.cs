@@ -30,7 +30,6 @@ public static class Balance
 
     public static void Load()
     {
-        Debug.Log("reading balance from file");
 
         if (System.IO.File.Exists(PATH))
         {
