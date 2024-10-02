@@ -40,7 +40,8 @@ public partial class CoinsAnim : VisualElement
 
         _coinsAnimDiv.RegisterCallbackOnce<TransitionEndEvent>(e =>
         {
-            var worldPos = Camera.main.ScreenToWorldPoint(_coinsAnimDiv.worldTransform.GetPosition());
+            Vector2 worldPos = Camera.main.ScreenToWorldPoint(_coinsAnimDiv.worldTransform.GetPosition()+ new Vector3(_coinsAnimDiv.worldBound.width / 2, _coinsAnimDiv.worldBound.height / 2));
+
             CoinsShown?.Invoke(worldPos, amount);
             HideLbl();
             callback?.Invoke();

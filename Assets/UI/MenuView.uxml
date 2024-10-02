@@ -66,4 +66,5 @@
         <engine:VisualElement name="pic" style="flex-grow: 1; position: absolute; background-image: url(&quot;project://database/Assets/References/gift-ref.jpeg?fileID=2800000&amp;guid=f2e2a897ce17747a98c12442f5ec5929&amp;type=3#gift-ref&quot;); width: 1179px; height: 1965px; align-self: center;" />
     </engine:VisualElement>
     <CoinsAnim picking-mode="Ignore" class="view" />
+    <engine:VisualElement name="overlay-fx" picking-mode="Ignore" class="view" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/FXmaterials/MenuTexture.renderTexture?fileID=8400000&amp;guid=1323caccf1cb94f68a3ab3111b04f7b7&amp;type=2#MenuTexture&quot;);" />
 </engine:UXML>

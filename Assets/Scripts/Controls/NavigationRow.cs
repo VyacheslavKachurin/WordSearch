@@ -64,10 +64,13 @@ public partial class NavigationRow : VisualElement
 
         _coinsLbl.RegisterCallbackOnce<GeometryChangedEvent>(e =>
         {
-            var worldPos = _coinsLbl.worldTransform.GetPosition();
-            Debug.Log($"World Pos: {worldPos}");
-            Debug.Log($"screen to world Point: {Camera.main.ScreenToWorldPoint(worldPos)}");
-            _coinsFX.SetForceField(Camera.main.ScreenToWorldPoint(worldPos));
+            var coinsPos = _coinsLbl.worldTransform.GetPosition();
+            var coinsBounds = _coinsLbl.worldBound;
+            Debug.Log($"Coins Pos: {coinsPos} \n Coins Bounds: {coinsBounds}");
+            var worldPos = Camera.main.ScreenToWorldPoint(coinsPos + new Vector3(coinsBounds.width / 2, coinsBounds.height / 2));
+
+            Debug.Log($"screen to world Point: {worldPos}");
+            _coinsFX.SetForceField(worldPos);
 
         });
 
