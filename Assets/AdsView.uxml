@@ -1,0 +1,24 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/AdsStyle.uss?fileID=7433441132597879392&amp;guid=f877612034ce7466880588ddd57f37b8&amp;type=3#AdsStyle" />
+    <engine:VisualElement name="main" style="flex-grow: 1; align-items: center; justify-content: center;">
+        <engine:VisualElement style="flex-grow: 0; align-items: stretch; justify-content: center;">
+            <engine:VisualElement style="flex-grow: 1;">
+                <engine:Label text="COINS:" name="coins-lbl" style="font-size: 60px;" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement style="flex-grow: 0;">
+            <engine:VisualElement name="row" class="row">
+                <engine:Button text="LoadBanner" name="LoadBannerBtn" class="unity-btn" />
+                <engine:Button text="DeleteBanner" name="ShowBannerBtn" class="unity-btn" />
+            </engine:VisualElement>
+            <engine:VisualElement name="row" class="row">
+                <engine:Button text="Load Intersitial" name="LoadInterstitialBtn" class="unity-btn" />
+                <engine:Button text="Show Intersitial" name="ShowInterstitialBtn" class="unity-btn" />
+            </engine:VisualElement>
+            <engine:VisualElement name="row" class="row">
+                <engine:Button text="Load Rewarded" name="LoadRewardedBtn" class="unity-btn" />
+                <engine:Button text="Show Rewarded" name="ShowRewardedBtn" class="unity-btn" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>

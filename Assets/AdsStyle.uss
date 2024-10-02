@@ -1,0 +1,26 @@
+.unity-btn {
+    font-size: 55px;
+    padding-top: 25px;
+    padding-bottom: 25px;
+    padding-right: 25px;
+    padding-left: 25px;
+    margin-left: 50px;
+    margin-right: 20px;
+}
+
+.row {
+    flex-grow: 1;
+    flex-direction: row;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    justify-content: flex-end;
+}
+
+.unity-btn {
+    font-size: 55px;
+    padding-top: 25px;
+    padding-bottom: 25px;
+    padding-right: 25px;
+    padding-left: 25px;
+    flex-grow: 1;
+}

@@ -9,6 +9,11 @@
 /[Bb]uilds/
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
+/Assets/LevelPlay/Samples/
+/Assets/Plugins/IngameDebugConsole/
+
+/Assets/LevelPlay/Samples.meta
+/Assets/Plugins/IngameDebugConsole.meta
 
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
