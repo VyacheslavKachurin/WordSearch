@@ -22,7 +22,7 @@ public partial class NavigationRow : VisualElement
     private CoinsFX _coinsFX;
 
     private CoinsAnim _coinsAnim;
-
+    private VisualElement _shopBg;
 
     [UxmlAttribute]
     public bool IsLevelVisible
@@ -32,11 +32,16 @@ public partial class NavigationRow : VisualElement
     }
 
 
-
     public NavigationRow()
     {
         var template = Resources.Load<VisualTreeAsset>("NavigationTemplate");
-        Add(template.Instantiate());
+        var instance = template.Instantiate();
+        instance.style.flexGrow = 1;
+        instance.pickingMode = PickingMode.Ignore;
+        instance.style.flexGrow = 1;
+        this.style.position = Position.Absolute;
+        this.style.flexGrow = 1;
+        Add(instance);
 
         _backBtn = this.Q<Button>("back-btn");
         _shopBtn = this.Q<Button>("shop-btn");
@@ -66,10 +71,10 @@ public partial class NavigationRow : VisualElement
         {
             var coinsPos = _coinsLbl.worldTransform.GetPosition();
             var coinsBounds = _coinsLbl.worldBound;
-            Debug.Log($"Coins Pos: {coinsPos} \n Coins Bounds: {coinsBounds}");
+            //      Debug.Log($"Coins Pos: {coinsPos} \n Coins Bounds: {coinsBounds}");
             var worldPos = Camera.main.ScreenToWorldPoint(coinsPos + new Vector3(coinsBounds.width / 2, coinsBounds.height / 2));
 
-            Debug.Log($"screen to world Point: {worldPos}");
+            //            Debug.Log($"screen to world Point: {worldPos}");
             _coinsFX.SetForceField(worldPos);
 
         });
@@ -87,6 +92,7 @@ public partial class NavigationRow : VisualElement
     {
         OnShopBtnClicked?.Invoke();
         Debug.Log($"Shop clicked");
+
     }
 
 

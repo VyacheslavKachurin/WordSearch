@@ -2,6 +2,7 @@
     <Style src="project://database/Assets/UI/GameStyle.uss?fileID=7433441132597879392&amp;guid=52f028e2a9bbb43c6985398e87d12d27&amp;type=3#GameStyle" />
     <Style src="project://database/Assets/UI/LevelStyle.uss?fileID=7433441132597879392&amp;guid=c74988ca9fc784d5c88d28cc551a0444&amp;type=3#LevelStyle" />
     <Style src="project://database/Assets/UI/CoinsAnim.uss?fileID=7433441132597879392&amp;guid=8ca0395acf16643cfaf2295e1f1a7b10&amp;type=3#CoinsAnim" />
+    <engine:VisualElement name="shop-ref" class="view" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Sprites/shop-ref.png?fileID=2800000&amp;guid=f8f3b89d308474f96aa85ffd2d9008c7&amp;type=3#shop-ref&quot;); display: none;" />
     <engine:VisualElement name="nav-row" class="row-width" style="flex-grow: 0; flex-direction: row; position: absolute; top: 208px; display: flex; align-self: center;">
         <engine:VisualElement name="left-part" class="nav-part">
             <engine:Button name="back-btn" style="background-image: url(&quot;project://database/Assets/Sprites/BackBtn.png?fileID=2800000&amp;guid=8ea480486dcfc4824a5b9bf4ff7fdbc3&amp;type=3#BackBtn&quot;); width: 82px; height: 98px;" />

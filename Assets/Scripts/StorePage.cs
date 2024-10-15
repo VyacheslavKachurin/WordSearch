@@ -1,0 +1,109 @@
+using System;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.Purchasing;
+using UnityEngine.Purchasing.Extension;
+
+public class IAPManager : IDetailedStoreListener
+{
+
+    private IStoreController _controller;
+    private IExtensionProvider _extensions;
+    private ProductCatalog _catalog;
+
+    public IAPManager()
+    {
+
+        var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
+
+        _catalog = JsonUtility.FromJson<ProductCatalog>(Resources.Load<TextAsset>("IAPProductCatalog").text);
+        foreach (var item in _catalog.allProducts)
+        {
+
+            builder.AddProduct(item.id, item.type);
+        }
+
+        UnityPurchasing.Initialize(this, builder);
+
+    }
+
+    /// <summary>
+    /// Called when Unity IAP is ready to make purchases.
+    /// </summary>
+    public void OnInitialized(IStoreController controller, IExtensionProvider extensions)
+    {
+        this._controller = controller;
+        this._extensions = extensions;
+
+        Debug.Log("In-App Purchasing successfully initialized");
+        LogStoreItems();
+    }
+
+
+    public void BuyCoins(int i)
+    {
+        var product = _catalog.allProducts.ToList()[i];
+
+        _controller.InitiatePurchase(product.id);
+    }
+
+    /// <summary>
+    /// Called when Unity IAP encounters an unrecoverable initialization error.
+    ///
+    /// Note that this will not be called if Internet is unavailable; Unity IAP
+    /// will attempt initialization until it becomes available.
+    /// </summary>
+    public void OnInitializeFailed(InitializationFailureReason error)
+    {
+        Debug.Log($"IAP Initialize Failed: {error}");
+    }
+
+    /// <summary>
+    /// Called when a purchase completes.
+    ///
+    /// May be called at any time after OnInitialized().
+    /// </summary>
+    public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs e)
+    {
+        var item = _catalog.allProducts.ToList().Find(x => x.id == e.purchasedProduct.definition.id);
+        var payout = item.Payouts[0].quantity;  Debug.Log($"IAP Purchase payout: {payout}");
+        Balance.AddBalance(payout);
+        return PurchaseProcessingResult.Complete;
+    }
+
+    /// <summary>
+    /// Called when a purchase fails.
+    /// IStoreListener.OnPurchaseFailed is deprecated,
+    /// use IDetailedStoreListener.OnPurchaseFailed instead.
+    /// </summary>
+    public void OnPurchaseFailed(Product i, PurchaseFailureReason p)
+    {
+        Debug.Log($"IAP Purchase Failed: {p}");
+    }
+
+    /// <summary>
+    /// Called when a purchase fails.
+    /// </summary>
+    public void OnPurchaseFailed(Product i, PurchaseFailureDescription p)
+    {
+        Debug.Log($"IAP Purchase Failed: {p.reason} - {p.message}");
+    }
+
+    public void OnInitializeFailed(InitializationFailureReason error, string message)
+    {
+        Debug.Log($"IAP Initialize Failed: {error} - {message}");
+    }
+
+    internal void LogStoreItems()
+    {
+        foreach (var item in _controller.products.all)
+        {
+            Debug.Log(item.definition.id);
+        }
+    }
+
+    internal void RemoveAds()
+    {
+        _controller.InitiatePurchase("no_ads");
+    }
+}

@@ -1,5 +1,6 @@
 using System;
 using Newtonsoft.Json;
+using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 public static class Balance
@@ -10,7 +11,7 @@ public static class Balance
     private const int STARTING_BALANCE = 500;
     private static int _balance;
 
-    private const string PATH = "Assets/Resources/Balance.json";
+    private const string PATH = "Balance.json";
     private static BalanceData _balanceData;
 
     public static bool UseAbility(int price)
@@ -30,10 +31,11 @@ public static class Balance
 
     public static void Load()
     {
-
-        if (System.IO.File.Exists(PATH))
+        var txt = Resources.Load<TextAsset>(PATH);
+        if (txt != null)
         {
-            var jsonData = System.IO.File.ReadAllText(PATH);
+
+            var jsonData = txt.ToString();
             _balanceData = JsonConvert.DeserializeObject<BalanceData>(jsonData);
             _balance = _balanceData.Balance;
         }
@@ -44,9 +46,10 @@ public static class Balance
         }
     }
 
-    public static void AddBalance(int amount)
+    public static void AddBalance(double amount)
     {
-        _balance += amount;
+       
+        _balance += (int)amount;
         OnBalanceChanged?.Invoke(_balance);
         Save();
     }
@@ -54,6 +57,8 @@ public static class Balance
 
     private static void Save()
     {
+        return;
+        Debug.Log($"Saving balance: {_balance}");
         var balanceData = new BalanceData(_balance);
         var jsonData = JsonConvert.SerializeObject(balanceData);
         System.IO.File.WriteAllText(PATH, jsonData);

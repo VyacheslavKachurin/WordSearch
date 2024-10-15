@@ -903,7 +903,8 @@ PlayerSettings:
   XboxOneOverrideIdentityName: 
   XboxOneOverrideIdentityPublisher: 
   vrEditorSettings: {}
-  cloudServicesEnabled: {}
+  cloudServicesEnabled:
+    Purchasing: 1
   luminIcon:
     m_Name: 
     m_ModelFolderPath: 
@@ -925,11 +926,11 @@ PlayerSettings:
   captureStartupLogs: {}
   activeInputHandler: 0
   windowsGamepadBackendHint: 0
-  cloudProjectId: 93e0d397-84b8-43a1-a9b2-98930aea668e
+  cloudProjectId: 77e8fed9-6775-41e4-a0ce-c69dcf41a485
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
   projectName: WordSearch
-  organizationId: alter3go
+  organizationId: dolozin
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}

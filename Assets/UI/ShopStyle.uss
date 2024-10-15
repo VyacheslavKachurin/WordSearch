@@ -1,0 +1,12 @@
+.shop-item {
+    background-image: url("project://database/Assets/Sprites/ad-btn.png?fileID=2800000&guid=b4aa0edaf6dc245c7876a03656ce14e4&type=3#ad-btn");
+    width: 567px;
+    height: 125px;
+    flex-direction: row;
+    font-size: 40px;
+    color: rgb(255, 255, 255);
+    align-items: flex-start;
+    padding-top: 34px;
+    -unity-font-style: bold;
+    margin-top: 34px;
+}

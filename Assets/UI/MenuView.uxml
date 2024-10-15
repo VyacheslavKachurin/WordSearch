@@ -3,7 +3,7 @@
     <Style src="project://database/Assets/UI/MenuStyle.uss?fileID=7433441132597879392&amp;guid=9d73d88b2ea5d4de08746f3f52fbf9a3&amp;type=3#MenuStyle" />
     <engine:VisualElement name="bg" class="view" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Sprites/BG/bg_1.png?fileID=2800000&amp;guid=0ce2d902dba304ff2bda3ca1827943cf&amp;type=3#bg_1&quot;);" />
     <engine:VisualElement name="main" style="flex-grow: 1;">
-        <NavigationRow is-level-visible="false" />
+        <NavigationRow is-level-visible="false" is-shop-visible="false" style="flex-grow: 1; display: flex; position: absolute; width: 100%; height: 100%;" />
         <engine:VisualElement name="top" style="flex-grow: 1; justify-content: space-between; flex-direction: column; align-items: stretch; margin-top: 341px; padding-bottom: 284px;">
             <engine:VisualElement name="red-div" style="flex-grow: 0; align-items: flex-start; margin-left: 66px;">
                 <engine:VisualElement style="flex-grow: 1;">
@@ -67,4 +67,5 @@
     </engine:VisualElement>
     <CoinsAnim picking-mode="Ignore" class="view" />
     <engine:VisualElement name="overlay-fx" picking-mode="Ignore" class="view" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/FXmaterials/MenuTexture.renderTexture?fileID=8400000&amp;guid=1323caccf1cb94f68a3ab3111b04f7b7&amp;type=2#MenuTexture&quot;);" />
+    <ShopView picking-mode="Ignore" style="display: none;" />
 </engine:UXML>

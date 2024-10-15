@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center;">
+        <ui:VisualElement style="flex-grow: 0; margin-top: 25px; margin-right: 25px; margin-bottom: 25px; margin-left: 25px;">
+            <ui:Label tabindex="-1" text="1242x2208" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+            <ui:Label tabindex="-1" text="1242x2688" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+            <ui:Label tabindex="-1" text="2048x2732" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+        </ui:VisualElement>
+        <ui:Button text="Make screenshot" parse-escape-sequences="true" display-tooltip-when-elided="true" name="pic-btn" />
+    </ui:VisualElement>
+</ui:UXML>

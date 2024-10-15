@@ -1,0 +1,60 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/ShopStyle.uss?fileID=7433441132597879392&amp;guid=191b440384a414d0a82cba9206ecf0b4&amp;type=3#ShopStyle" />
+    <engine:VisualElement name="shop-view" picking-mode="Ignore" class="view" style="flex-grow: 1; align-items: stretch; justify-content: center; background-image: none; display: flex;">
+        <engine:VisualElement name="shop-div" style="flex-grow: 0; align-items: center;">
+            <engine:VisualElement name="ads-div" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Sprites/ads-bg.png?fileID=2800000&amp;guid=7d9032c377a74428dbf7f28daa533318&amp;type=3#ads-bg&quot;); width: 964px; height: 417px; justify-content: space-evenly; margin-bottom: 72px;">
+                <engine:Label text="Enjoy the game &#10;without ads!" class="lbl-shadow" style="font-size: 54px;" />
+                <engine:VisualElement style="flex-grow: 0; align-items: center; justify-content: center; padding-bottom: 56px;">
+                    <engine:Button text="REMOVE ADS $5.99" name="no-ads-btn" style="background-image: url(&quot;project://database/Assets/Sprites/ad-btn.png?fileID=2800000&amp;guid=b4aa0edaf6dc245c7876a03656ce14e4&amp;type=3#ad-btn&quot;); width: 567px; height: 124px; color: rgb(255, 255, 255); font-size: 40px; -unity-font-style: bold;" />
+                </engine:VisualElement>
+            </engine:VisualElement>
+            <engine:VisualElement name="list" style="flex-grow: 1;">
+                <engine:Button name="shop-item" class="shop-item">
+                    <engine:VisualElement style="flex-grow: 1; justify-content: center; flex-direction: row;">
+                        <engine:Label text="250" name="coins-amount-lbl" class="lbl-shadow" />
+                        <engine:VisualElement name="coin" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/coin-big.png?fileID=2800000&amp;guid=35d1d1e52133544ccbac3d76c6cca714&amp;type=3#coin-big&quot;); width: 51px; height: 54px;" />
+                    </engine:VisualElement>
+                    <engine:VisualElement style="flex-grow: 1; justify-content: center;">
+                        <engine:Label text="$0.99" name="coins-price-lbl" class="lbl-shadow" />
+                    </engine:VisualElement>
+                </engine:Button>
+                <engine:Button name="shop-item" class="shop-item">
+                    <engine:VisualElement style="flex-grow: 1; justify-content: center; flex-direction: row;">
+                        <engine:Label text="750" name="coins-amount-lbl" class="lbl-shadow" />
+                        <engine:VisualElement name="coin" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/coin-big.png?fileID=2800000&amp;guid=35d1d1e52133544ccbac3d76c6cca714&amp;type=3#coin-big&quot;); width: 51px; height: 54px;" />
+                    </engine:VisualElement>
+                    <engine:VisualElement style="flex-grow: 1; justify-content: center;">
+                        <engine:Label text="$2.99" name="coins-price-lbl" class="lbl-shadow" />
+                    </engine:VisualElement>
+                </engine:Button>
+                <engine:Button name="shop-item" class="shop-item">
+                    <engine:VisualElement style="flex-grow: 1; justify-content: center; flex-direction: row;">
+                        <engine:Label text="1600" name="coins-amount-lbl" class="lbl-shadow" />
+                        <engine:VisualElement name="coin" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/coin-big.png?fileID=2800000&amp;guid=35d1d1e52133544ccbac3d76c6cca714&amp;type=3#coin-big&quot;); width: 51px; height: 54px;" />
+                    </engine:VisualElement>
+                    <engine:VisualElement style="flex-grow: 1; justify-content: center;">
+                        <engine:Label text="$4.99" name="coins-price-lbl" class="lbl-shadow" />
+                    </engine:VisualElement>
+                </engine:Button>
+                <engine:Button name="shop-item" class="shop-item">
+                    <engine:VisualElement style="flex-grow: 1; justify-content: center; flex-direction: row;">
+                        <engine:Label text="3600" name="coins-amount-lbl" class="lbl-shadow" />
+                        <engine:VisualElement name="coin" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/coin-big.png?fileID=2800000&amp;guid=35d1d1e52133544ccbac3d76c6cca714&amp;type=3#coin-big&quot;); width: 51px; height: 54px;" />
+                    </engine:VisualElement>
+                    <engine:VisualElement style="flex-grow: 1; justify-content: center;">
+                        <engine:Label text="$9.99" name="coins-price-lbl" class="lbl-shadow" />
+                    </engine:VisualElement>
+                </engine:Button>
+                <engine:Button name="shop-item" class="shop-item">
+                    <engine:VisualElement style="flex-grow: 1; justify-content: center; flex-direction: row;">
+                        <engine:Label text="8000" name="coins-amount-lbl" class="lbl-shadow" />
+                        <engine:VisualElement name="coin" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/coin-big.png?fileID=2800000&amp;guid=35d1d1e52133544ccbac3d76c6cca714&amp;type=3#coin-big&quot;); width: 51px; height: 54px;" />
+                    </engine:VisualElement>
+                    <engine:VisualElement style="flex-grow: 1; justify-content: center;">
+                        <engine:Label text="$19.99" name="coins-price-lbl" class="lbl-shadow" />
+                    </engine:VisualElement>
+                </engine:Button>
+            </engine:VisualElement>
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>
