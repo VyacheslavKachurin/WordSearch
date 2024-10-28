@@ -11,6 +11,7 @@ public class LineProvider : MonoBehaviour
 
     private float _lineSize;
     [SerializeField] private float _lineSizeMultiplier = 1.2f;
+    private List<LineRenderer> _lines = new();
 
     internal void Append(Vector2 point)
     {
@@ -23,16 +24,19 @@ public class LineProvider : MonoBehaviour
 
     internal void CreateLine(Vector3 point, Color color)
     {
+        LineRenderer line;
+        line = Instantiate(_linePrefab, point, Quaternion.identity);
+        line.startWidth = _lineSize;
+        line.endWidth = _lineSize;
+        line.positionCount = 2;
+        line.SetPosition(0, point);
+        line.SetPosition(1, point);
 
-        _line = Instantiate(_linePrefab, point, Quaternion.identity);
-        _line.startWidth = _lineSize;
-        _line.endWidth = _lineSize;
-        _line.positionCount = 2;
-        _line.SetPosition(0, point);
-        _line.SetPosition(1, point);
+        line.startColor = color;
+        line.endColor = color;
 
-        _line.startColor = color;
-        _line.endColor = color;
+        _lines.Add(line);
+        _line = line;
     }
 
     internal void Draw(Vector2 point)
@@ -89,5 +93,15 @@ public class LineProvider : MonoBehaviour
     internal void SetLineSize(float letterSize)
     {
         _lineSize = letterSize * _lineSizeMultiplier;
+    }
+
+    internal void ResetState()
+    {
+        Debug.Log($"Reset state called");
+        if (_lines.Count == 0) return;
+        foreach (var line in _lines)
+            Destroy(line.gameObject);
+
+        _lines.Clear();
     }
 }

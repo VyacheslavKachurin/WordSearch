@@ -9,6 +9,7 @@ public class InputTrigger : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D letter)
     {
+       
         var res = letter.TryGetComponent<LetterUnit>(out var letterUnit);
         if (!res) return;
         OnLetterEnter?.Invoke(letterUnit);

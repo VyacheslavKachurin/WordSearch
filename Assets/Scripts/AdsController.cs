@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Advertisements;
 
@@ -15,9 +16,17 @@ public class AdsController : MonoBehaviour, IUnityAdsInitializationListener, IUn
 
     private bool _rewardedAdLoaded = false;
 
+    public static AdsController Instance { get; private set; }
+
     void Awake()
     {
         InitializeAds();
+        Instance = this;
+    }
+
+    private void OnDestroy()
+    {
+        Instance = null;
     }
 
     public void InitializeAds()
@@ -97,6 +106,8 @@ public class AdsController : MonoBehaviour, IUnityAdsInitializationListener, IUn
     public void OnInitializationComplete()
     {
         Debug.Log("Unity Ads initialization complete.");
+        LoadRewardedAd();
+        LoadInterstitialAd();
     }
 
     public void OnInitializationFailed(UnityAdsInitializationError error, string message)
@@ -139,9 +150,11 @@ public class AdsController : MonoBehaviour, IUnityAdsInitializationListener, IUn
     {
         if (_rewardedAdLoaded)
         {
-            Advertisement.Show(_rewardedID,this);
+            Debug.Log($"Showing Ad: {_rewardedID}");
+            Advertisement.Show(_rewardedID, this);
             _rewardedAdLoaded = false;
         }
+        else    Debug.Log($"No Ad Loaded: {_rewardedID}");
     }
 
     public void OnUnityAdsFailedToLoad(string placementId, UnityAdsLoadError error, string message)

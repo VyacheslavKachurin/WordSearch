@@ -6,9 +6,13 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 using DG.Tweening;
+using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class LevelView : MonoBehaviour
 {
+    public static event Action NextLevelClicked;
+
     private VisualElement _root;
     private Label _levelTheme;
     private VisualElement _wordsHolder;
@@ -32,7 +36,15 @@ public class LevelView : MonoBehaviour
     [SerializeField] private ParticleSystem _wordFoundFX;
     [SerializeField] private RenderTexture _renderTexture;
     private float _rootHeight;
-
+    private NavigationRow _navRow;
+    private VisualElement _finishView;
+    private Button _nextLvlBtn;
+    private VisualElement _progressFill;
+    private Label _progressLbl;
+    private VisualElement _progressBg;
+    [SerializeField] private float _fillDelay = 0.01f;
+    private Coroutine _progressBarCoroutine;
+    private const string NEXT_LVL_BTN_ON = "next-lvl-btn-on";
 
     private void Awake()
     {
@@ -60,6 +72,65 @@ public class LevelView : MonoBehaviour
             _rootHeight = _root.layout.height;
         });
 
+        _finishView = _root.Q<VisualElement>("finish-view");
+        _nextLvlBtn = _finishView.Q<Button>("next-lvl-btn");
+        _nextLvlBtn.clicked += HandleNextLvlBtn;
+
+        _progressFill = _root.Q<VisualElement>("progress-fill");
+        _progressLbl = _root.Q<Label>("progress-lbl");
+        _progressBg = _root.Q<VisualElement>("progress-bg");
+
+
+        _navRow = _root.Q<NavigationRow>();
+        _navRow.InitBalance(AudioManager.Instance);
+
+    }
+
+    public void ShowFinishView(int levelPassed)
+    {
+        _progressLbl.text = $"{levelPassed}/5";
+        _finishView.Toggle(true);
+        if (_progressBarCoroutine != null) return;
+        _progressBarCoroutine = StartCoroutine(FillProgressBar(levelPassed));
+    }
+
+    [ContextMenu("Test level fill")]
+    public void TestFill()
+    {
+
+        ShowFinishView(1);
+    }
+
+
+
+    private IEnumerator FillProgressBar(int levelPassed)
+    {
+        var targetFill = 100 * (levelPassed / 5f);
+        var currentFill = 0f;
+        Debug.Log($"targetFill: {targetFill}");
+        while (currentFill < targetFill)
+        {
+            currentFill += 1f;
+            _progressFill.style.width = new StyleLength(new Length(currentFill, LengthUnit.Percent));
+            yield return new WaitForSeconds(_fillDelay);
+        }
+        ShowNextLvlBtn();
+    }
+
+    private void ShowNextLvlBtn()
+    {
+        _nextLvlBtn.AddToClassList(NEXT_LVL_BTN_ON);
+
+    }
+
+    private void HandleNextLvlBtn()
+    {
+        var nextLvl = Session.GetLastLevel() + 1;
+        Session.SetLastLevel(nextLvl);
+        // SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        NextLevelClicked?.Invoke();
+        _finishView.Toggle(false);
+        _progressBarCoroutine = null;
     }
 
     private void InitRenderTexture()
@@ -85,15 +156,13 @@ public class LevelView : MonoBehaviour
 
     public void SetLevelData(LevelData data)
     {
-        _levelTheme.text = data.Theme;
+        _levelTheme.text = data.Subject;
         FillWords(data.Words);
         _levelLbl.text = $"Level: {data.Level}";
 
         // country
         // level
         // words
-
-
     }
 
     public void AnimateWord(List<LetterUnit> letterUnits)
@@ -156,12 +225,14 @@ public class LevelView : MonoBehaviour
 
     }
 
+
     private void PlayWordFoundFX(Vector2 endPos)
     {
         var worldPos = Camera.main.ScreenToWorldPoint(new Vector2(endPos.x, _rootHeight - endPos.y));
 
         var fx = Instantiate(_wordFoundFX, worldPos, Quaternion.identity);
         fx.Play();
+
     }
 
     private void InitButtons()
@@ -179,6 +250,8 @@ public class LevelView : MonoBehaviour
 
     private void FillWords(List<string> words)
     {
+        _wordsHolder.Clear();
+
         foreach (var word in words)
         {
             var div = new VisualElement();
@@ -228,6 +301,14 @@ public class LevelView : MonoBehaviour
                 HideWord(word);
 
         HandleFirstLettersRemoved(levelState.ActiveFirstLetters.Count);
+
+
+
+    }
+
+    private void OnDestroy()
+    {
+        _navRow.Unsubscribe();
     }
 }
 

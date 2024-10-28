@@ -2,7 +2,6 @@
     <Style src="project://database/Assets/UI/LevelStyle.uss?fileID=7433441132597879392&amp;guid=c74988ca9fc784d5c88d28cc551a0444&amp;type=3#LevelStyle" />
     <Style src="project://database/Assets/UI/GameStyle.uss?fileID=7433441132597879392&amp;guid=52f028e2a9bbb43c6985398e87d12d27&amp;type=3#GameStyle" />
     <Style src="project://database/Assets/UI/WordAnimation.uss?fileID=7433441132597879392&amp;guid=7bc8b23aea04943ef914a49fdff2d4d3&amp;type=3#WordAnimation" />
-    <engine:VisualElement name="ref" class="view" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/References/MainGameRef.png?fileID=2800000&amp;guid=37061b8a54fab40a79453056ce4d6bd5&amp;type=3#MainGameRef&quot;); display: none; opacity: 1;" />
     <engine:VisualElement name="level-view" class="view" style="flex-grow: 1; align-items: center; justify-content: flex-start; opacity: 1; display: flex;">
         <NavigationRow is-level-visible="true" is-shop-visible="false" />
         <engine:VisualElement name="controls-row" class="row-width" style="flex-grow: 0; bottom: 198px; position: absolute;">
@@ -38,6 +37,30 @@
         </engine:VisualElement>
     </engine:VisualElement>
     <PlateView picking-mode="Ignore" name="PlateView" class="view" />
+    <engine:VisualElement name="finish-view" class="view" style="flex-grow: 1; align-items: center; justify-content: center; background-image: url(&quot;project://database/Assets/Sprites/BG/bg_1.png?fileID=2800000&amp;guid=0ce2d902dba304ff2bda3ca1827943cf&amp;type=3#bg_1&quot;); display: none;">
+        <engine:Button name="remove-ads-btn" style="background-image: url(&quot;project://database/Assets/Sprites/ads-btn.png?fileID=2800000&amp;guid=4f9e86ee199ed4fb18fb67b2945640e5&amp;type=3#ads-btn&quot;); width: 150px; height: 150px; position: absolute; right: 100px; top: 150px;" />
+        <engine:VisualElement style="flex-grow: 1; align-items: center; justify-content: space-evenly;">
+            <engine:VisualElement name="header" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/WordsHeader.png?fileID=2800000&amp;guid=7554701caebd34311854e6b9a8a1fa51&amp;type=3#WordsHeader&quot;); width: 700px; border-top-left-radius: 25px; border-top-right-radius: 25px; border-bottom-right-radius: 25px; border-bottom-left-radius: 25px; align-items: center; justify-content: center; padding-top: 20px; padding-bottom: 20px;">
+                <engine:Label text="Amazing!" class="lbl lbl-shadow" />
+            </engine:VisualElement>
+            <engine:VisualElement name="imgholder" style="flex-grow: 0;">
+                <engine:VisualElement name="pic" style="flex-grow: 1; width: 300px; height: 300px; background-color: rgb(255, 255, 255);" />
+            </engine:VisualElement>
+            <engine:VisualElement style="flex-grow: 0;">
+                <engine:VisualElement name="progressHolder" style="flex-grow: 0; width: 700px; margin-bottom: 200px;">
+                    <engine:VisualElement name="borderBg" style="flex-grow: 1; justify-content: center; border-top-width: 3px; border-right-width: 3px; border-bottom-width: 3px; border-left-width: 3px; border-left-color: rgb(255, 255, 255); border-right-color: rgb(255, 255, 255); border-top-color: rgb(255, 255, 255); border-bottom-color: rgb(255, 255, 255);">
+                        <engine:VisualElement name="progress-bg" style="flex-grow: 1; position: absolute; width: 100%; height: 75px; background-color: rgba(0, 0, 0, 0.55);" />
+                        <engine:VisualElement name="progress-fill" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Sprites/WordsHeader.png?fileID=2800000&amp;guid=7554701caebd34311854e6b9a8a1fa51&amp;type=3#WordsHeader&quot;); height: 75px; width: 0; border-top-left-radius: 35px; border-top-right-radius: 35px; border-bottom-right-radius: 35px; border-bottom-left-radius: 35px;" />
+                        <engine:VisualElement name="flagPic" style="flex-grow: 1; position: absolute; height: 100px; width: 100px; background-color: rgb(255, 102, 102); border-top-left-radius: 50px; border-top-right-radius: 50px; border-bottom-right-radius: 50px; border-bottom-left-radius: 50px; left: -50px; border-left-color: rgb(255, 255, 255); border-right-color: rgb(255, 255, 255); border-top-color: rgb(255, 255, 255); border-bottom-color: rgb(255, 255, 255); border-top-width: 3px; border-right-width: 3px; border-bottom-width: 3px; border-left-width: 3px;" />
+                        <engine:VisualElement name="giftPic" style="flex-grow: 1; position: absolute; height: 150px; width: 150px; right: -50px; background-image: url(&quot;project://database/Assets/Sprites/gift.png?fileID=2800000&amp;guid=bed651ce5066c4f9fa2acde842a42a63&amp;type=3#gift&quot;);" />
+                        <engine:Label text="2/5" name="progress-lbl" class="lbl" style="position: absolute; align-self: center; -unity-font-style: normal; font-size: 50px;" />
+                    </engine:VisualElement>
+                </engine:VisualElement>
+                <engine:Button text="Next Level" name="next-lvl-btn" class="lbl lbl-shadow next-lvl-btn next-lvl-btn-on" style="background-image: url(&quot;project://database/Assets/Sprites/time-mode.png?fileID=2800000&amp;guid=f83b086586d68492a9f957e6d1439dce&amp;type=3#time-mode&quot;); padding-left: 75px; padding-right: 75px; padding-top: 30px; padding-bottom: 30px;" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+    </engine:VisualElement>
+    <engine:VisualElement name="ref" class="view" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/References/finish-ref.jpeg?fileID=2800000&amp;guid=074260442e4c649eb9c61e8fe424f4c4&amp;type=3#finish-ref&quot;); display: none; opacity: 1;" />
     <engine:VisualElement name="visuals-div" picking-mode="Ignore" class="view" style="flex-grow: 1;" />
     <engine:VisualElement name="fx-div" picking-mode="Ignore" class="view" style="flex-grow: 1;" />
 </engine:UXML>

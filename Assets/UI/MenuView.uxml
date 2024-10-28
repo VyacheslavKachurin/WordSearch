@@ -23,7 +23,7 @@
                 </engine:VisualElement>
                 <engine:VisualElement name="btns" style="flex-grow: 0;">
                     <engine:Button name="classic-btn" text="CLASSIC" class="mode-btn lbl-shadow" style="background-image: url(&quot;project://database/Assets/Sprites/classic-mode.png?fileID=2800000&amp;guid=7f38683c5d84c46cbb83ca676710caed&amp;type=3#classic-mode&quot;);" />
-                    <engine:Button name="time-btn" text="TIME TRIAL" class="mode-btn lbl-shadow" />
+                    <engine:Button name="time-btn" text="TIME TRIAL" class="mode-btn lbl-shadow" style="display: none;" />
                 </engine:VisualElement>
             </engine:VisualElement>
         </engine:VisualElement>
@@ -31,7 +31,7 @@
             <engine:VisualElement style="flex-grow: 1; align-items: center;">
                 <engine:Button name="left-btn" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; background-image: url(&quot;project://database/Assets/Sprites/brn-left.png?fileID=2800000&amp;guid=bde19571a27ff4cf7a8dd83588a0b6a5&amp;type=3#brn-left&quot;); width: 126px; height: 126px;" />
             </engine:VisualElement>
-            <engine:Button name="home-btn" style="background-image: url(&quot;project://database/Assets/Sprites/home-btn.png?fileID=2800000&amp;guid=88d49fd2495f7442e891eb4787ab9898&amp;type=3#home-btn&quot;); width: 246px; height: 249px; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; bottom: 47px;" />
+            <engine:Button name="home-btn" picking-mode="Ignore" style="background-image: url(&quot;project://database/Assets/Sprites/home-btn.png?fileID=2800000&amp;guid=88d49fd2495f7442e891eb4787ab9898&amp;type=3#home-btn&quot;); width: 246px; height: 249px; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; bottom: 47px;" />
             <engine:VisualElement style="flex-grow: 1; align-items: center;">
                 <engine:Button name="right-btn" style="background-image: url(&quot;project://database/Assets/Sprites/btn-right.png?fileID=2800000&amp;guid=91877cab3d314452eb0ee13342cfc511&amp;type=3#btn-right&quot;); width: 125px; height: 129px;" />
             </engine:VisualElement>

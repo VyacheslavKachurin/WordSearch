@@ -11,7 +11,7 @@ public static class Balance
     private const int STARTING_BALANCE = 500;
     private static int _balance;
 
-    private const string PATH = "Balance.json";
+    private static readonly string PATH = Application.persistentDataPath + "/Balance.json";
     private static BalanceData _balanceData;
 
     public static bool UseAbility(int price)
@@ -48,7 +48,7 @@ public static class Balance
 
     public static void AddBalance(double amount)
     {
-       
+
         _balance += (int)amount;
         OnBalanceChanged?.Invoke(_balance);
         Save();
@@ -57,7 +57,7 @@ public static class Balance
 
     private static void Save()
     {
-        return;
+        
         Debug.Log($"Saving balance: {_balance}");
         var balanceData = new BalanceData(_balance);
         var jsonData = JsonConvert.SerializeObject(balanceData);

@@ -2,12 +2,17 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 public class MenuView : MonoBehaviour
 {
     [SerializeField] private float _hideBoxDelay = 0.005f;
+
+    [SerializeField] private string _levelScene = "LevelScene";
+
     private VisualElement _root;
     private FadePanel _fadePnl;
     private VisualElement _giftDiv;
@@ -24,6 +29,9 @@ public class MenuView : MonoBehaviour
 
     [SerializeField] private int _minPrize = 20;
     [SerializeField] private int _maxPrize = 50;
+    private Button _classicBtn;
+
+    
 
     private void Start()
     {
@@ -34,6 +42,20 @@ public class MenuView : MonoBehaviour
 
         SetGiftBtns();
         _navRow.SetCoinsAnim(_root.Q<CoinsAnim>());
+        _navRow.InitBalance(AudioManager.Instance);
+
+        _classicBtn = _root.Q<Button>("classic-btn");
+        _classicBtn.clicked += HandleClassicBtn;
+    }
+
+    private void HandleClassicBtn()
+    {
+        SceneManager.LoadScene(_levelScene);
+    }
+
+    void OnDestroy()
+    {
+        _navRow?.Unsubscribe();
     }
 
     private void SetGiftBtns()
@@ -92,7 +114,7 @@ public class MenuView : MonoBehaviour
             //_giftDiv.RemoveFromClassList(GIFT_ANIM_OUT);
             _fadePnl.Toggle(false);
             element.RemoveFromClassList(BOX_WIN);
-           
+
         });
 
         _giftDiv.AddToClassList(GIFT_ANIM_OUT);

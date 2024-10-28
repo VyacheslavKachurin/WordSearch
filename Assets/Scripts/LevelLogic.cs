@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LevelLogic : MonoBehaviour
 {
@@ -20,9 +21,9 @@ public class LevelLogic : MonoBehaviour
 
 
     private List<string> _words;
-    private Direction _direction;
-    [SerializeField] private LayerMask _ignoreRaycastLayer;
 
+    [SerializeField] private LayerMask _ignoreRaycastLayer;
+    [SerializeField] private string _menuScene = "MenuScene";
 
     private void Start()
     {
@@ -30,11 +31,28 @@ public class LevelLogic : MonoBehaviour
         InputTrigger.OnLetterEnter += HandleLetterEnter;
         InputHandler.OnInputDrag += HandleDrag;
         InputHandler.OnLetterDeselect += HandleLetterDeselect;
+        WordFX.OnAnimDone += CheckIfLevelDone;
 
 
         _audio = AudioManager.Instance;
         _inputHandler.SetLetterUnits(_tryWordLetterUnits);
+        NavigationRow.OnBackBtnClicked += HandleBackBtn;
 
+    }
+
+
+    private void CheckIfLevelDone()
+    {
+        if (_words.Count == 0)
+        {
+            _levelView.ShowFinishView(Session.GetLastLevel());
+        }
+    }
+
+    private void HandleBackBtn()
+    {
+        SaveState();
+        SceneManager.LoadScene(_menuScene);
     }
 
     [ContextMenu("Save State")]
@@ -63,12 +81,12 @@ public class LevelLogic : MonoBehaviour
     private void CheckWord()
     {
         if (_tryWord.Length == 0) return;
-//        Debug.Log($"Check word: {_tryWord}");
+
         _levelView.ToggleWord(false);
 
         var isWord = _words.Contains(_tryWord);
         _lineProvider.FinishDraw(isWord, _tryWordLetterUnits);
-        var sound = isWord ? Sound.Found : Sound.Error;
+        var sound = isWord ? Sound.WordFound : Sound.WrongWord;
         _audio.PlaySound(sound);
         _isFirstLetter = true;
         if (isWord) RemoveWord();
@@ -124,11 +142,11 @@ public class LevelLogic : MonoBehaviour
                 return;
             }
 
-//            Debug.Log($"adding letter: {letter.Letter}");
+            //            Debug.Log($"adding letter: {letter.Letter}");
             _tryWord += letter.Letter.ToString();
             _tryWordLetterUnits.Add(letter);
             _lineProvider.Append(letter.transform.position);
-
+             _audio.PlayLetter(_tryWordLetterUnits.Count);
             _levelView.AddLetter(letter.Letter);
         }
     }

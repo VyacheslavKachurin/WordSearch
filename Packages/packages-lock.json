@@ -1,5 +1,21 @@
 {
   "dependencies": {
+    "com.google.external-dependency-manager": {
+      "version": "https://github.com/google-unity/external-dependency-manager.git#1.2.177",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "64445bb59f6d9d4d7f24be5eea45e7fdf2146546"
+    },
+    "com.singularitygroup.hotreload": {
+      "version": "file:com.singularitygroup.hotreload",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.unity.ugui": "1.0.0",
+        "com.unity.modules.unitywebrequest": "1.0.0"
+      }
+    },
     "com.unity.2d.animation": {
       "version": "10.1.1",
       "depth": 1,
@@ -248,6 +264,25 @@
         "com.unity.modules.jsonserialize": "1.0.0"
       },
       "url": "https://packages.unity.com"
+    },
+    "io.appmetrica.analytics": {
+      "version": "https://github.com/appmetrica/appmetrica-unity-plugin.git#v6.3.0",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.google.external-dependency-manager": "1.2.177"
+      },
+      "hash": "bac19a45816e919f9cac22a5ad73a5460c30b5d3"
+    },
+    "io.appmetrica.analytics.push": {
+      "version": "https://github.com/appmetrica/push-unity-plugin.git#v2.0.0",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.google.external-dependency-manager": "1.2.177",
+        "io.appmetrica.analytics": "6.1.0"
+      },
+      "hash": "1038a15ecf5456e48979f8f55c2e81786b17b3a6"
     },
     "jillejr.newtonsoft.json-for-unity.converters": {
       "version": "https://github.com/jilleJr/Newtonsoft.Json-for-Unity.Converters.git#1.6.3",

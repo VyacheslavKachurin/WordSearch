@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -23,6 +24,8 @@ public partial class NavigationRow : VisualElement
 
     private CoinsAnim _coinsAnim;
     private VisualElement _shopBg;
+    private AudioManager _audioManager;
+    private List<Button> _btns;
 
     [UxmlAttribute]
     public bool IsLevelVisible
@@ -55,10 +58,22 @@ public partial class NavigationRow : VisualElement
         _shopBtn.clicked += HandleShopBtn;
         _settingsBtn.clicked += HandleSettingsBtn;
 
+        _btns = new List<Button> { _backBtn, _shopBtn, _settingsBtn };
+
+    }
+
+    public void InitBalance(AudioManager audioManager)
+    {
+        _audioManager = audioManager;
         SetBalance(Balance.GetBalance());
         Balance.OnBalanceChanged += SetBalance;
+        foreach (var btn in _btns)
+            _audioManager.PlaySound(Sound.Click);
+    }
 
-
+    public void Unsubscribe()
+    {
+        Balance.OnBalanceChanged -= SetBalance;
     }
 
     public void SetCoinsAnim(CoinsAnim coinsAnim)

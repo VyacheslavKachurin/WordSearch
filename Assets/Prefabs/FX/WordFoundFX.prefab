@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2257438803901899318}
   - component: {fileID: 9150111728784239381}
   - component: {fileID: 7998376026199355301}
+  - component: {fileID: -7241881945074918837}
   m_Layer: 8
   m_Name: WordFoundFX
   m_TagString: Untagged
@@ -43,7 +44,7 @@ ParticleSystem:
   serializedVersion: 8
   lengthInSec: 1
   simulationSpeed: 1
-  stopAction: 2
+  stopAction: 3
   cullingMode: 0
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
@@ -4890,3 +4891,15 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &-7241881945074918837
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7558662224120400690}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2385f3faa168f42869b07d31a3daf44d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -29,6 +29,7 @@ public class GameBoard : MonoBehaviour
     [ContextMenu("Build Board")]
     public void BuildBoard(LevelData data)
     {
+        ClearBoard();
         var boardSize = GetSize(data.Width, data.Height);
         _letters = new LetterUnit[data.Height, data.Width];
 
@@ -57,9 +58,10 @@ public class GameBoard : MonoBehaviour
     [ContextMenu("Clear Board")]
     public void ClearBoard()
     {
+        if (_letters == null) return;
         foreach (var letter in _letters)
         {
-            DestroyImmediate(letter.gameObject);
+            Destroy(letter.gameObject);
         }
 
         _letters = null;

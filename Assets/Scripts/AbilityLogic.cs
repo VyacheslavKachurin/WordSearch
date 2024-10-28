@@ -10,6 +10,12 @@ public class AbilityLogic : MonoBehaviour
     public static event Action OnCashRequested;
 
     public static event Action OnFakeLettersRemoved;
+    private AudioManager _audioManager;
+
+    private void Awake()
+    {
+        _audioManager = AudioManager.Instance;
+    }
 
     private void Start()
     {
@@ -43,7 +49,7 @@ public class AbilityLogic : MonoBehaviour
                 break;
         }
 
-       
+
     }
 
     public void SetData(LevelData levelData, GameBoard gameBoard)
@@ -55,7 +61,7 @@ public class AbilityLogic : MonoBehaviour
 
     private void ShowAd()
     {
-        Debug.Log($"Showing Ad");
+        AdsController.Instance.ShowRewardedAd();
     }
 
     private void RevealSquare()
@@ -65,6 +71,8 @@ public class AbilityLogic : MonoBehaviour
 
     private void RevealLetter(int amount)
     {
+        var sound = amount == 1 ? Sound.Lamp : Sound.Light;
+        _audioManager.PlaySound(sound);
         for (int i = 0; i < amount; i++)
         {
             var point = LevelStateService.GetFirstPoint();
@@ -76,6 +84,7 @@ public class AbilityLogic : MonoBehaviour
 
     public void HideFakeLetters()
     {
+        _audioManager.PlaySound(Sound.Magnet);
         foreach (var point in _data.FakeLetters)
         {
             _gameBoard.Letters[point.Y, point.X].Hide();

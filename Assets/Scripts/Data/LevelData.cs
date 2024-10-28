@@ -6,12 +6,13 @@ using UnityEngine;
 public class LevelData
 {
     public int Level;
-    public string Theme;
+    public string Subject;
+
     public List<string> Words;
     public char[,] Matrix;
     public int Width;
     public int Height;
-    public Country Country;
+    public string Country;
 
     public char this[int y, int x] => Matrix[y, x];
 
