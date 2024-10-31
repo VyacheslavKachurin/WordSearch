@@ -1,3 +1,9 @@
+.target-letters {
+    color: rgb(255, 255, 255);
+    font-size: 34px;
+    transition-duration: 0.3s;
+}
+
 .word-big {
     scale: 1.4 1.4;
 }
@@ -11,4 +17,20 @@
 
 .word-gray {
     color: rgb(195, 195, 195);
+}
+
+.target-word {
+    transition-duration: 0.15s;
+}
+
+.target-word-right {
+    translate: 40px 0;
+}
+
+.target-word-left {
+    translate: -20px 0;
+}
+
+.target-word-left {
+    translate: -20px 0;
 }

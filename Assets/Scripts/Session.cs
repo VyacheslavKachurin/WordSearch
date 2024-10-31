@@ -3,9 +3,20 @@ using UnityEngine;
 
 public static class Session
 {
+    public static event Action<bool> OnMusicChange;
+    public static event Action<bool> OnSoundChange;
+
+    public static event Action AdsRemoved;
 
     private const string LAST_CLASSIC_LEVEL = "last-classic-level";
     private const string IS_FIRST_TIME = "is-first-time";
+
+    private const string IS_MUSIC_ON = "is-music-on";
+    private const string IS_SOUND_ON = "is-sound-on";
+
+    public static string TIMESTAMP_KEY = "timestamp";
+    public static string STAGE_KEY = "stage";
+
     public static bool IsFirstTime
     {
         get
@@ -18,16 +29,26 @@ public static class Session
         }
     }
 
+    public static int LastStage
+    {
+        get
+        {
+            return PlayerPrefs.GetInt(STAGE_KEY, 1);
+        }
+        set
+        {
+            PlayerPrefs.SetInt(STAGE_KEY, value);
+        }
+    }
+
+    public static bool IsSelecting = false;
+    public static int RewardAmount = 25;
+
     private static int LastClassicLevel
     {
         get
         {
-            var level = 1;
-            if (PlayerPrefs.HasKey(LAST_CLASSIC_LEVEL))
-            {
-                level = PlayerPrefs.GetInt(LAST_CLASSIC_LEVEL);
-            }
-            return level;
+            return PlayerPrefs.GetInt(LAST_CLASSIC_LEVEL, 1);
         }
         set
         {
@@ -43,5 +64,76 @@ public static class Session
     public static void SetLastLevel(int level)
     {
         LastClassicLevel = level;
+    }
+
+    public static bool IsMusicOn
+    {
+        get
+        {
+            return PlayerPrefs.GetInt(IS_MUSIC_ON, 1) == 1;
+        }
+        set
+        {
+            PlayerPrefs.SetInt(IS_MUSIC_ON, value ? 1 : 0);
+            OnMusicChange?.Invoke(value);
+        }
+    }
+
+    public static bool IsSoundOn
+    {
+        get
+        {
+            return PlayerPrefs.GetInt(IS_SOUND_ON, 1) == 1;
+        }
+        set
+        {
+            PlayerPrefs.SetInt(IS_SOUND_ON, value ? 1 : 0);
+            OnSoundChange?.Invoke(value);
+        }
+    }
+
+    public static bool WasGiftReceived
+    {
+        get
+        {
+            return PlayerPrefs.GetString(TIMESTAMP_KEY) == DateTime.Now.ToString("MM-dd");
+        }
+        set
+        {
+            PlayerPrefs.SetString(TIMESTAMP_KEY, DateTime.Now.ToString("MM-dd"));
+        }
+    }
+
+    public static void ClearGift()
+    {
+        PlayerPrefs.DeleteKey(TIMESTAMP_KEY);
+    }
+
+    public static bool NoAds
+    {
+        get
+        {
+            return PlayerPrefs.GetInt("no_ads", 0) == 1;
+        }
+        set
+        {
+            PlayerPrefs.SetInt("no_ads", value ? 1 : 0);
+            if (value) AdsRemoved?.Invoke();
+        }
+    }
+
+    public static string GiftTimeLeft()
+    {
+        DateTime now = DateTime.Now;
+        DateTime tomorrow = now.AddDays(1).Date;
+        TimeSpan timeLeft = tomorrow - now;
+        var answer = $"{timeLeft.Hours}h {timeLeft.Minutes}m {timeLeft.Seconds}s";
+
+        return answer;
+    }
+
+    internal static int GetLastStage()
+    {
+        return LastStage;
     }
 }

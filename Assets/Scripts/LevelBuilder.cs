@@ -1,6 +1,7 @@
 using UnityEngine;
 using Newtonsoft.Json;
 using System.Collections;
+using System;
 
 public class LevelBuilder : MonoBehaviour
 {
@@ -10,15 +11,23 @@ public class LevelBuilder : MonoBehaviour
     [SerializeField] LevelLogic _levelLogic;
     [SerializeField] AbilityLogic _abilityLogic;
     [SerializeField] AdsController _adsController;
+    [SerializeField] BgController _bgController;
 
     private LevelData _levelData;
     [SerializeField] private LineProvider _lineProvider;
+
+#if UNITY_EDITOR
+    [SerializeField] private int _targetLevel;
+    [SerializeField] private bool _loadTargetLevel = false;
+    [SerializeField] private int _stage;
+#endif
+
 
     private void Start()
     {
         CreateLevel();
         _adsController.LoadBanner();
-        LevelView.NextLevelClicked += () => CreateLevel();
+        LevelView.NextLevelClicked += CreateLevel;
 
     }
 
@@ -32,9 +41,21 @@ public class LevelBuilder : MonoBehaviour
     [ContextMenu("Create Level")]
     public void CreateLevel()
     {
-       
+        _lineProvider.ResetState();
+        Session.IsSelecting = true;
         var level = Session.GetLastLevel();
-        _levelDataAsset = Resources.Load<TextAsset>($"LevelData/LevelData {level}");
+        var stage = Session.GetLastStage();
+
+#if UNITY_EDITOR
+        if (_loadTargetLevel)
+        {
+            level = _targetLevel;
+            stage = _stage;
+        }
+#endif
+        _levelDataAsset = Resources.Load<TextAsset>($"LevelData/Stage {stage}/LevelData {level}");
+        Debug.Log($"stage={stage} level={level}");
+        Debug.Log($"LevelData asset=null {_levelDataAsset == null}");
         _levelData = JsonConvert.DeserializeObject<LevelData>(_levelDataAsset.text);
 
         _gameBoard.BuildBoard(_levelData);
@@ -42,14 +63,23 @@ public class LevelBuilder : MonoBehaviour
         _levelView.SetLevelData(_levelData);
         _levelLogic.SetData(_levelData);
         _abilityLogic.SetData(_levelData, _gameBoard);
+        StartCoroutine(SetLineSize());
         LoadState();
 
-        StartCoroutine(SetLineSize());
+
+
+        SetBg();
     }
+
+    private void SetBg()
+    {
+        _bgController.CreateBackView();
+    }
+
 
     private IEnumerator SetLineSize()
     {
-        _lineProvider.ResetState();
+
         yield return new WaitForEndOfFrame();
         _lineProvider.SetLineSize(_gameBoard.GetLetterHeight());
     }
@@ -69,4 +99,15 @@ public class LevelBuilder : MonoBehaviour
             LevelStateService.CreateState(_levelData);
         }
     }
+
+    [ContextMenu("Log Data")]
+    private void LogData()
+    {
+        var totalLetters = _levelData.Width * _levelData.Height;
+        var usedLetters = totalLetters - _levelData.FakeLetters.Count;
+        var ratio = (float)totalLetters / usedLetters;
+        Debug.Log($"Ratio: {totalLetters} / {usedLetters}  = {ratio}");
+
+    }
+
 }

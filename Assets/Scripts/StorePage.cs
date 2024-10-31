@@ -35,16 +35,21 @@ public class IAPManager : IDetailedStoreListener
         this._controller = controller;
         this._extensions = extensions;
 
-        Debug.Log("In-App Purchasing successfully initialized");
-        LogStoreItems();
     }
 
 
     public void BuyCoins(int i)
     {
+        Debug.Log($"try buy coins");
         var product = _catalog.allProducts.ToList()[i];
 
         _controller.InitiatePurchase(product.id);
+    }
+
+    public void RemoveAds()
+    {
+        Debug.Log($"try initiate purchase remove ads");
+        _controller.InitiatePurchase("no_ads");
     }
 
     /// <summary>
@@ -66,8 +71,20 @@ public class IAPManager : IDetailedStoreListener
     public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs e)
     {
         var item = _catalog.allProducts.ToList().Find(x => x.id == e.purchasedProduct.definition.id);
-        var payout = item.Payouts[0].quantity;  Debug.Log($"IAP Purchase payout: {payout}");
-        Balance.AddBalance(payout);
+        var payout = item.Payouts[0].quantity; Debug.Log($"IAP Purchase payout: {payout}");
+
+        if (item.type == ProductType.Consumable)
+        {
+            Balance.AddBalance(payout);
+        }
+        else
+        {
+            Session.NoAds = true;
+        }
+
+        AudioManager.Instance.PlaySound(Sound.Coins);
+
+
         return PurchaseProcessingResult.Complete;
     }
 
@@ -98,12 +115,9 @@ public class IAPManager : IDetailedStoreListener
     {
         foreach (var item in _controller.products.all)
         {
-            Debug.Log(item.definition.id);
+            //   Debug.Log(item.definition.id);
         }
     }
 
-    internal void RemoveAds()
-    {
-        _controller.InitiatePurchase("no_ads");
-    }
+
 }

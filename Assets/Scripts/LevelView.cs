@@ -44,7 +44,18 @@ public class LevelView : MonoBehaviour
     private VisualElement _progressBg;
     [SerializeField] private float _fillDelay = 0.01f;
     private Coroutine _progressBarCoroutine;
+    private VisualElement _shopBg;
+    private Button _removeAdsBtn;
+    [SerializeField] private int _passedLevel = 1;
+    [SerializeField] private int _totalLevels = 3;
+    private const string FINISH_VIEW_IN = "finish-view-in";
     private const string NEXT_LVL_BTN_ON = "next-lvl-btn-on";
+
+
+    private const string TARGET_WORD_LEFT = "target-word-left";
+    private const string TARGET_WORD_RIGHT = "target-word-right";
+
+    [SerializeField] private ParticleSystem _winFX;
 
     private void Awake()
     {
@@ -83,30 +94,107 @@ public class LevelView : MonoBehaviour
 
         _navRow = _root.Q<NavigationRow>();
         _navRow.InitBalance(AudioManager.Instance);
+        _navRow.SetCoinsAnim(_root.Q<CoinsAnim>());
+        _shopBg = _root.Q<VisualElement>("shop-bg");
+
+        NavigationRow.OnShopBtnClicked += ShowShopBg;
+        NavigationRow.OnShopHideClicked += HideShopBg;
+
+        SetBackPicture();
+
+        _removeAdsBtn = _root.Q<Button>("remove-ads-btn");
+
+        if (Session.NoAds) RemoveAdsBtn();
+        else _removeAdsBtn.clicked += InitNoAdsPurchase;
+        Session.AdsRemoved += RemoveAdsBtn;
+
+        var plateView = _root.Q<PlateView>();
+        Debug.Log($"plate view is null : {plateView == null}");
+        plateView.SubscribeToSettingsClick();
+
+        _root.RegisterCallback<DetachFromPanelEvent>(e => Unsubscribe());
 
     }
 
-    public void ShowFinishView(int levelPassed)
+    private void OnDestroy()
     {
-        _progressLbl.text = $"{levelPassed}/5";
+
+
+    }
+
+    private void InitNoAdsPurchase()
+    {
+        AudioManager.Instance.PlaySound(Sound.Click);
+        ShopView shopView = _root.Q<ShopView>();
+        shopView.InitRemoveAds();
+    }
+
+    private void RemoveAdsBtn()
+    {
+        _removeAdsBtn.Toggle(false);
+    }
+
+    private void ShowShopBg()
+    {
+        _shopBg.Toggle(true);
+    }
+
+    public void SetBackPicture()
+    {
+        var bgController = GameObject.Find("BgController").GetComponent<BgController>();
+        var bgStyle = new StyleBackground(bgController.GetBackView());
+        _shopBg.style.backgroundImage = bgStyle;
+        _finishView.style.backgroundImage = bgStyle;
+    }
+
+
+
+    private void HideShopBg()
+    {
+        _shopBg.Toggle(false);
+    }
+
+    public void ShowFinishView()
+    {
+        Debug.Log($"show finish view");
+        _progressLbl.text = $"{LevelLogic.Step}/{LevelLogic.TotalSteps}";
         _finishView.Toggle(true);
-        if (_progressBarCoroutine != null) return;
-        _progressBarCoroutine = StartCoroutine(FillProgressBar(levelPassed));
+
+        _finishView.RegisterCallbackOnce<TransitionEndEvent>(e =>
+        {
+            if (_progressBarCoroutine != null) return;
+            _progressBarCoroutine = StartCoroutine(FillProgressBar(LevelLogic.Step, LevelLogic.TotalSteps));
+        });
+
+        _finishView.AddToClassList(FINISH_VIEW_IN);
+        if (LevelLogic.Step == LevelLogic.TotalSteps)
+            ShowStageCompleted();
+
     }
 
-    [ContextMenu("Test level fill")]
-    public void TestFill()
+    [ContextMenu("Show Stage Completed")]
+    private void ShowStageCompleted()
     {
+        Debug.Log($"Show Stage Completed");
+        AudioManager.Instance.PlaySound(Sound.StageCompleted);
+        _winFX.Play();
+        Session.LastStage++;
+        _nextLvlBtn.SetEnabled(false);
 
-        ShowFinishView(1);
+    }
+
+    [ContextMenu("Show Finish View")]
+    public void ShowFinish()
+    {
+        ShowFinishView();
     }
 
 
 
-    private IEnumerator FillProgressBar(int levelPassed)
+    private IEnumerator FillProgressBar(int step, int totalsteps)
     {
-        var targetFill = 100 * (levelPassed / 5f);
-        var currentFill = 0f;
+        var targetFill = 100 * ((float)step / (float)totalsteps);
+        var currentFill = _progressFill.style.width.value.value;
         Debug.Log($"targetFill: {targetFill}");
         while (currentFill < targetFill)
         {
@@ -120,17 +208,24 @@ public class LevelView : MonoBehaviour
     private void ShowNextLvlBtn()
     {
         _nextLvlBtn.AddToClassList(NEXT_LVL_BTN_ON);
+        _nextLvlBtn.SetEnabled(true);
 
     }
 
     private void HandleNextLvlBtn()
     {
-        var nextLvl = Session.GetLastLevel() + 1;
+
+        var nextLvl = LevelLogic.CurrentLevel + 1;
         Session.SetLastLevel(nextLvl);
         // SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         NextLevelClicked?.Invoke();
         _finishView.Toggle(false);
+        _finishView.RemoveFromClassList(FINISH_VIEW_IN);
         _progressBarCoroutine = null;
+        _progressFill.style.width = new StyleLength(new Length(0, LengthUnit.Percent));
+        SetBackPicture();
+        LevelStateService.DeleteState();
+
     }
 
     private void InitRenderTexture()
@@ -154,11 +249,23 @@ public class LevelView : MonoBehaviour
         _abilityBtns[Ability.Magnet].SetEnabled(false);
     }
 
+    [ContextMenu("Reset Btns")]
+    private void ResetBtns()
+    {
+        foreach (var pair in _abilityBtns)
+        {
+
+            pair.Value.SetEnabled(true);
+        }
+    }
+
     public void SetLevelData(LevelData data)
     {
         _levelTheme.text = data.Subject;
         FillWords(data.Words);
         _levelLbl.text = $"Level: {data.Level}";
+
+        ResetBtns();
 
         // country
         // level
@@ -220,6 +327,8 @@ public class LevelView : MonoBehaviour
         DOTween.To(() => letterLbl.style.fontSize.value.value, fontSize => letterLbl.style.fontSize = fontSize, fontSize, _letterAnimDuration).OnComplete(() =>
         {
             letterLbl.RemoveFromHierarchy();
+            endPos.y -= letterLbl.layout.height / 3;
+            endPos.x += letterLbl.layout.width * 2;
             PlayWordFoundFX(endPos);
         });
 
@@ -229,7 +338,7 @@ public class LevelView : MonoBehaviour
     private void PlayWordFoundFX(Vector2 endPos)
     {
         var worldPos = Camera.main.ScreenToWorldPoint(new Vector2(endPos.x, _rootHeight - endPos.y));
-
+        //  Debug.Log($"World Pos: {worldPos}");
         var fx = Instantiate(_wordFoundFX, worldPos, Quaternion.identity);
         fx.Play();
 
@@ -296,6 +405,7 @@ public class LevelView : MonoBehaviour
 
     internal void SetState(LevelState levelState)
     {
+        Debug.Log($"level state is null : {levelState == null}");
         if (levelState.FoundWords.Count > 0)
             foreach (var word in levelState.FoundWords)
                 HideWord(word);
@@ -306,9 +416,45 @@ public class LevelView : MonoBehaviour
 
     }
 
-    private void OnDestroy()
+    internal void AnimateHideWord(bool isWord)
     {
+
+        if (isWord)
+        {
+
+            ToggleWord(false);
+        }
+        else
+        {
+            StartCoroutine(AnimatingHideWord());
+        }
+    }
+
+    private IEnumerator AnimatingHideWord()
+    {
+        _targetWord.AddToClassList(TARGET_WORD_LEFT);
+        yield return new WaitForSeconds(0.15f);
+        _targetWord.RemoveFromClassList(TARGET_WORD_LEFT);
+        _targetWord.AddToClassList(TARGET_WORD_RIGHT);
+        yield return new WaitForSeconds(0.15f);
+        _targetWord.RemoveFromClassList(TARGET_WORD_RIGHT);
+        yield return new WaitForSeconds(0.15f);
+        ToggleWord(false);
+
+    }
+
+    private void Unsubscribe()
+    {
+
         _navRow.Unsubscribe();
+
+
+        AbilityLogic.OnFakeLettersRemoved -= DisableMagnet;
+        LevelStateService.OnActiveFirstLetterRemoved -= HandleFirstLettersRemoved;
+        Session.AdsRemoved -= RemoveAdsBtn;
+        NavigationRow.OnShopBtnClicked -= ShowShopBg;
+        NavigationRow.OnShopHideClicked -= HideShopBg;
+
     }
 }
 

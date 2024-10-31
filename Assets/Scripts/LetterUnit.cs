@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -23,12 +24,22 @@ public class LetterUnit : MonoBehaviour
     public Point Point;
 
     private Color? _lineColor = null;
+    [SerializeField] private float _animScaleUp = 1.5f;
+    private float _baseScale;
 
+    [SerializeField] private float _animScaleDuration = 0.3f;
 
     void Awake()
     {
         _text = GetComponent<TextMeshPro>();
         _collider = GetComponent<BoxCollider2D>();
+
+    }
+
+    [ContextMenu("Log Scale")]
+    private void LogScale()
+    {
+        Debug.Log(transform.localScale);
     }
 
 
@@ -44,6 +55,7 @@ public class LetterUnit : MonoBehaviour
         var size = letterSize.x > letterSize.y ? letterSize.y : letterSize.x;
         size *= scale;
         transform.localScale = new Vector2(size, size);
+        _baseScale = transform.localScale.x;
     }
 
     internal void Disable()
@@ -54,7 +66,6 @@ public class LetterUnit : MonoBehaviour
     [ContextMenu("Disable")]
     internal void Hide()
     {
-
         StartCoroutine(AnimateDisable());
         StartCoroutine(AnimateRotate());
         Disable();
@@ -95,6 +106,12 @@ public class LetterUnit : MonoBehaviour
         var targetColor = isSelected ? _foundColor : _activeColor;
         // Debug.Log($"Animate selection: {isSelected} color: {targetColor}");
         _text.color = targetColor;
+    }
+
+    [ContextMenu("Scale")]
+    public void AnimateScale()
+    {
+        transform.DOScale(_animScaleUp, _animScaleDuration).SetEase(Ease.InOutSine).OnComplete(() => transform.DOScale(_baseScale, _animScaleDuration).SetEase(Ease.InOutSine));
     }
 
     internal Color GetColor()

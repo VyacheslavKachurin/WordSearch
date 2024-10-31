@@ -2,9 +2,11 @@ using System;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Advertisements;
+using UnityEngine.SceneManagement;
 
 public class AdsController : MonoBehaviour, IUnityAdsInitializationListener, IUnityAdsShowListener, IUnityAdsLoadListener
 {
+    public static event Action RewardedAdWatched;
     [SerializeField] string _iOSGameId = "5713743";
     [SerializeField] bool _testMode = true;
     private string _gameId;
@@ -20,8 +22,24 @@ public class AdsController : MonoBehaviour, IUnityAdsInitializationListener, IUn
 
     void Awake()
     {
-        InitializeAds();
-        Instance = this;
+        if (Session.NoAds)
+        {
+            Destroy(this);
+            return;
+        }
+
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            Instance = this;
+            InitializeAds();
+
+            DontDestroyOnLoad(this);
+
+        }
     }
 
     private void OnDestroy()
@@ -41,6 +59,7 @@ public class AdsController : MonoBehaviour, IUnityAdsInitializationListener, IUn
 
     public void LoadBanner()
     {
+        if (Session.NoAds) return;
         Advertisement.Banner.SetPosition(_bannerPosition);
         BannerLoadOptions options = new BannerLoadOptions
         {
@@ -70,6 +89,15 @@ public class AdsController : MonoBehaviour, IUnityAdsInitializationListener, IUn
         Advertisement.Banner.Show(_bannerID);
     }
 
+
+    public void RemoveBanner()
+    {
+        if (Advertisement.Banner.isLoaded)
+        {
+            Advertisement.Banner.Hide();
+        }
+    }
+
     private void OnBannerShown()
     {
         Debug.Log($"Banner Shown");
@@ -92,12 +120,15 @@ public class AdsController : MonoBehaviour, IUnityAdsInitializationListener, IUn
 
     public void ShowInterstitialAd()
     {
+        if (Session.NoAds) return;
         Debug.Log($"Showing Ad: {_interstitialID}");
         Advertisement.Show(_interstitialID, this);
     }
 
     public void LoadRewardedAd()
     {
+        if (Session.NoAds) return;
+
         Advertisement.Load(_rewardedID, this);
         Debug.Log($"Loading Ad: {_rewardedID}");
     }
@@ -137,7 +168,10 @@ public class AdsController : MonoBehaviour, IUnityAdsInitializationListener, IUn
         if (placementId == _rewardedID && showCompletionState == UnityAdsShowCompletionState.COMPLETED)
         {
             Debug.Log($"Reward Ad Completed; Grant a reward");
+            RewardedAdWatched?.Invoke();
         }
+
+
     }
 
     public void OnUnityAdsAdLoaded(string placementId)
@@ -153,8 +187,13 @@ public class AdsController : MonoBehaviour, IUnityAdsInitializationListener, IUn
             Debug.Log($"Showing Ad: {_rewardedID}");
             Advertisement.Show(_rewardedID, this);
             _rewardedAdLoaded = false;
+            LoadRewardedAd();
         }
-        else    Debug.Log($"No Ad Loaded: {_rewardedID}");
+        else
+        {
+            Debug.Log($"No Ad Loaded: {_rewardedID}");
+            LoadRewardedAd();
+        }
     }
 
     public void OnUnityAdsFailedToLoad(string placementId, UnityAdsLoadError error, string message)

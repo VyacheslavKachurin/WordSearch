@@ -25,6 +25,18 @@ public class LevelLogic : MonoBehaviour
     [SerializeField] private LayerMask _ignoreRaycastLayer;
     [SerializeField] private string _menuScene = "MenuScene";
 
+#if UNITY_EDITOR
+    [SerializeField] private bool _canContinue = false;
+#endif
+
+    public static int Stage;
+    public static int Step;
+    public static int TotalSteps;
+
+    public static int CurrentLevel;
+
+    private bool _shouldCheckForFinish = true;
+
     private void Start()
     {
         InputHandler.OnInputStop += CheckWord;
@@ -37,22 +49,46 @@ public class LevelLogic : MonoBehaviour
         _audio = AudioManager.Instance;
         _inputHandler.SetLetterUnits(_tryWordLetterUnits);
         NavigationRow.OnBackBtnClicked += HandleBackBtn;
+        _shouldCheckForFinish = true;
 
     }
 
+    private void OnDestroy()
+    {
+        InputHandler.OnInputStop -= CheckWord;
+        InputTrigger.OnLetterEnter -= HandleLetterEnter;
+        InputHandler.OnInputDrag -= HandleDrag;
+        InputHandler.OnLetterDeselect -= HandleLetterDeselect;
+        WordFX.OnAnimDone -= CheckIfLevelDone;
+        NavigationRow.OnBackBtnClicked -= HandleBackBtn;
+    }
 
+
+    [ContextMenu("Check if level done")]
     private void CheckIfLevelDone()
     {
+#if UNITY_EDITOR
+        if (!_canContinue) return;
+#endif
+        if (!_shouldCheckForFinish) return;
         if (_words.Count == 0)
         {
-            _levelView.ShowFinishView(Session.GetLastLevel());
+            Debug.Log($"check if level done");
+            _levelView.ShowFinishView();
+            _shouldCheckForFinish = false;
         }
+    }
+
+    private void OnApplicationPause(bool pause)
+    {
+
+        SaveState();
     }
 
     private void HandleBackBtn()
     {
         SaveState();
-        SceneManager.LoadScene(_menuScene);
+        SceneManager.LoadScene(_menuScene, LoadSceneMode.Single);
     }
 
     [ContextMenu("Save State")]
@@ -82,11 +118,11 @@ public class LevelLogic : MonoBehaviour
     {
         if (_tryWord.Length == 0) return;
 
-        _levelView.ToggleWord(false);
-
         var isWord = _words.Contains(_tryWord);
         _lineProvider.FinishDraw(isWord, _tryWordLetterUnits);
         var sound = isWord ? Sound.WordFound : Sound.WrongWord;
+
+        _levelView.AnimateHideWord(isWord);
         _audio.PlaySound(sound);
         _isFirstLetter = true;
         if (isWord) RemoveWord();
@@ -121,6 +157,7 @@ public class LevelLogic : MonoBehaviour
     private void HandleLetterEnter(LetterUnit letter)
     {
         letter.AnimateSelection(true);
+        letter.AnimateScale();
         if (_isFirstLetter)
         {
             var lineColor = letter.GetColor();
@@ -146,14 +183,33 @@ public class LevelLogic : MonoBehaviour
             _tryWord += letter.Letter.ToString();
             _tryWordLetterUnits.Add(letter);
             _lineProvider.Append(letter.transform.position);
-             _audio.PlayLetter(_tryWordLetterUnits.Count);
+            _audio.PlayLetter(_tryWordLetterUnits.Count);
             _levelView.AddLetter(letter.Letter);
         }
+    }
+
+    [ContextMenu("Complete Level")]
+    private void CompleteLevel()
+    {
+        _words.Clear();
+        CheckIfLevelDone();
+    }
+
+    [ContextMenu("set stage to 1")]
+    private void SetStageTo1()
+    {
+        Session.LastStage = 1;
     }
 
     internal void SetData(LevelData levelData)
     {
         _words = levelData.Words.ToList();
+        Stage = levelData.Stage;
+        Step = levelData.Step;
+        TotalSteps = levelData.TotalSteps;
+        CurrentLevel = levelData.Level;
+        _shouldCheckForFinish = true;
+
     }
 }
 public enum Direction

@@ -9,35 +9,39 @@ public class LevelStateService
 {
     public static LevelState State;
     public static event Action<int> OnActiveFirstLetterRemoved;
-    private const string fileName = "PlayData.json";
-    private const string prePath = "Assets/Resources/";
+    private const string _fileName = "/LevelState.json";
+    private static string _prePath = Application.persistentDataPath;
 
 
     public static void SaveState()
     {
+        Debug.Log($"Saving State; path: {_prePath + _fileName}");
         string json = JsonConvert.SerializeObject(State);
+        if (State == null) return;
 
-        System.IO.File.WriteAllText(prePath + fileName, json);
+        System.IO.File.WriteAllText(_prePath + _fileName, json);
 
     }
 
     public static bool LoadState(out LevelState levelState)
     {
         levelState = null;
-        if (System.IO.File.Exists(prePath + fileName))
+        if (System.IO.File.Exists(_prePath + _fileName))
         {
-            string json = System.IO.File.ReadAllText(prePath + fileName);
+            string json = System.IO.File.ReadAllText(_prePath + _fileName);
             levelState = JsonConvert.DeserializeObject<LevelState>(json);
             State = levelState;
             return true;
         }
+        Debug.Log($"Level State not found");
         return false;
     }
 
     public static void DeleteState()
     {
-        if (!System.IO.File.Exists(prePath + fileName)) return;
-        System.IO.File.Delete(prePath + fileName);
+        if (!System.IO.File.Exists(_prePath + _fileName)) return;
+        System.IO.File.Delete(_prePath + _fileName);
+        Debug.Log($"Level State deleted");
     }
 
     internal static void CreateState(LevelData levelData)

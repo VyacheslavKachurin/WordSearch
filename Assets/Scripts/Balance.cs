@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -31,13 +33,16 @@ public static class Balance
 
     public static void Load()
     {
-        var txt = Resources.Load<TextAsset>(PATH);
-        if (txt != null)
+        //check if file exists
+        if (System.IO.File.Exists(PATH))
         {
-
-            var jsonData = txt.ToString();
-            _balanceData = JsonConvert.DeserializeObject<BalanceData>(jsonData);
-            _balance = _balanceData.Balance;
+            var txt = System.IO.File.ReadAllText(PATH);
+            if (txt != null)
+            {
+                var jsonData = txt.ToString();
+                _balanceData = JsonConvert.DeserializeObject<BalanceData>(jsonData);
+                _balance = _balanceData.Balance;
+            }
         }
         else
         {
@@ -46,10 +51,34 @@ public static class Balance
         }
     }
 
-    public static void AddBalance(double amount)
+    public static void AddBalance(double amount, int delay = 0)
     {
-
+        Debug.Log($"Adding {amount}");
+        // AnimateBalance((int)amount, delay);
         _balance += (int)amount;
+
+        OnBalanceChanged?.Invoke(_balance);
+        Save();
+
+
+    }
+
+    private static async void AnimateBalance(int amount, int delay)
+    {
+        var targetBalance = _balance + amount;
+        while (_balance != targetBalance)
+        {
+            _balance++;
+            OnBalanceChanged?.Invoke(_balance);
+            await Task.Delay(delay);
+        }
+
+        Save();
+    }
+
+    public static void ClearBalance()
+    {
+        _balance = 0;
         OnBalanceChanged?.Invoke(_balance);
         Save();
     }
@@ -57,13 +86,12 @@ public static class Balance
 
     private static void Save()
     {
-        
+
         Debug.Log($"Saving balance: {_balance}");
         var balanceData = new BalanceData(_balance);
         var jsonData = JsonConvert.SerializeObject(balanceData);
         System.IO.File.WriteAllText(PATH, jsonData);
     }
-
 
 }
 

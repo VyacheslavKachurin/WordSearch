@@ -18,11 +18,12 @@ public class CoinsFX : MonoBehaviour
     {
         var fx = Instantiate(_coins, new Vector2(startPos.x, -startPos.y), Quaternion.identity);
         fx.trigger.AddCollider(_trigger);
+   
     }
 
     public void SetForceField(Vector2 worldPos)
     {
-        _forceField.transform.position = new Vector2(worldPos.x, -worldPos.y);
+        _forceField.transform.position = new Vector2(worldPos.x + _forceField.transform.lossyScale.x / 2, -worldPos.y);
     }
 
     public void OnDestroy()

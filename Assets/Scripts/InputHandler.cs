@@ -27,14 +27,19 @@ public class InputHandler : MonoBehaviour
         InputTrigger.OnLetterExit += HandleLetterExit;
     }
 
+    private void OnDestroy()
+    {
+        InputTrigger.OnLetterExit -= HandleLetterExit;
+    }
+
     private void HandleLetterExit(LetterUnit unit)
     {
         if (!_isSelecting) return;
         var isOnDirection = IsOnDirection(_trigger.transform.position);
-        Debug.Log($"isOnDirection: {isOnDirection}");
 
 
-         if (!isOnDirection) OnLetterDeselect?.Invoke(unit);
+
+        if (!isOnDirection) OnLetterDeselect?.Invoke(unit);
 
     }
 
@@ -43,6 +48,7 @@ public class InputHandler : MonoBehaviour
 
     private void Update()
     {
+        if (!Session.IsSelecting) return;
         if (Input.touchCount == 0) return;
         _touch = Input.GetTouch(0);
 

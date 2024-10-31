@@ -93,14 +93,25 @@ public class LineProvider : MonoBehaviour
     internal void SetLineSize(float letterSize)
     {
         _lineSize = letterSize * _lineSizeMultiplier;
+
+        for (int i = 0; i < _lines.Count; i++)
+        {
+            _lines[i].startWidth = _lineSize;
+            _lines[i].endWidth = _lineSize;
+        }
     }
 
+    [ContextMenu("Reset State")]
     internal void ResetState()
     {
         Debug.Log($"Reset state called");
         if (_lines.Count == 0) return;
         foreach (var line in _lines)
+        {
+            if (line == null) continue;
             Destroy(line.gameObject);
+        }
+
 
         _lines.Clear();
     }

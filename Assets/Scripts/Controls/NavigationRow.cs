@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 [UxmlElement]
@@ -10,6 +12,7 @@ public partial class NavigationRow : VisualElement
     public static event Action OnBackBtnClicked;
     public static event Action OnShopBtnClicked;
     public static event Action OnSettingsClicked;
+    public static event Action OnShopHideClicked;
 
     private Label _coinsLbl;
     private Button _shopBtn;
@@ -23,7 +26,6 @@ public partial class NavigationRow : VisualElement
     private CoinsFX _coinsFX;
 
     private CoinsAnim _coinsAnim;
-    private VisualElement _shopBg;
     private AudioManager _audioManager;
     private List<Button> _btns;
 
@@ -32,6 +34,20 @@ public partial class NavigationRow : VisualElement
     {
         get => _levelDiv.style.display == DisplayStyle.Flex;
         set => _levelDiv.Toggle(value);
+    }
+
+    [UxmlAttribute]
+    public bool IsBackActive
+    {
+        get => _backBtn.style.display == DisplayStyle.Flex;
+        set => _backBtn.Toggle(value);
+    }
+
+    [UxmlAttribute]
+    public bool IsSettingsVisible
+    {
+        get => _settingsBtn.style.visibility == Visibility.Visible;
+        set => _settingsBtn.style.visibility = value ? Visibility.Visible : Visibility.Hidden;
     }
 
 
@@ -56,11 +72,20 @@ public partial class NavigationRow : VisualElement
 
         _backBtn.clicked += HandleBackBtn;
         _shopBtn.clicked += HandleShopBtn;
-        _settingsBtn.clicked += HandleSettingsBtn;
 
         _btns = new List<Button> { _backBtn, _shopBtn, _settingsBtn };
 
+        this.RegisterCallback<DetachFromPanelEvent>((evt) =>
+        {
+            Unsubscribe();
+        });
+
+
+
+
+
     }
+
 
     public void InitBalance(AudioManager audioManager)
     {
@@ -68,29 +93,64 @@ public partial class NavigationRow : VisualElement
         SetBalance(Balance.GetBalance());
         Balance.OnBalanceChanged += SetBalance;
         foreach (var btn in _btns)
-            _audioManager.PlaySound(Sound.Click);
+        {
+            btn.RegisterCallback<ClickEvent>(MakeBtnSound);
+        }
+
+        PlateView.OnAnimateCoinsRequested += AnimateAddCoins;
+        _settingsBtn.clicked += HandleSettingsBtn;
+    }
+
+    private void MakeBtnSound(ClickEvent evt)
+    {
+        _audioManager.PlaySound(Sound.Click);
     }
 
     public void Unsubscribe()
     {
         Balance.OnBalanceChanged -= SetBalance;
+        foreach (var btn in _btns)
+        {
+            btn.UnregisterCallback<ClickEvent>(MakeBtnSound);
+        }
+
+        _backBtn.clicked -= HandleBackBtn;
+        _shopBtn.clicked -= HandleShopBtn;
+
+        foreach (var btn in _btns)
+        {
+            btn.RegisterCallback<ClickEvent>(MakeBtnSound);
+        }
+
+        PlateView.OnAnimateCoinsRequested -= AnimateAddCoins;
+        _settingsBtn.clicked -= HandleSettingsBtn;
+        CoinsAnim.CoinsShown -= ShowCoinsFX;
     }
+
+
 
     public void SetCoinsAnim(CoinsAnim coinsAnim)
     {
         _coinsAnim = coinsAnim;
-        CoinsAnim.CoinsShown += ShowCoinsFX;
-        _coinsFX = _coinsFX != null ? _coinsFX : CoinsFX.Instance;
 
-        _coinsLbl.RegisterCallbackOnce<GeometryChangedEvent>(e =>
+        _coinsFX = GameObject.Find("CoinsFX").GetComponent<CoinsFX>();
+
+        _shopBtn.RegisterCallbackOnce<GeometryChangedEvent>(e =>
         {
-            var coinsPos = _coinsLbl.worldTransform.GetPosition();
-            var coinsBounds = _coinsLbl.worldBound;
+            Debug.Log($"e == null : {e == null}");
+            Debug.Log($"coins fx == null : {_coinsFX == null}");
+            Debug.Log($"shop btn == null : {_shopBtn == null}");
+            var shopPos = _shopBtn.worldTransform.GetPosition();
+            var coinsBounds = _shopBtn.worldBound;
             //      Debug.Log($"Coins Pos: {coinsPos} \n Coins Bounds: {coinsBounds}");
-            var worldPos = Camera.main.ScreenToWorldPoint(coinsPos + new Vector3(coinsBounds.width / 2, coinsBounds.height / 2));
+            var worldPos = Camera.main.ScreenToWorldPoint(shopPos + new Vector3(0, coinsBounds.height / 2));
 
             //            Debug.Log($"screen to world Point: {worldPos}");
             _coinsFX.SetForceField(worldPos);
+
+            Debug.Log($"shop pos == null : {_shopBtn == null}");
+            Debug.Log($"coins bounds=null : {coinsBounds == null}");
+            Debug.Log($"world pos =null : {worldPos == null}");
 
         });
 
@@ -100,22 +160,26 @@ public partial class NavigationRow : VisualElement
     private void HandleSettingsBtn()
     {
         OnSettingsClicked?.Invoke();
-        Debug.Log($"Settings clicked");
+
     }
 
     private void HandleShopBtn()
     {
         OnShopBtnClicked?.Invoke();
-        Debug.Log($"Shop clicked");
-
+        IsSettingsVisible = false;
+        IsBackActive = true;
     }
-
-
 
     private void HandleBackBtn()
     {
-        OnBackBtnClicked?.Invoke();
-        Debug.Log($"Back clicked");
+        if (IsSettingsVisible)
+            OnBackBtnClicked?.Invoke();
+        else
+        {
+            IsSettingsVisible = true;
+            OnShopHideClicked?.Invoke();
+            Session.IsSelecting = true;
+        }
     }
 
     public void SetLevel(string level)
@@ -135,10 +199,11 @@ public partial class NavigationRow : VisualElement
         _coinsFX.CreateAnim(startPos, amount);
     }
 
-    public void AnimateAddCoins(Vector2 startPos, int amount, Action callback)
+    public void AnimateAddCoins(Vector2 startPos, int amount, Action callback = null)
     {
         _coinsAnim.ShowCoinsLbl(startPos, amount, callback);
 
     }
+
 
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -9,9 +10,11 @@ public partial class ShopView : VisualElement
 {
     private List<Button> _buyBtns;
     private Button _noAdsBtn;
+    private VisualElement _adsDiv;
+    private NavigationRow _navRow;
 
     public static event Action OnRemoveAdsClicked;
-    public static event Action<int> OnShopBtnClicked;
+    public static event Action<int> OnPurchaseInit;
 
 
     public ShopView()
@@ -26,23 +29,61 @@ public partial class ShopView : VisualElement
         style.height = new StyleLength(new Length(100, LengthUnit.Percent));
         style.width = new StyleLength(new Length(100, LengthUnit.Percent));
 
-        NavigationRow.OnShopBtnClicked += HandleShopBtn;
+        NavigationRow.OnShopBtnClicked += ShowShopView;
+        NavigationRow.OnShopHideClicked += HideShopView;
         _noAdsBtn = this.Q<Button>("no-ads-btn");
-        _noAdsBtn.clicked += OnRemoveAdsClicked;
+        _noAdsBtn.clicked += () =>
+        {
+            Debug.Log($"Remove Ads Btn Clicked ");
+            OnRemoveAdsClicked?.Invoke();
+        };
+
         _buyBtns = this.Query<Button>("shop-item").ToList();
 
         for (int i = 0; i < _buyBtns.Count; i++)
         {
             var index = i;
-            _buyBtns[i].clicked += () => OnShopBtnClicked?.Invoke(index);
+            _buyBtns[i].clicked += () => OnPurchaseInit?.Invoke(index);
+
         }
+        _adsDiv = this.Q<VisualElement>("ads-div");
+
+        if (Session.NoAds) HideAdsOffer();
+        Session.AdsRemoved += HideAdsOffer;
+
+      
+    }
+
+    public void InitRemoveAds()
+    {
+        OnRemoveAdsClicked?.Invoke();
+    }
 
 
+    public void HideAdsOffer()
+    {
+        _adsDiv.Toggle(false);
+    }
+
+    private void HideShopView()
+    {
+        this.Toggle(false);
+        Session.IsSelecting = true;
 
     }
 
-    private void HandleShopBtn()
+    void OnDestroy()
     {
-        this.Toggle(style.display != DisplayStyle.Flex);
+        Debug.Log($"Shop View Destroyed");
+        NavigationRow.OnShopBtnClicked -= ShowShopView;
+        NavigationRow.OnShopHideClicked -= ShowShopView;
+    }
+
+    private void ShowShopView()
+    {
+        if (this.style.display == DisplayStyle.Flex) return;
+        Session.IsSelecting = false;
+        this.Toggle(true);
+
     }
 }

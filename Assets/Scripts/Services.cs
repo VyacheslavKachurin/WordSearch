@@ -12,6 +12,12 @@ public class Services : MonoBehaviour
 
     }
 
+    [ContextMenu("Delete State")]
+    private void DeleteState()
+    {
+        LevelStateService.DeleteState();
+    }
+
     [ContextMenu("Init Purchases")]
     public async void InitPurchases()
     {
@@ -20,7 +26,7 @@ public class Services : MonoBehaviour
         LogStoreItems();
 
 
-        ShopView.OnShopBtnClicked += BuyCoins;
+        ShopView.OnPurchaseInit += BuyCoins;
         ShopView.OnRemoveAdsClicked += RemoveAds;
     }
 
@@ -35,15 +41,61 @@ public class Services : MonoBehaviour
     {
         _iAPManager.BuyCoins(i);
     }
+
+    private void OnDestroy()
+    {
+        ShopView.OnPurchaseInit -= BuyCoins;
+        ShopView.OnRemoveAdsClicked -= RemoveAds;
+
+    }
+
     private void RemoveAds()
     {
-       _iAPManager.RemoveAds();
+        Debug.Log($"Remove Ads");
+        _iAPManager.RemoveAds();
     }
 
     private void InitIAPManager()
     {
         _iAPManager = new IAPManager();
     }
+
+    [ContextMenu("Remove ads purchase")]
+    public void RemoveAdsPurchase()
+    {
+        Session.NoAds = false;
+    }
+
+    [ContextMenu("Clear Level Progress")]
+    public void ClearLevelProgress()
+    {
+        Session.SetLastLevel(1);
+    }
+
+    [ContextMenu("Clear coins data")]
+    public void ClearCoinsData()
+    {
+        Balance.ClearBalance();
+    }
+
+    [ContextMenu("Clear All Data")]
+    public void ClearAllData()
+    {
+        ClearLevelProgress();
+        ClearCoinsData();
+        RemoveAdsPurchase();
+        ClearGiftData();
+        Session.LastStage = 1;
+        Session.SetLastLevel(1);
+        DeleteState();
+    }
+
+    [ContextMenu("Clear Gift Data")]
+    public void ClearGiftData()
+    {
+        Session.ClearGift();
+    }
+
 
     private async Task InitUGS()
     {

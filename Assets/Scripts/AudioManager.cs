@@ -19,6 +19,7 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip _coinsSound;
     [SerializeField] private AudioClip _windOpenSound;
     [SerializeField] private AudioClip _windCloseSound;
+    [SerializeField] private AudioClip _stageCompleted;
 
 
     private Dictionary<Sound, AudioClip> _audioClips;
@@ -48,14 +49,31 @@ public class AudioManager : MonoBehaviour
         {Sound.Coins, _coinsSound},
         {Sound.WindOpen, _windOpenSound},
         {Sound.WindClose, _windCloseSound},
+        {Sound.StageCompleted, _stageCompleted}
     };
-
             PlayTheme();
         }
+
+        Session.OnMusicChange += HandleMusicChange;
+
+
+    }
+
+
+    private void HandleMusicChange(bool value)
+    {
+        if (value) PlayTheme();
+        else _audioSource.Stop();
+    }
+
+    void OnDestroy()
+    {
+        Session.OnMusicChange -= HandleMusicChange;
     }
 
     public void PlayTheme()
     {
+        if (!Session.IsMusicOn) return;
         _audioSource.clip = _mainTheme;
         _audioSource.loop = true;
         _audioSource.Play();
@@ -63,14 +81,15 @@ public class AudioManager : MonoBehaviour
 
     public void PlayLetter(int pitch)
     {
-        Debug.Log($"Playing letter: {pitch}");
+        if (!Session.IsSoundOn) return;
         var clip = _letters[pitch];
-        _audioSource.PlayOneShot(clip,10);
+        _audioSource.PlayOneShot(clip, 10);
     }
 
     public void PlaySound(Sound sound)
     {
-        _audioSource.PlayOneShot(_audioClips[sound],10);
+        if (!Session.IsSoundOn) return;
+        _audioSource.PlayOneShot(_audioClips[sound], 10);
     }
 }
 
@@ -84,5 +103,6 @@ public enum Sound
     WordFound,
     Coins,
     WindOpen,
-    WindClose
+    WindClose,
+    StageCompleted
 }

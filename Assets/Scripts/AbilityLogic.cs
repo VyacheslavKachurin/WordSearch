@@ -22,6 +22,11 @@ public class AbilityLogic : MonoBehaviour
         AbilityBtn.OnAbilityClicked += HandleAbility;
     }
 
+    private void OnDestroy()
+    {
+        AbilityBtn.OnAbilityClicked -= HandleAbility;
+    }
+
     private void HandleAbility(Ability ability, int price, AbilityBtn btn)
     {
         if (!Balance.UseAbility(price))
@@ -45,7 +50,7 @@ public class AbilityLogic : MonoBehaviour
                 RevealSquare();
                 break;
             case Ability.Ads:
-                ShowAd();
+                RequireAd();
                 break;
         }
 
@@ -59,9 +64,9 @@ public class AbilityLogic : MonoBehaviour
 
     }
 
-    private void ShowAd()
+    private void RequireAd()
     {
-        AdsController.Instance.ShowRewardedAd();
+        OnCashRequested?.Invoke();
     }
 
     private void RevealSquare()
@@ -84,10 +89,12 @@ public class AbilityLogic : MonoBehaviour
 
     public void HideFakeLetters()
     {
+
         _audioManager.PlaySound(Sound.Magnet);
         foreach (var point in _data.FakeLetters)
         {
             _gameBoard.Letters[point.Y, point.X].Hide();
+
         }
         LevelStateService.State.FakeLettersRemoved = true;
         OnFakeLettersRemoved?.Invoke();

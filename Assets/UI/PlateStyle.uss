@@ -35,10 +35,10 @@
     height: 76px;
 }
 
-.switch-off {
-    background-image: url("project://database/Assets/Sprites/switch-off.png?fileID=2800000&guid=21db254a0f2174a6f81563e4066270c3&type=3#switch-off");
-}
-
 .plate-show-off {
     scale: 0 0;
+}
+
+.switch-off {
+    background-image: url("project://database/Assets/Sprites/switch-off.png?fileID=2800000&guid=21db254a0f2174a6f81563e4066270c3&type=3#switch-off");
 }

@@ -19,11 +19,6 @@
     flex-grow: 0;
 }
 
-.target-letters {
-    color: rgb(255, 255, 255);
-    font-size: 34px;
-}
-
 .next-lvl-btn {
     transition-duration: 0.3s;
     transition-timing-function: ease-in;
@@ -32,5 +27,14 @@
 
 .next-lvl-btn-on {
     scale: 1 1;
+    opacity: 1;
+}
+
+.finish-view {
+    transition-duration: 0.6s;
+    opacity: 0;
+}
+
+.finish-view-in {
     opacity: 1;
 }

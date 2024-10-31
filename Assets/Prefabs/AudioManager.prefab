@@ -45,7 +45,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 0.1
   m_Pitch: 1
   Loop: 0
@@ -152,6 +152,7 @@ MonoBehaviour:
   _coinsSound: {fileID: 8300000, guid: 60770532fc2214747a7b5b4c0aa5114e, type: 3}
   _windOpenSound: {fileID: 8300000, guid: cfd2933466b3b4e4491ffcf818504197, type: 3}
   _windCloseSound: {fileID: 8300000, guid: 5bc640fb6e7c44dbbb15706d346f970e, type: 3}
+  _stageCompleted: {fileID: 8300000, guid: ff43420a7cc7343dc8591a3330b56db2, type: 3}
   _letters:
   - {fileID: 8300000, guid: f4bc56ea63d5e475eb5846455d0442b4, type: 3}
   - {fileID: 8300000, guid: 3c6624a7656e542528a595e737f09715, type: 3}

@@ -21,6 +21,16 @@ public class GameBoard : MonoBehaviour
         LevelLogic.OnWordFound += HandleWordFound;
     }
 
+    private void OnDestroy(){
+        LevelLogic.OnWordFound -= HandleWordFound;
+    }
+
+    [ContextMenu("Access Letters")]
+    private void TryAccessLetters()
+    {
+        var position = Letters[1, 1].transform.position;
+    }
+
     private void HandleWordFound(List<Point> list)
     {
 
@@ -54,6 +64,8 @@ public class GameBoard : MonoBehaviour
         Debug.Log($"Game board built");
 
     }
+
+
 
     [ContextMenu("Clear Board")]
     public void ClearBoard()

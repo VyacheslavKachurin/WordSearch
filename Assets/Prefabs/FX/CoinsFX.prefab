@@ -100,21 +100,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4972031748774706781, guid: 0d173bd7b2b944bd89be9149206e1c9b, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5728744426035675355, guid: 0d173bd7b2b944bd89be9149206e1c9b, type: 3}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5728744426035675355, guid: 0d173bd7b2b944bd89be9149206e1c9b, type: 3}
       propertyPath: m_Parameters.m_GravityCurve.scalar
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7138841979692044021, guid: 0d173bd7b2b944bd89be9149206e1c9b, type: 3}
       propertyPath: m_Size.x
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7138841979692044021, guid: 0d173bd7b2b944bd89be9149206e1c9b, type: 3}
       propertyPath: m_Size.y
-      value: 0.4
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
