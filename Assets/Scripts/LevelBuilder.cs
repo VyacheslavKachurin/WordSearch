@@ -31,6 +31,11 @@ public class LevelBuilder : MonoBehaviour
 
     }
 
+    private void OnDestroy()
+    {
+        LevelView.NextLevelClicked -= GoNextLevel;
+    }
+
 
     [ContextMenu("Reset Progress")]
     private void ResetProgress()
@@ -99,6 +104,8 @@ public class LevelBuilder : MonoBehaviour
             _gameBoard.SetState(levelState);
             _lineProvider.SetState(levelState, _gameBoard.Letters);
             _abilityLogic.SetState(levelState);
+            _levelLogic.SetState(levelState);
+
         }
         else
         {

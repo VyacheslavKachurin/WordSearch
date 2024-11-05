@@ -71,7 +71,9 @@ public partial class AbilityBtn : Button
         _abilityIcon = this.Q<VisualElement>("ability-icon");
 
         RegisterCallback<ClickEvent>(OnClicked);
+
     }
+
 
     private void OnClicked(ClickEvent evt)
     {

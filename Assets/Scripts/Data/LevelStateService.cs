@@ -15,6 +15,7 @@ public class LevelStateService
 
     public static void SaveState()
     {
+        if(State == null) return;
         Debug.Log($"Saving State; path: {_prePath + _fileName}");
         string json = JsonConvert.SerializeObject(State);
         if (State == null) return;
@@ -60,6 +61,7 @@ public class LevelStateService
 
         var firstLetter = foundLetters[0].Point;
         State.ActiveFirstLetters.Remove(firstLetter);
+
     }
 
     internal static Point GetFirstPoint()

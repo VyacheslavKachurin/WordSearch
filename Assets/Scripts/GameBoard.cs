@@ -73,6 +73,7 @@ public class GameBoard : MonoBehaviour
         if (_letters == null) return;
         foreach (var letter in _letters)
         {
+            if(letter == null) continue;
             Destroy(letter.gameObject);
         }
 

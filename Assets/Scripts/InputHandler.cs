@@ -20,6 +20,7 @@ public class InputHandler : MonoBehaviour
     private Diagonal _diagonalDir;
     private List<LetterUnit> _letterUnits;
     private Touch _touch;
+    [SerializeField] private float _speed = 100;
 
     private void Start()
     {
@@ -76,7 +77,9 @@ public class InputHandler : MonoBehaviour
                 newPos = GetNextPos(ToWorldPosition(_touch.position), _direction);
             }
 
-            _trigger.transform.position = newPos;
+
+            if (Vector2.Distance(_trigger.transform.position, newPos) > 0.1f)
+                _trigger.Move(newPos);
 
             if (_direction == Direction.Diagonal && IsOnDiagonalDirection(ToWorldPosition(_touch.position)))
                 OnInputDrag?.Invoke(newPos);
@@ -199,7 +202,7 @@ public class InputHandler : MonoBehaviour
 
         else
         {
-            Debug.Log($"Not on direction: {_direction} \n triggerPos: {triggerPos} \n lastLetter: {lastLetter}");
+            //            Debug.Log($"Not on direction: {_direction} \n triggerPos: {triggerPos} \n lastLetter: {lastLetter}");
             return false;
         }
     }

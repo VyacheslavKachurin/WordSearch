@@ -6,33 +6,32 @@ public class ParticleProvider : MonoBehaviour
 {
     [SerializeField] private ParticleSystem _wordFoundFX;
 
-    public static int ActiveParticles { get; private set; } = 0;
-
-
+    public static bool IsAnimating;
 
     void Start()
     {
         LevelView.OnWordFound += PlayWordFoundFX;
         WordFX.OnAnimDone += RemoveWordFX;
-        LevelLogic.OnWordFound += CountLetters;
 
     }
 
-    private void CountLetters(List<Point> list)
+
+    [ContextMenu("Log particles")]
+    private void LogParticles()
     {
-        ActiveParticles += list.Count;
+
+        Debug.Log($"Active particles: {IsAnimating}");
     }
 
     private void RemoveWordFX()
     {
-        ActiveParticles--;
+        IsAnimating = false;
     }
 
     void OnDestroy()
     {
         LevelView.OnWordFound -= PlayWordFoundFX;
         WordFX.OnAnimDone -= RemoveWordFX;
-        LevelLogic.OnWordFound -= CountLetters;
     }
 
     private void PlayWordFoundFX(Vector2 endPos)

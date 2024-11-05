@@ -71,6 +71,7 @@ public class LineProvider : MonoBehaviour
 
     internal void SetState(LevelState levelState, LetterUnit[,] letters)
     {
+        Debug.Log($"Setting state");
         for (int i = 0; i < levelState.Lines.Count; i++)
         {
             var line = Instantiate(_linePrefab);
@@ -79,6 +80,7 @@ public class LineProvider : MonoBehaviour
             line.SetPosition(1, levelState.Lines[i].Positions[1]);
             line.startColor = levelState.Lines[i].color;
             line.endColor = levelState.Lines[i].color;
+            _lines.Add(line);
         }
 
         for (int i = 0; i < levelState.OpenLetters.Count; i++)
@@ -105,6 +107,7 @@ public class LineProvider : MonoBehaviour
     internal void ResetState()
     {
         Debug.Log($"Reset state called");
+        Debug.Log($"Lines Count: {_lines.Count}");
         if (_lines.Count == 0) return;
         foreach (var line in _lines)
         {
@@ -112,5 +115,11 @@ public class LineProvider : MonoBehaviour
             Destroy(line.gameObject);
         }
         _lines.Clear();
+    }
+
+    [ContextMenu("Log Lines")]
+    private void LogLines()
+    {
+        Debug.Log($"Lines Count: {_lines.Count}");
     }
 }

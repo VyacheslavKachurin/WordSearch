@@ -15,17 +15,15 @@ public class AbilityLogic : MonoBehaviour
     private void Awake()
     {
         _audioManager = AudioManager.Instance;
-    }
-
-    private void Start()
-    {
         AbilityBtn.OnAbilityClicked += HandleAbility;
     }
+
 
     private void OnDestroy()
     {
         AbilityBtn.OnAbilityClicked -= HandleAbility;
     }
+
 
     private void HandleAbility(Ability ability, int price, AbilityBtn btn)
     {

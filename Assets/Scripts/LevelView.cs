@@ -93,7 +93,7 @@ public class LevelView : MonoBehaviour
 
         _navRow = _root.Q<NavigationRow>();
         _navRow.InitBalance(AudioManager.Instance);
-   //     _navRow.SetCoinsView(_root.Q<CoinsView>());
+        //     _navRow.SetCoinsView(_root.Q<CoinsView>());
         _shopBg = _root.Q<VisualElement>("shop-bg");
 
         NavigationRow.OnShopBtnClicked += ShowShopBg;
@@ -113,6 +113,16 @@ public class LevelView : MonoBehaviour
 
         _root.RegisterCallback<DetachFromPanelEvent>(e => Unsubscribe());
 
+        LevelLogic.WordListUpdated += HandleWordListUpdated;
+    }
+
+    private void HandleWordListUpdated(int words)
+    {
+        Debug.Log($"Words left: {words}");
+        if (words < 3)
+        {
+            _abilityBtns[Ability.Lighting].SetEnabled(false);
+        }
     }
 
     private void OnDestroy()
@@ -213,7 +223,7 @@ public class LevelView : MonoBehaviour
 
     private void HandleNextLvlBtn()
     {
-
+        AudioManager.Instance.PlaySound(Sound.Click);
         NextLevelClicked?.Invoke();
         _finishView.Toggle(false);
         _finishView.RemoveFromClassList(FINISH_VIEW_IN);
@@ -311,7 +321,7 @@ public class LevelView : MonoBehaviour
 
     private void MoveLetter(Label letterLbl, Vector2 targetPos)
     {
-        Debug.Log($"target pos x: {targetPos.x} y: {targetPos.y}");
+        //  Debug.Log($"target pos x: {targetPos.x} y: {targetPos.y}");
         var startPos = letterLbl.layout.position;
         var endPos = targetPos;
 
@@ -395,12 +405,29 @@ public class LevelView : MonoBehaviour
 
     internal void SetState(LevelState levelState)
     {
+        var totalWords = _words.Count;
+        var foundWords = levelState.FoundWords.Count;
+        var leftWords = totalWords - foundWords;
+        var activeFirstLetters = levelState.ActiveFirstLetters.Count;
+
+        Debug.Log($"Total words: {totalWords}");
+        Debug.Log($"Found words: {foundWords}");
+        Debug.Log($"Left words: {leftWords}");
+        Debug.Log($"Active First Letters: {levelState.ActiveFirstLetters.Count}");
+        if (leftWords >= 3 && activeFirstLetters >= 3)
+            _abilityBtns[Ability.Lighting].SetEnabled(true);
+        else
+            _abilityBtns[Ability.Lighting].SetEnabled(false);
+
+        if (leftWords == 0 || activeFirstLetters == 0)
+            _abilityBtns[Ability.Hint].SetEnabled(false);
+        else
+            _abilityBtns[Ability.Hint].SetEnabled(true);
 
         if (levelState.FoundWords.Count > 0)
             foreach (var word in levelState.FoundWords)
                 HideWord(word);
 
-        HandleFirstLettersRemoved(levelState.ActiveFirstLetters.Count);
 
 
 
@@ -443,6 +470,7 @@ public class LevelView : MonoBehaviour
         NavigationRow.OnShopBtnClicked -= ShowShopBg;
         NavigationRow.OnShopHideClicked -= HideShopBg;
         RootHeight = 0;
+        LevelLogic.WordListUpdated -= HandleWordListUpdated;
 
     }
 }
