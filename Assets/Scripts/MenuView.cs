@@ -9,8 +9,6 @@ using UnityEngine.UIElements;
 
 public class MenuView : MonoBehaviour
 {
-    [SerializeField] private float _hideBoxDelay = 0.005f;
-
     [SerializeField] private string _levelScene = "LevelScene";
 
     private VisualElement _root;
@@ -39,6 +37,7 @@ public class MenuView : MonoBehaviour
     private Button _giftCloseBtn;
     private VisualElement _shopBg;
     private Button _adsBtn;
+    private CoinsView _coinsView;
 
     private void Start()
     {
@@ -50,7 +49,8 @@ public class MenuView : MonoBehaviour
         _navRow = _root.Q<NavigationRow>();
 
         SetGiftBtns();
-        _navRow.SetCoinsAnim(_root.Q<CoinsAnim>());
+        _coinsView = _root.Q<CoinsView>();
+        _navRow.SetCoinsView(_coinsView);
         _navRow.InitBalance(AudioManager.Instance);
 
         _classicBtn = _root.Q<Button>("classic-btn");
@@ -89,6 +89,21 @@ public class MenuView : MonoBehaviour
            Unsubscribe();
        });
 
+
+    }
+
+    private void HideBackBtn()
+    {
+        throw new NotImplementedException();
+    }
+
+    [ContextMenu("Create Sprite")]
+    private void CreateSprite()
+    {
+        var sprite = Sprite.Create(new Texture2D(1, 1), new Rect(0, 0, 1, 1), new Vector2(0.5f, 0.5f));
+        var go = new GameObject();
+        go.AddComponent<SpriteRenderer>().sprite = sprite;
+        go.transform.position = _navRow.GetCoinsPicPos();
     }
 
     private void Unsubscribe()
@@ -136,6 +151,7 @@ public class MenuView : MonoBehaviour
 
     private void HandleClassicBtn()
     {
+        AudioManager.Instance.PlaySound(Sound.Click);
         SceneManager.LoadScene(_levelScene);
     }
 
@@ -168,6 +184,11 @@ public class MenuView : MonoBehaviour
         }
         btn.RegisterCallbackOnce<TransitionEndEvent>(UnpackGift);
         btn.AddToClassList(BOX_WIN);
+
+        foreach (var b in _giftBtns)
+        {
+            b.UnregisterCallback<ClickEvent>(HandleGiftBtn);
+        }
     }
 
     private void UnpackGift(TransitionEndEvent evt)
@@ -186,6 +207,7 @@ public class MenuView : MonoBehaviour
     [ContextMenu("Show gift panel")]
     public void ShowGift()
     {
+
         _giftDiv.RemoveFromClassList(GIFT_ANIM_OUT);
         _fadePnl.Toggle(true);
         _giftView.Toggle(true);

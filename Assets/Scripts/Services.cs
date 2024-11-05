@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Services : MonoBehaviour
 {
+    
     private IAPManager _iAPManager;
 
     private void Awake()

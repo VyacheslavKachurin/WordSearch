@@ -111,8 +111,6 @@ public class LineProvider : MonoBehaviour
             if (line == null) continue;
             Destroy(line.gameObject);
         }
-
-
         _lines.Clear();
     }
 }

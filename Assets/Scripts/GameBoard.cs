@@ -61,7 +61,7 @@ public class GameBoard : MonoBehaviour
             }
             Y -= boardSize.LetterSize.y;
         }
-        Debug.Log($"Game board built");
+
 
     }
 

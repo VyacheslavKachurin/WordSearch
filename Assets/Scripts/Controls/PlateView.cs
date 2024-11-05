@@ -107,11 +107,18 @@ public partial class PlateView : VisualElement
     private void HandleSoundBtn()
     {
         Session.IsSoundOn = !Session.IsSoundOn;
+
+        var sound = Session.IsMusicOn ? Sound.WindOpen : Sound.WindClose;
+        AudioManager.Instance.PlaySound(sound);
+
     }
 
     private void HandleMusicBtn()
     {
         Session.IsMusicOn = !Session.IsMusicOn;
+        var sound = Session.IsMusicOn ? Sound.WindOpen : Sound.WindClose;
+        AudioManager.Instance.PlaySound(sound);
+
     }
 
     private void HandleAdBtn()
@@ -147,7 +154,6 @@ public partial class PlateView : VisualElement
 
     public void SubscribeToSettingsClick()
     {
-        Debug.Log($"Subscribing to Settings Click");
         NavigationRow.OnSettingsClicked += () => ShowPlate(Plate.Settings);
     }
 }

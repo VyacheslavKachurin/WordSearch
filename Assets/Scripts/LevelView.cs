@@ -11,6 +11,7 @@ using UnityEngine.SceneManagement;
 public class LevelView : MonoBehaviour
 {
     public static event Action NextLevelClicked;
+    public static event Action<Vector2> OnWordFound;
 
     private VisualElement _root;
     private Label _levelTheme;
@@ -32,9 +33,9 @@ public class LevelView : MonoBehaviour
 
     [SerializeField] float _letterAnimDuration = 0.5f;
 
-    [SerializeField] private ParticleSystem _wordFoundFX;
+
     [SerializeField] private RenderTexture _renderTexture;
-    private float _rootHeight;
+    public static float RootHeight;
     private NavigationRow _navRow;
     private VisualElement _finishView;
     private Button _nextLvlBtn;
@@ -45,8 +46,7 @@ public class LevelView : MonoBehaviour
     private Coroutine _progressBarCoroutine;
     private VisualElement _shopBg;
     private Button _removeAdsBtn;
-    [SerializeField] private int _passedLevel = 1;
-    [SerializeField] private int _totalLevels = 3;
+
     private const string FINISH_VIEW_IN = "finish-view-in";
     private const string NEXT_LVL_BTN_ON = "next-lvl-btn-on";
 
@@ -79,7 +79,7 @@ public class LevelView : MonoBehaviour
 
         _root.RegisterCallbackOnce<GeometryChangedEvent>((e) =>
         {
-            _rootHeight = _root.layout.height;
+            RootHeight = _root.layout.height;
         });
 
         _finishView = _root.Q<VisualElement>("finish-view");
@@ -93,7 +93,7 @@ public class LevelView : MonoBehaviour
 
         _navRow = _root.Q<NavigationRow>();
         _navRow.InitBalance(AudioManager.Instance);
-        _navRow.SetCoinsAnim(_root.Q<CoinsAnim>());
+   //     _navRow.SetCoinsView(_root.Q<CoinsView>());
         _shopBg = _root.Q<VisualElement>("shop-bg");
 
         NavigationRow.OnShopBtnClicked += ShowShopBg;
@@ -108,7 +108,7 @@ public class LevelView : MonoBehaviour
         Session.AdsRemoved += RemoveAdsBtn;
 
         var plateView = _root.Q<PlateView>();
-        Debug.Log($"plate view is null : {plateView == null}");
+
         plateView.SubscribeToSettingsClick();
 
         _root.RegisterCallback<DetachFromPanelEvent>(e => Unsubscribe());
@@ -178,7 +178,7 @@ public class LevelView : MonoBehaviour
         AudioManager.Instance.PlaySound(Sound.StageCompleted);
         _winFX.Play();
         Session.LastStage++;
-        _nextLvlBtn.SetEnabled(false);
+        //_nextLvlBtn.SetEnabled(false);
 
     }
 
@@ -214,16 +214,14 @@ public class LevelView : MonoBehaviour
     private void HandleNextLvlBtn()
     {
 
-        var nextLvl = LevelLogic.CurrentLevel + 1;
-        Session.SetLastLevel(nextLvl);
-        // SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         NextLevelClicked?.Invoke();
         _finishView.Toggle(false);
         _finishView.RemoveFromClassList(FINISH_VIEW_IN);
         _progressBarCoroutine = null;
         _progressFill.style.width = new StyleLength(new Length(0, LengthUnit.Percent));
         SetBackPicture();
-        LevelStateService.DeleteState();
+
+
 
     }
 
@@ -295,7 +293,7 @@ public class LevelView : MonoBehaviour
                 var width = letterLbl.layout.width;
 
 
-                letterLbl.style.top = _rootHeight - (viewPos.y + height / 1.5f);
+                letterLbl.style.top = RootHeight - (viewPos.y + height / 1.5f);
                 letterLbl.style.left = viewPos.x - width / 2;
 
                 Vector2 targetPos;
@@ -328,20 +326,13 @@ public class LevelView : MonoBehaviour
             letterLbl.RemoveFromHierarchy();
             endPos.y -= letterLbl.layout.height / 3;
             endPos.x += letterLbl.layout.width * 2;
-            PlayWordFoundFX(endPos);
+            OnWordFound?.Invoke(endPos);
         });
 
     }
 
 
-    private void PlayWordFoundFX(Vector2 endPos)
-    {
-        var worldPos = Camera.main.ScreenToWorldPoint(new Vector2(endPos.x, _rootHeight - endPos.y));
-        //  Debug.Log($"World Pos: {worldPos}");
-        var fx = Instantiate(_wordFoundFX, worldPos, Quaternion.identity);
-        fx.Play();
 
-    }
 
     private void InitButtons()
     {
@@ -404,7 +395,7 @@ public class LevelView : MonoBehaviour
 
     internal void SetState(LevelState levelState)
     {
-        Debug.Log($"level state is null : {levelState == null}");
+
         if (levelState.FoundWords.Count > 0)
             foreach (var word in levelState.FoundWords)
                 HideWord(word);
@@ -444,15 +435,14 @@ public class LevelView : MonoBehaviour
 
     private void Unsubscribe()
     {
-
         _navRow.Unsubscribe();
-
 
         AbilityLogic.OnFakeLettersRemoved -= DisableMagnet;
         LevelStateService.OnActiveFirstLetterRemoved -= HandleFirstLettersRemoved;
         Session.AdsRemoved -= RemoveAdsBtn;
         NavigationRow.OnShopBtnClicked -= ShowShopBg;
         NavigationRow.OnShopHideClicked -= HideShopBg;
+        RootHeight = 0;
 
     }
 }

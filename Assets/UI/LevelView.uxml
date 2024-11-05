@@ -65,5 +65,4 @@
     <engine:VisualElement name="visuals-div" picking-mode="Ignore" class="view" style="flex-grow: 1;" />
     <engine:VisualElement name="fx-div" picking-mode="Ignore" class="view" style="flex-grow: 1; display: flex;" />
     <ShopView picking-mode="Ignore" style="display: none;" />
-    <CoinsAnim picking-mode="Ignore" class="view" style="position: absolute;" />
 </engine:UXML>

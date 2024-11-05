@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using SingularityGroup.HotReload;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -32,7 +34,7 @@ public class LevelLogic : MonoBehaviour
     public static int Step;
     public static int TotalSteps;
 
-    public static int CurrentLevel;
+
 
     private bool _shouldCheckForFinish = true;
 
@@ -42,7 +44,7 @@ public class LevelLogic : MonoBehaviour
         InputTrigger.OnLetterEnter += HandleLetterEnter;
         InputHandler.OnInputDrag += HandleDrag;
         InputHandler.OnLetterDeselect += HandleLetterDeselect;
-        WordFX.OnAnimDone += CheckIfLevelDone;
+        // WordFX.OnAnimDone += CheckIfLevelDone;
 
 
         _audio = AudioManager.Instance;
@@ -58,13 +60,13 @@ public class LevelLogic : MonoBehaviour
         InputTrigger.OnLetterEnter -= HandleLetterEnter;
         InputHandler.OnInputDrag -= HandleDrag;
         InputHandler.OnLetterDeselect -= HandleLetterDeselect;
-        WordFX.OnAnimDone -= CheckIfLevelDone;
+        //  WordFX.OnAnimDone -= CheckIfLevelDone;
         NavigationRow.OnBackBtnClicked -= HandleBackBtn;
     }
 
 
     [ContextMenu("Check if level done")]
-    private void CheckIfLevelDone()
+    private void IsLevelDone()
     {
 #if UNITY_EDITOR
         if (!_canContinue) return;
@@ -72,10 +74,23 @@ public class LevelLogic : MonoBehaviour
         if (!_shouldCheckForFinish) return;
         if (_words.Count == 0)
         {
-            Debug.Log($"check if level done");
-            _levelView.ShowFinishView();
-            _shouldCheckForFinish = false;
+            Debug.Log($"No words");
+            StartCoroutine(LevelDoneCoroutine());
         }
+    }
+
+    [ContextMenu("Log words left")]
+    private void LogWordsLeft()
+    {
+        Debug.Log($"words left: {_words.Count}");
+    }
+
+    private IEnumerator LevelDoneCoroutine()
+    {
+        Debug.Log($"waiting until all particles are done, active particles: {ParticleProvider.ActiveParticles}");
+        yield return new WaitUntil(() => ParticleProvider.ActiveParticles == 0);
+        _levelView.ShowFinishView();
+        _shouldCheckForFinish = false;
     }
 
     private void OnApplicationPause(bool pause)
@@ -150,6 +165,8 @@ public class LevelLogic : MonoBehaviour
         LevelStateService.AddFoundWord(_tryWord, _tryWordLetterUnits, lineState);
 
         _levelView.AnimateWord(_tryWordLetterUnits);
+        Debug.Log($"calling CheckIfLevelDone");
+        IsLevelDone();
 
     }
 
@@ -191,7 +208,7 @@ public class LevelLogic : MonoBehaviour
     private void CompleteLevel()
     {
         _words.Clear();
-        CheckIfLevelDone();
+        IsLevelDone();
     }
 
     [ContextMenu("set stage to 1")]
@@ -206,7 +223,6 @@ public class LevelLogic : MonoBehaviour
         Stage = levelData.Stage;
         Step = levelData.Step;
         TotalSteps = levelData.TotalSteps;
-        CurrentLevel = levelData.Level;
         _shouldCheckForFinish = true;
 
     }
