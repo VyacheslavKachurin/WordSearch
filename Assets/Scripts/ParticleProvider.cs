@@ -34,9 +34,8 @@ public class ParticleProvider : MonoBehaviour
         WordFX.OnAnimDone -= RemoveWordFX;
     }
 
-    private void PlayWordFoundFX(Vector2 endPos)
+    private void PlayWordFoundFX(Vector2 worldPos)
     {
-        var worldPos = Camera.main.ScreenToWorldPoint(new Vector2(endPos.x, LevelView.RootHeight - endPos.y));
         var fx = Instantiate(_wordFoundFX, worldPos, Quaternion.identity);
         fx.Play();
     }

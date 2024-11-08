@@ -20,7 +20,7 @@ public class LevelView : MonoBehaviour
     private Label _targetLetters;
     private Label _levelLbl;
     private VisualElement _visualsDiv;
-    private VisualElement _fxDiv;
+    private Image _overlayFx;
     private const string WORD_STYLE = "word";
     private const string WORD_DIV_STYLE = "word-div";
     [SerializeField] float _letterAnimStyle = 70;
@@ -55,6 +55,10 @@ public class LevelView : MonoBehaviour
     private const string TARGET_WORD_RIGHT = "target-word-right";
 
     [SerializeField] private ParticleSystem _winFX;
+    [SerializeField] private Vector2 _fakePos;
+    [SerializeField] private float _fakeLblHeight = 38;
+
+    [SerializeField] private Camera _fxCam;
 
     private void Awake()
     {
@@ -67,7 +71,7 @@ public class LevelView : MonoBehaviour
 
         _levelLbl = _root.Q<Label>("level-lbl");
         _visualsDiv = _root.Q<VisualElement>("visuals-div");
-        _fxDiv = _root.Q<VisualElement>("fx-div");
+        _overlayFx = _root.Q<Image>("overlay-fx");
 
         InitRenderTexture();
 
@@ -118,7 +122,6 @@ public class LevelView : MonoBehaviour
 
     private void HandleWordListUpdated(int words)
     {
-        Debug.Log($"Words left: {words}");
         if (words < 3)
         {
             _abilityBtns[Ability.Lighting].SetEnabled(false);
@@ -237,8 +240,7 @@ public class LevelView : MonoBehaviour
 
     private void InitRenderTexture()
     {
-        _fxDiv.style.backgroundImage = new StyleBackground(Background.FromRenderTexture(_renderTexture));
-
+        _overlayFx.SetRenderTexture(_fxCam);
     }
 
     private void HandleFirstLettersRemoved(int lettersLeft)
@@ -321,7 +323,7 @@ public class LevelView : MonoBehaviour
 
     private void MoveLetter(Label letterLbl, Vector2 targetPos)
     {
-        //  Debug.Log($"target pos x: {targetPos.x} y: {targetPos.y}");
+
         var startPos = letterLbl.layout.position;
         var endPos = targetPos;
 
@@ -329,19 +331,36 @@ public class LevelView : MonoBehaviour
         var y = endPos.y - letterLbl.layout.height;
         var fontSize = 34;
 
+        // Debug.Log($"Letter:{letterLbl.text} from {startPos} to {endPos} ");
+
         DOTween.To(() => letterLbl.style.left.value.value, x => letterLbl.style.left = x, endPos.x, _letterAnimDuration);
         DOTween.To(() => letterLbl.style.top.value.value, y => letterLbl.style.top = y, endPos.y, _letterAnimDuration);
         DOTween.To(() => letterLbl.style.fontSize.value.value, fontSize => letterLbl.style.fontSize = fontSize, fontSize, _letterAnimDuration).OnComplete(() =>
         {
             letterLbl.RemoveFromHierarchy();
-            endPos.y -= letterLbl.layout.height / 3;
+            //  endPos.y -= letterLbl.layout.height / 3;
             endPos.x += letterLbl.layout.width * 2;
-            OnWordFound?.Invoke(endPos);
+            endPos.y += letterLbl.layout.height / 2;
+
+            var worldPos = letterLbl.GetWorldPosition(_root);
+            OnWordFound?.Invoke(worldPos);
         });
 
     }
 
+    [ContextMenu("InstantiateFakeFX")]
+    private void PlayWordFoundFX()
+    {
+        _fakePos.y -= _fakeLblHeight;
 
+        var worldPos = Camera.main.ScreenToWorldPoint(new Vector2(_fakePos.x, LevelView.RootHeight - _fakePos.y));
+        worldPos.z = 0;
+
+        // var worldPos = Camera.main.ScreenToWorldPoint(new Vector2(_fakePos.x, _fakePos.y+));
+        // go.transform.position = worldPos;
+
+        OnWordFound?.Invoke(worldPos);
+    }
 
 
     private void InitButtons()
@@ -380,6 +399,8 @@ public class LevelView : MonoBehaviour
 
     public void RemoveLetter(char letter)
     {
+        Debug.Log($"Level View remove letter is null: {letter == '\0'}");
+        if (letter == '\0') return;
         _targetLetters.text = _targetLetters.text.Remove(_targetLetters.text.Length - 1);
     }
 
@@ -398,9 +419,18 @@ public class LevelView : MonoBehaviour
 
         label.AddToClassList(WORD_BIG);
         label.AddToClassList(WORD_GRAY);
-
         await Task.Delay(_removeWordStyleDelay);
+        // RequestWordFX(label);
         label.RemoveFromClassList(WORD_BIG);
+    }
+
+    private void RequestWordFX(Label label)
+    {
+        var worldPos = label.worldTransform.GetPosition();
+        var bounds = label.worldBound;
+        var finalPos = Camera.main.ScreenToWorldPoint(worldPos + new Vector3(bounds.width / 2, -bounds.height / 4));
+        OnWordFound?.Invoke(finalPos);
+
     }
 
     internal void SetState(LevelState levelState)
@@ -408,12 +438,8 @@ public class LevelView : MonoBehaviour
         var totalWords = _words.Count;
         var foundWords = levelState.FoundWords.Count;
         var leftWords = totalWords - foundWords;
-        var activeFirstLetters = levelState.ActiveFirstLetters.Count;
+        var activeFirstLetters = levelState.FirstLetters.Count;
 
-        Debug.Log($"Total words: {totalWords}");
-        Debug.Log($"Found words: {foundWords}");
-        Debug.Log($"Left words: {leftWords}");
-        Debug.Log($"Active First Letters: {levelState.ActiveFirstLetters.Count}");
         if (leftWords >= 3 && activeFirstLetters >= 3)
             _abilityBtns[Ability.Lighting].SetEnabled(true);
         else
@@ -472,18 +498,5 @@ public class LevelView : MonoBehaviour
         RootHeight = 0;
         LevelLogic.WordListUpdated -= HandleWordListUpdated;
 
-    }
-}
-
-public static class Extensions
-{
-    public static void Toggle(this VisualElement element, bool value)
-    {
-        element.style.display = value ? DisplayStyle.Flex : DisplayStyle.None;
-    }
-
-    public static Vector2 Pos(this Transform trans)
-    {
-        return trans.position;
     }
 }

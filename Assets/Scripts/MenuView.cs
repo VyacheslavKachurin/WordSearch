@@ -29,7 +29,7 @@ public class MenuView : MonoBehaviour
     [SerializeField] private int _minPrize = 20;
     [SerializeField] private int _maxPrize = 50;
     private Button _classicBtn;
-    private Button _giftBtn;
+    private Button _giftsViewBtn;
     [SerializeField] private int _giftCoinsDelay = 100;
     private VisualElement _grantedDiv;
     private VisualElement _interactionDiv;
@@ -38,6 +38,11 @@ public class MenuView : MonoBehaviour
     private VisualElement _shopBg;
     private Button _adsBtn;
     private CoinsView _coinsView;
+    [SerializeField] private Vector2 _fakeGiftPos;
+    [SerializeField] private CoinsFX_Handler _coinsFX_Handler;
+    [SerializeField] private float _hideGiftDelay = 0.5f;
+    [SerializeField] private Camera _fxCam;
+    private Image _overlayFx;
 
     private void Start()
     {
@@ -48,23 +53,23 @@ public class MenuView : MonoBehaviour
         _giftView = _root.Q<VisualElement>("gift-view");
         _navRow = _root.Q<NavigationRow>();
 
-        SetGiftBtns();
+
         _coinsView = _root.Q<CoinsView>();
-        _navRow.SetCoinsView(_coinsView);
+
         _navRow.InitBalance(AudioManager.Instance);
 
         _classicBtn = _root.Q<Button>("classic-btn");
         _classicBtn.clicked += HandleClassicBtn;
 
-        _giftBtn = _root.Q<Button>("gift-btn");
-        _giftBtn.clicked += ShowGift;
+        _giftsViewBtn = _root.Q<Button>("gift-btn");
+        _giftsViewBtn.clicked += ShowGiftView;
 
         _grantedDiv = _root.Q<VisualElement>("granted-div");
         _interactionDiv = _root.Q<VisualElement>("interaction-div");
         _newGiftLbl = _root.Q<Label>("new-gift-lbl");
 
         _giftCloseBtn = _root.Q<Button>("gift-close-btn");
-        _giftCloseBtn.clicked += () => HideGift();
+        _giftCloseBtn.clicked += () => StartCoroutine(HidingGift(true));
 
         _shopBg = _root.Q<VisualElement>("shop-bg");
 
@@ -84,18 +89,20 @@ public class MenuView : MonoBehaviour
 
         EnableSettingsBtn();
 
-        _root.RegisterCallback<DetachFromPanelEvent>((evt) =>
-       {
-           Unsubscribe();
-       });
+        NavigationRow.CoinsPicResolved += SetCoinsAnimation;
 
+        SetGiftBtns();
 
+        _overlayFx = _root.Q<Image>("overlay-fx");
+        _overlayFx.SetRenderTexture(_fxCam);
     }
 
-    private void HideBackBtn()
+    private void SetCoinsAnimation(VisualElement target)
     {
-        throw new NotImplementedException();
+        var worldPos = target.GetWorldPosition(_root);
+        _coinsFX_Handler.SetForceField(worldPos);
     }
+
 
     [ContextMenu("Create Sprite")]
     private void CreateSprite()
@@ -106,11 +113,7 @@ public class MenuView : MonoBehaviour
         go.transform.position = _navRow.GetCoinsPicPos();
     }
 
-    private void Unsubscribe()
-    {
-        NavigationRow.OnShopBtnClicked -= ShowShopBg;
-        NavigationRow.OnShopHideClicked -= HideShopBg;
-    }
+
 
     private void EnableSettingsBtn()
     {
@@ -158,22 +161,37 @@ public class MenuView : MonoBehaviour
     void OnDestroy()
     {
         _navRow?.Unsubscribe();
+
+        NavigationRow.OnShopBtnClicked -= ShowShopBg;
+        NavigationRow.OnShopHideClicked -= HideShopBg;
+        NavigationRow.CoinsPicResolved -= SetCoinsAnimation;
     }
 
     private void SetGiftBtns()
     {
-        _giftBtns = _giftView.Query<Button>().ToList();
+        _giftBtns = _interactionDiv.Query<Button>().ToList();
 
         foreach (var btn in _giftBtns)
         {
-            btn.RegisterCallback<ClickEvent>(HandleGiftBtn);
+            btn.RegisterCallback<ClickEvent>(HandleGiftClicked);
             btn.AddToClassList(BOX_HIDE);
         }
+        _giftCloseBtn.Toggle(false);
 
     }
 
-    private void HandleGiftBtn(ClickEvent evt)
+    [ContextMenu("Log dimensions")]
+    private void LogDimensions()
     {
+        var width = _root.worldBound.width;
+        var height = _root.worldBound.height;
+        Debug.Log($"MenuView width: {width} height: {height}");
+
+    }
+
+    private void HandleGiftClicked(ClickEvent evt)
+    {
+        Debug.Log($"Handle gift btn");
         AudioManager.Instance.PlaySound(Sound.Click);
         var btn = evt.currentTarget as Button;
 
@@ -183,48 +201,56 @@ public class MenuView : MonoBehaviour
             b.AddToClassList(BOX_HIDE);
         }
         btn.RegisterCallbackOnce<TransitionEndEvent>(UnpackGift);
+
         btn.AddToClassList(BOX_WIN);
 
         foreach (var b in _giftBtns)
         {
-            b.UnregisterCallback<ClickEvent>(HandleGiftBtn);
+            b.UnregisterCallback<ClickEvent>(HandleGiftClicked);
         }
     }
 
     private void UnpackGift(TransitionEndEvent evt)
     {
+        Debug.Log($"Unpack gift");
         var randomPrize = UnityEngine.Random.Range(_minPrize, _maxPrize + 1);
         var element = evt.target as VisualElement;
         var pos = element.worldBound.position;//+ new Vector2(element.worldBound.width / 2, element.worldBound.height / 2);
-
-        _navRow.AnimateAddCoins(pos, randomPrize, () => HideGift(element));
+        Debug.Log($"Unpack gift pos: {pos}");
+        _coinsView.ShowCoinsLbl(pos, randomPrize);
         Balance.AddBalance(randomPrize, _giftCoinsDelay);
         AudioManager.Instance.PlaySound(Sound.Coins);
         Session.WasGiftReceived = true;
+        StartCoroutine(HidingGift(false));
+
+        var btn = evt.target as VisualElement;
+        var worldPos = btn.GetWorldPosition(_root);
+        _coinsFX_Handler.PlayCoinsFX(worldPos);
     }
 
 
-    [ContextMenu("Show gift panel")]
-    public void ShowGift()
-    {
 
-        _giftDiv.RemoveFromClassList(GIFT_ANIM_OUT);
+    [ContextMenu("Show gift view")]
+    public void ShowGiftView()
+    {
+        //_giftDiv.RemoveFromClassList(GIFT_ANIM_OUT);
         _fadePnl.Toggle(true);
         _giftView.Toggle(true);
-        _giftDiv.Toggle(true);
+        //_giftDiv.Toggle(true);
         _giftDiv.AddToClassList(GIFT_ANIM_IN);
         AudioManager.Instance.PlaySound(Sound.WindOpen);
-
 
         if (Session.WasGiftReceived)
         {
             _interactionDiv.Toggle(false);
             _grantedDiv.Toggle(true);
             _newGiftLbl.text = $"come back in {Session.GiftTimeLeft()}";
+            _giftCloseBtn.Toggle(true);
         }
         else
         {
             _interactionDiv.Toggle(true);
+            _grantedDiv.Toggle(false);
         }
 
         foreach (var btn in _giftBtns)
@@ -243,9 +269,11 @@ public class MenuView : MonoBehaviour
         _shopBg.Toggle(true);
     }
 
-    public void HideGift(VisualElement element = null)
+    public IEnumerator HidingGift(bool isInstant = false)
     {
-
+        var delayTime = isInstant ? 0 : _hideGiftDelay;
+        yield return new WaitForSeconds(delayTime);
+        AudioManager.Instance.PlaySound(Sound.WindClose);
         _giftDiv.RegisterCallbackOnce<TransitionEndEvent>(e =>
         {
             _giftView.Toggle(false);
@@ -253,8 +281,6 @@ public class MenuView : MonoBehaviour
             //_giftDiv.RemoveFromClassList(GIFT_ANIM_IN);
             //_giftDiv.RemoveFromClassList(GIFT_ANIM_OUT);
             _fadePnl.Toggle(false);
-            element?.RemoveFromClassList(BOX_WIN);
-
 
         });
 

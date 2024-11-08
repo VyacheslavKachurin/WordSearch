@@ -17,6 +17,8 @@
 
 .word-div {
     flex-grow: 0;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 .next-lvl-btn {

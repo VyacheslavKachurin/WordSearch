@@ -10,7 +10,7 @@ public class LevelState
     [Preserve]
     public bool FakeLettersRemoved;
     [Preserve]
-    public List<Point> ActiveFirstLetters;
+    public List<Point> FirstLetters;
     [Preserve]
     public List<string> FoundWords;
     [Preserve]
@@ -24,7 +24,7 @@ public class LevelState
     public LevelState(bool fakeLettersRemoved, List<Point> firstLetters, List<string> foundWords, List<Point> foundLetters, List<LineState> lines, List<Point> openLetters)
     {
         FakeLettersRemoved = fakeLettersRemoved;
-        ActiveFirstLetters = firstLetters;
+        FirstLetters = firstLetters;
         FoundWords = foundWords;
         FoundLetters = foundLetters;
         Lines = lines;

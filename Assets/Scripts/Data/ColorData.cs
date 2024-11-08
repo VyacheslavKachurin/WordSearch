@@ -8,6 +8,10 @@ public class ColorData : ScriptableObject
 
     internal Color GetRandom()
     {
-        return Colors[UnityEngine.Random.Range(0, Colors.Length)];
+
+        var color = Colors[UnityEngine.Random.Range(0, Colors.Length)];
+        if (LineProvider.LastColor == color) return GetRandom();
+        else LineProvider.LastColor = color;
+        return color;
     }
 }

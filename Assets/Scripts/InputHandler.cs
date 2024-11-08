@@ -85,7 +85,6 @@ public class InputHandler : MonoBehaviour
                 OnInputDrag?.Invoke(newPos);
             else if (_direction != Direction.Diagonal)
                 OnInputDrag?.Invoke(newPos);
-
         }
 
         if (_touch.phase == TouchPhase.Ended && _isSelecting)

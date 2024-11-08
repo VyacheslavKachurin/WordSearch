@@ -76,7 +76,7 @@ public partial class PlateView : VisualElement
         var pos = _adBtn.worldBound.position;
         var reward = Session.RewardAmount;
 
-        OnAnimateCoinsRequested(pos, reward, null);
+      //  OnAnimateCoinsRequested(pos, reward, null);
         Balance.AddBalance(reward, 100);
         AudioManager.Instance.PlaySound(Sound.Coins);
     }

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 655414212006123025}
   - component: {fileID: 6880191523272284627}
   m_Layer: 0
-  m_Name: CoinsFX
+  m_Name: CoinsHandlerFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -109,8 +109,24 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5728744426035675355, guid: 0d173bd7b2b944bd89be9149206e1c9b, type: 3}
+      propertyPath: m_Parameters.m_EndRange
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 5728744426035675355, guid: 0d173bd7b2b944bd89be9149206e1c9b, type: 3}
+      propertyPath: m_Parameters.m_DragCurve.scalar
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5728744426035675355, guid: 0d173bd7b2b944bd89be9149206e1c9b, type: 3}
       propertyPath: m_Parameters.m_GravityCurve.scalar
-      value: 3
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 5728744426035675355, guid: 0d173bd7b2b944bd89be9149206e1c9b, type: 3}
+      propertyPath: m_Parameters.m_VectorFieldSpeedCurve.scalar
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5728744426035675355, guid: 0d173bd7b2b944bd89be9149206e1c9b, type: 3}
+      propertyPath: m_Parameters.m_VectorFieldAttractionCurve.scalar
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 7138841979692044021, guid: 0d173bd7b2b944bd89be9149206e1c9b, type: 3}
       propertyPath: m_Size.x

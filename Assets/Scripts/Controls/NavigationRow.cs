@@ -14,6 +14,8 @@ public partial class NavigationRow : VisualElement
     public static event Action OnSettingsClicked;
     public static event Action OnShopHideClicked;
 
+    public static event Action<VisualElement> CoinsPicResolved;
+
     private Label _coinsLbl;
     private Button _shopBtn;
     private Button _shopBigBtn;
@@ -24,12 +26,10 @@ public partial class NavigationRow : VisualElement
     public Label CoinsLbl => _coinsLbl;
     private VisualElement _coinPic;
 
-    private CoinsFX _coinsFX;
+    private CoinsFX_Handler _coinsFX;
 
-    //private CoinsView _coinsView;
     private AudioManager _audioManager;
     private List<Button> _btns;
-    private CoinsView _coinsView;
 
     [UxmlAttribute]
     public bool IsLevelVisible
@@ -55,8 +55,10 @@ public partial class NavigationRow : VisualElement
 
     public NavigationRow()
     {
+
         var template = Resources.Load<VisualTreeAsset>("NavigationTemplate");
         var instance = template.Instantiate();
+
         instance.style.flexGrow = 1;
         instance.pickingMode = PickingMode.Ignore;
         instance.style.flexGrow = 1;
@@ -77,7 +79,7 @@ public partial class NavigationRow : VisualElement
         _shopBtn.clicked += HandleShopBtn;
         _shopBigBtn.clicked += HandleShopBtn;
 
-        _btns = new List<Button> {_shopBtn, _settingsBtn, _shopBigBtn };
+        _btns = new List<Button> { _shopBtn, _settingsBtn, _shopBigBtn };
 
         this.RegisterCallback<DetachFromPanelEvent>((evt) =>
         {
@@ -88,6 +90,7 @@ public partial class NavigationRow : VisualElement
         {
             btn.RegisterCallback<ClickEvent>(MakeBtnSound);
         }
+        SetCoinsPic();
 
     }
 
@@ -100,8 +103,6 @@ public partial class NavigationRow : VisualElement
         SetBalance(Balance.GetBalance());
         Balance.OnBalanceChanged += SetBalance;
 
-
-        PlateView.OnAnimateCoinsRequested += AnimateAddCoins;
         _settingsBtn.clicked += HandleSettingsBtn;
     }
 
@@ -114,6 +115,7 @@ public partial class NavigationRow : VisualElement
 
     public void Unsubscribe()
     {
+
         Balance.OnBalanceChanged -= SetBalance;
         foreach (var btn in _btns)
         {
@@ -123,34 +125,22 @@ public partial class NavigationRow : VisualElement
         _backBtn.clicked -= HandleBackBtn;
         _shopBtn.clicked -= HandleShopBtn;
 
-        foreach (var btn in _btns)
-        {
-            btn.RegisterCallback<ClickEvent>(MakeBtnSound);
-        }
 
-        PlateView.OnAnimateCoinsRequested -= AnimateAddCoins;
         _settingsBtn.clicked -= HandleSettingsBtn;
+
 
     }
 
 
 
-    public void SetCoinsView(CoinsView coinsView)
+
+    public void SetCoinsPic()
     {
         _coinPic = this.Q<VisualElement>("coin-pic");
-        _coinsView = coinsView;
-
-        _coinsFX = GameObject.Find("CoinsFX").GetComponent<CoinsFX>();
 
         _coinPic.RegisterCallbackOnce<GeometryChangedEvent>(e =>
         {
-
-            var picPos = _coinPic.worldTransform.GetPosition();
-            var coinsBounds = _coinPic.worldBound;
-
-            var worldPos = Camera.main.ScreenToWorldPoint(picPos + new Vector3(0, coinsBounds.height / 2));
-
-            _coinsFX.SetForceField(worldPos);
+            CoinsPicResolved?.Invoke(_coinPic);
         });
 
 
@@ -212,15 +202,7 @@ public partial class NavigationRow : VisualElement
         _coinsLbl.text = text;
     }
 
-    private void ShowCoinsFX(Vector2 startPos, int amount)
-    {
-        _coinsFX.CreateAnim(startPos, amount);
-    }
 
-    public void AnimateAddCoins(Vector2 startPos, int amount, Action callback = null)
-    {
-        //    _coinsView.ShowCoinsLbl(startPos, amount, callback);
-    }
 
 
 }

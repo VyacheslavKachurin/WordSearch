@@ -29,13 +29,12 @@ public partial class CoinsView : VisualElement
 
     }
 
-    public void ShowCoinsLbl(Vector2 startPos, int amount, Action callback)
+    public void ShowCoinsLbl(Vector2 startPos, int amount, Action callback = null)
     {
         _coinsAnimDiv.style.left = startPos.x;
         _coinsAnimDiv.style.top = startPos.y;
 
         _coinsAnimLbl.text = $"+{amount}";
-
 
         _coinsAnimDiv.RegisterCallbackOnce<TransitionEndEvent>(e =>
         {

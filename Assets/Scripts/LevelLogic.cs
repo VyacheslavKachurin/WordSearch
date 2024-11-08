@@ -75,6 +75,7 @@ public class LevelLogic : MonoBehaviour
         if (_words.Count == 0)
         {
             Debug.Log($"No words");
+
             StartCoroutine(LevelDoneCoroutine());
         }
     }
@@ -88,7 +89,8 @@ public class LevelLogic : MonoBehaviour
     private IEnumerator LevelDoneCoroutine()
     {
         Debug.Log($"waiting until all particles are done, active particles: {ParticleProvider.IsAnimating}");
-        yield return new WaitUntil(() => !ParticleProvider.IsAnimating);
+        //yield return new WaitUntil(() => !ParticleProvider.IsAnimating);
+        yield return new WaitForSeconds(1);
         _levelView.ShowFinishView();
         _shouldCheckForFinish = false;
     }
@@ -113,9 +115,13 @@ public class LevelLogic : MonoBehaviour
 
     private void HandleLetterDeselect(LetterUnit letter)
     {
+        Debug.Log($"letter is null : {letter == null}");
+        Debug.Log($"Level Logic handle letter deselecte");
+        Debug.Log($"letter deselect: {letter.Letter}");
         _tryWordLetterUnits.Remove(letter);
         _tryWord = _tryWord.Substring(0, _tryWord.Length - 1);
         // Debug.Log($"tryWord deselect letter: {_tryWord}");
+        Debug.Log($"Letter deselect: {letter.Letter}");
         _levelView.RemoveLetter(letter.Letter);
         _audio.PlayLetter(_tryWordLetterUnits.Count);
         _lineProvider.RemovePoint();
@@ -139,7 +145,12 @@ public class LevelLogic : MonoBehaviour
         _levelView.AnimateHideWord(isWord);
         _audio.PlaySound(sound);
         _isFirstLetter = true;
-        if (isWord) RemoveWord();
+        if (isWord)
+        {
+            LevelStateService.State.OpenLetters.Add(_tryWordLetterUnits[0].Point);
+            RemoveWord();
+            LevelStateService.State.FirstLetters.Remove(_tryWordLetterUnits[0].Point);
+        }
         else
             foreach (var letter in _tryWordLetterUnits)
                 letter.AnimateSelection(false);
@@ -148,6 +159,20 @@ public class LevelLogic : MonoBehaviour
 
         _tryWord = string.Empty;
 
+    }
+
+    [ContextMenu("Log Found Letters")]
+    private void LogFoundLetters()
+    {
+        foreach (var point in LevelStateService.State.FoundLetters)
+            Debug.Log($"Found Letters: {point.GetVector()}");
+    }
+
+    [ContextMenu("Log Open letters")]
+    private void LogOpenLetters()
+    {
+        foreach (var point in LevelStateService.State.OpenLetters)
+            Debug.Log($"Open Letters: {point.GetVector()}");
     }
 
     private void RemoveWord()
@@ -168,7 +193,6 @@ public class LevelLogic : MonoBehaviour
 
         _levelView.AnimateWord(_tryWordLetterUnits);
         ParticleProvider.IsAnimating = true;
-        Debug.Log($"calling CheckIfLevelDone");
         IsLevelDone();
 
     }
@@ -176,10 +200,11 @@ public class LevelLogic : MonoBehaviour
     [ContextMenu("Log First Active letters")]
     private void LogFirstActiveLetters()
     {
-        Debug.Log($"Active First Letters: {LevelStateService.State.ActiveFirstLetters.Count}");
-        foreach (var letter in LevelStateService.State.ActiveFirstLetters)
-            Debug.Log($"Letter: {letter}");
+        Debug.Log($"Active First Letters: {LevelStateService.State.FirstLetters.Count}");
+        foreach (var letter in LevelStateService.State.FirstLetters)
+            Debug.Log($"Letter: {letter.GetVector()}");
     }
+
 
     private void HandleLetterEnter(LetterUnit letter)
     {

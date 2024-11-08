@@ -15,7 +15,7 @@ public class LevelStateService
 
     public static void SaveState()
     {
-        if(State == null) return;
+        if (State == null) return;
         Debug.Log($"Saving State; path: {_prePath + _fileName}");
         string json = JsonConvert.SerializeObject(State);
         if (State == null) return;
@@ -60,17 +60,26 @@ public class LevelStateService
         State.Lines.Add(lineState);
 
         var firstLetter = foundLetters[0].Point;
-        State.ActiveFirstLetters.Remove(firstLetter);
+        var letterToRemove = State.FirstLetters.FirstOrDefault(x => x.X == firstLetter.X && x.Y == firstLetter.Y);
+        var isItThere = letterToRemove != null;
+        if (isItThere)
+            State.FirstLetters.Remove(letterToRemove);
 
     }
 
     internal static Point GetFirstPoint()
     {
-        var index = Random.Range(0, State.ActiveFirstLetters.Count);
-        var point = State.ActiveFirstLetters[index];
-        State.ActiveFirstLetters.Remove(point);
+        var index = Random.Range(0, State.FirstLetters.Count);
+        var point = State.FirstLetters[index];
+
+        if (State.OpenLetters.Contains(point))
+        {
+            Debug.Log($"This letter is already open");
+            return GetFirstPoint();
+        }
+        State.FirstLetters.Remove(point);
         State.OpenLetters.Add(point);
-        OnActiveFirstLetterRemoved?.Invoke(State.ActiveFirstLetters.Count);
+        OnActiveFirstLetterRemoved?.Invoke(State.FirstLetters.Count);
         return point;
     }
 }
