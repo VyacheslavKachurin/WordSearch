@@ -10,7 +10,7 @@ public static class Balance
     public static event Action<decimal> OnBalanceChanged;
 
     private const string BALANCE_KEY = "balance";
-    private const int STARTING_BALANCE = 500;
+    private const int STARTING_BALANCE = 10000;
     private static int _balance;
 
     private static readonly string PATH = Application.persistentDataPath + "/Balance.json";
@@ -78,9 +78,11 @@ public static class Balance
 
     public static void ClearBalance()
     {
-        _balance = 0;
-        OnBalanceChanged?.Invoke(_balance);
-        Save();
+         if (System.IO.File.Exists(PATH))
+        {
+            System.IO.File.Delete(PATH);
+        }
+
     }
 
 

@@ -61,7 +61,7 @@ public class GameBoard : MonoBehaviour
             }
             Y -= boardSize.LetterSize.y;
         }
-        Debug.Log($"Game board built");
+
 
     }
 
@@ -73,6 +73,7 @@ public class GameBoard : MonoBehaviour
         if (_letters == null) return;
         foreach (var letter in _letters)
         {
+            if(letter == null) continue;
             Destroy(letter.gameObject);
         }
 

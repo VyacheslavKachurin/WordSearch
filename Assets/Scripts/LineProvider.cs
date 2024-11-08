@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class LineProvider : MonoBehaviour
@@ -12,6 +13,8 @@ public class LineProvider : MonoBehaviour
     private float _lineSize;
     [SerializeField] private float _lineSizeMultiplier = 1.2f;
     private List<LineRenderer> _lines = new();
+
+    public static Color? LastColor;
 
     internal void Append(Vector2 point)
     {
@@ -71,6 +74,7 @@ public class LineProvider : MonoBehaviour
 
     internal void SetState(LevelState levelState, LetterUnit[,] letters)
     {
+
         for (int i = 0; i < levelState.Lines.Count; i++)
         {
             var line = Instantiate(_linePrefab);
@@ -79,11 +83,24 @@ public class LineProvider : MonoBehaviour
             line.SetPosition(1, levelState.Lines[i].Positions[1]);
             line.startColor = levelState.Lines[i].color;
             line.endColor = levelState.Lines[i].color;
+            _lines.Add(line);
         }
 
         for (int i = 0; i < levelState.OpenLetters.Count; i++)
         {
             var point = levelState.OpenLetters[i];
+            var vector = new Vector2(point.X, point.Y);
+
+            // if (!_lines.Any(x => x.GetPosition(0) == (Vector3)vector)) continue;
+            // open letters are the ones that found and the ones that revealed with abilitys
+            //we need to skip the ones that found
+            var isThere = levelState.FoundLetters.Any(x => x.X == point.X && x.Y == point.Y);
+            if (isThere)
+            {
+                Debug.Log($"Found letter: {point}");
+                continue;
+            }
+
             var letter = letters[point.Y, point.X];
             CreateLine(letter.transform.position, letter.GetColor());
 
@@ -111,8 +128,12 @@ public class LineProvider : MonoBehaviour
             if (line == null) continue;
             Destroy(line.gameObject);
         }
-
-
         _lines.Clear();
+    }
+
+    [ContextMenu("Log Lines")]
+    private void LogLines()
+    {
+        Debug.Log($"Lines Count: {_lines.Count}");
     }
 }

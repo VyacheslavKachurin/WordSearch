@@ -8,7 +8,8 @@ public class AudioManager : MonoBehaviour
 
     [SerializeField] private AudioClip _mainTheme;
     public static AudioManager Instance { get; private set; }
-    private AudioSource _audioSource;
+    [SerializeField] private AudioSource _themeSource;
+    [SerializeField] private AudioSource _soundsSource;
 
     [SerializeField] private AudioClip _btnClick;
     [SerializeField] private AudioClip _lampSound;
@@ -36,7 +37,7 @@ public class AudioManager : MonoBehaviour
         {
             Instance = this;
 
-            _audioSource = GetComponent<AudioSource>();
+            // _audioSource = GetComponent<AudioSource>();
             DontDestroyOnLoad(this);
 
             _audioClips = new Dictionary<Sound, AudioClip>(){
@@ -63,7 +64,9 @@ public class AudioManager : MonoBehaviour
     private void HandleMusicChange(bool value)
     {
         if (value) PlayTheme();
-        else _audioSource.Stop();
+        else
+            _themeSource.mute = !value;
+
     }
 
     void OnDestroy()
@@ -73,23 +76,32 @@ public class AudioManager : MonoBehaviour
 
     public void PlayTheme()
     {
+
         if (!Session.IsMusicOn) return;
-        _audioSource.clip = _mainTheme;
-        _audioSource.loop = true;
-        _audioSource.Play();
+        _themeSource.clip = _mainTheme;
+        _themeSource.loop = true;
+        _themeSource.mute = false;
+        if (!_themeSource.isPlaying) _themeSource.Play();
     }
 
     public void PlayLetter(int pitch)
     {
         if (!Session.IsSoundOn) return;
+
+        if (_letters.Count <= pitch)
+        {
+            Debug.Log($"Sound out of bounds: {pitch}");
+            pitch = _letters.Count - 1;
+        }
+
         var clip = _letters[pitch];
-        _audioSource.PlayOneShot(clip, 10);
+        _soundsSource.PlayOneShot(clip, 10);
     }
 
     public void PlaySound(Sound sound)
     {
         if (!Session.IsSoundOn) return;
-        _audioSource.PlayOneShot(_audioClips[sound], 10);
+        _soundsSource.PlayOneShot(_audioClips[sound], 10);
     }
 }
 

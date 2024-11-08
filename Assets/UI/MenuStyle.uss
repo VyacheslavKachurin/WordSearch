@@ -18,8 +18,6 @@
 .box {
     width: 250px;
     height: 210px;
-    background-image: url("project://database/Assets/Sprites/gift.png?fileID=2800000&guid=bed651ce5066c4f9fa2acde842a42a63&type=3#gift");
-    -unity-background-image-tint-color: rgb(47, 255, 0);
     margin-top: 45px;
     margin-right: 45px;
     margin-bottom: 45px;
@@ -47,6 +45,13 @@
     scale: 1 1;
 }
 
+.gift-anim-out {
+    scale: 1 1;
+    transition-delay: 0.6s;
+    opacity: 0;
+    transition-timing-function: ease-in;
+}
+
 .box-hide {
     width: 0;
     height: 0;
@@ -57,13 +62,5 @@
 }
 
 .box-win {
-    width: 300px;
-    height: 300px;
-}
-
-.gift-anim-out {
-    scale: 1 1;
-    transition-delay: 0.6s;
-    opacity: 0;
-    transition-timing-function: ease-in;
+    scale: 1.3 1.3;
 }

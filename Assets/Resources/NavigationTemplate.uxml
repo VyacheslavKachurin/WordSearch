@@ -14,20 +14,22 @@
             </engine:VisualElement>
         </engine:VisualElement>
         <engine:VisualElement name="right-part" class="nav-part" style="flex-grow: 0;">
-            <engine:VisualElement name="coins-bg" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Sprites/CoinsBg.png?fileID=2800000&amp;guid=23909b6a7876f4ac3992f9cc1b7794bc&amp;type=3#CoinsBg&quot;); width: 259px; height: 95px; align-items: stretch; justify-content: center; flex-direction: row; padding-left: 29px; padding-right: 23px;">
-                <engine:VisualElement name="coins-div" style="flex-grow: 1; flex-shrink: 0; background-color: rgba(255, 0, 0, 0); justify-content: flex-start; flex-direction: row;">
-                    <engine:VisualElement name="coin-pic" style="background-image: url(&quot;project://database/Assets/Sprites/Coin.png?fileID=2800000&amp;guid=cc92c5e188d60469d967d65f06b736e8&amp;type=3#Coin&quot;); width: 32px; height: 34px; flex-shrink: 0; top: 25px;" />
-                    <engine:VisualElement style="flex-grow: 1; align-items: flex-start; justify-content: flex-start;">
-                        <engine:Label text="350" name="coins-lbl" class="nav-lbl" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; top: 23px; -unity-text-align: middle-center; text-overflow: clip;" />
+            <engine:Button text="Button" name="shop-big-btn">
+                <engine:VisualElement name="coins-bg" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Sprites/CoinsBg.png?fileID=2800000&amp;guid=23909b6a7876f4ac3992f9cc1b7794bc&amp;type=3#CoinsBg&quot;); width: 259px; height: 95px; align-items: stretch; justify-content: center; flex-direction: row; padding-left: 29px; padding-right: 23px;">
+                    <engine:VisualElement name="coins-div" style="flex-grow: 1; flex-shrink: 0; background-color: rgba(255, 0, 0, 0); justify-content: flex-start; flex-direction: row;">
+                        <engine:VisualElement name="coin-pic" style="background-image: url(&quot;project://database/Assets/Sprites/Coin.png?fileID=2800000&amp;guid=cc92c5e188d60469d967d65f06b736e8&amp;type=3#Coin&quot;); width: 32px; height: 34px; flex-shrink: 0; top: 25px;" />
+                        <engine:VisualElement style="flex-grow: 1; align-items: center; justify-content: center; padding-right: 12px;">
+                            <engine:Label text="10.5 K" name="coins-lbl" class="nav-lbl" style="-unity-text-align: middle-center; text-overflow: clip; font-size: 25px; top: -6px;" />
+                        </engine:VisualElement>
+                    </engine:VisualElement>
+                    <engine:VisualElement name="VisualElement" style="flex-grow: 0;">
+                        <engine:Button name="shop-btn" style="background-image: url(&quot;project://database/Assets/Sprites/ShopIcon.png?fileID=2800000&amp;guid=aa47609c6b68645f299c02eccd0238d6&amp;type=3#ShopIcon&quot;); width: 59px; height: 59px; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; top: 13px;" />
                     </engine:VisualElement>
                 </engine:VisualElement>
-                <engine:VisualElement name="VisualElement" style="flex-grow: 0;">
-                    <engine:Button name="shop-btn" style="background-image: url(&quot;project://database/Assets/Sprites/ShopIcon.png?fileID=2800000&amp;guid=aa47609c6b68645f299c02eccd0238d6&amp;type=3#ShopIcon&quot;); width: 59px; height: 59px; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; top: 13px;" />
-                </engine:VisualElement>
-            </engine:VisualElement>
+            </engine:Button>
         </engine:VisualElement>
     </engine:VisualElement>
-    <engine:VisualElement name="coins-anim-div" picking-mode="Ignore" class="coins-anim" style="justify-content: center; align-items: center;">
+    <engine:VisualElement name="coins-anim-div" picking-mode="Ignore" class="coins-anim" style="justify-content: center; align-items: center; opacity: 0; display: none;">
         <engine:Label text="+20" name="coins-anim-lbl" style="font-size: 90px; -unity-font-style: bold;" />
         <engine:VisualElement style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Sprites/coin-big.png?fileID=2800000&amp;guid=35d1d1e52133544ccbac3d76c6cca714&amp;type=3#coin-big&quot;); width: 87px; height: 92px;" />
     </engine:VisualElement>

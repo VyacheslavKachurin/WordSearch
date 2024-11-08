@@ -6,9 +6,9 @@
     <engine:VisualElement name="level-view" class="view" style="flex-grow: 1; align-items: center; justify-content: flex-start; opacity: 1; display: flex;">
         <engine:VisualElement name="controls-row" class="row-width" style="flex-grow: 0; bottom: 290px; position: absolute;">
             <engine:VisualElement name="row" style="flex-grow: 1; align-items: center; justify-content: space-evenly; flex-direction: row;">
-                <AbilityBtn price="100" ability-value="Lighting" is-free="false" name="lighting-btn" price-data="project://database/Assets/Data/AbilityPriceData.asset?fileID=11400000&amp;guid=74b72cc2186bd4503927ea9377416f05&amp;type=2#AbilityPriceData" />
                 <AbilityBtn price="100" ability-value="Hint" is-free="false" name="hint-btn" price-data="project://database/Assets/Data/AbilityPriceData.asset?fileID=11400000&amp;guid=74b72cc2186bd4503927ea9377416f05&amp;type=2#AbilityPriceData" />
                 <AbilityBtn price="100" ability-value="Magnet" is-free="false" name="magnet-btn" price-data="project://database/Assets/Data/AbilityPriceData.asset?fileID=11400000&amp;guid=74b72cc2186bd4503927ea9377416f05&amp;type=2#AbilityPriceData" />
+                <AbilityBtn price="100" ability-value="Lighting" is-free="false" name="lighting-btn" price-data="project://database/Assets/Data/AbilityPriceData.asset?fileID=11400000&amp;guid=74b72cc2186bd4503927ea9377416f05&amp;type=2#AbilityPriceData" />
                 <AbilityBtn price="100" ability-value="Ads" is-free="true" name="ads-btn" />
                 <AbilityBtn price="100" ability-value="Firework" is-free="false" name="firework-btn" price-data="project://database/Assets/Data/AbilityPriceData.asset?fileID=11400000&amp;guid=74b72cc2186bd4503927ea9377416f05&amp;type=2#AbilityPriceData" style="display: none;" />
             </engine:VisualElement>
@@ -19,19 +19,16 @@
                 <engine:Label text="topic" name="level-theme" enable-rich-text="true" class="lbl-shadow" style="font-size: 50px; color: rgb(255, 255, 255); -unity-font-style: bold; -unity-font-definition: url(&quot;project://database/Assets/Fonts/helvetica-neue-5/HelveticaNeueRoman%20SDF.asset?fileID=11400000&amp;guid=2a99dce4bc3f4406ba2276ce36b97de6&amp;type=2#HelveticaNeueRoman SDF&quot;); padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; margin-right: 0; margin-left: 0; margin-bottom: 0; margin-top: 0;" />
             </engine:VisualElement>
             <engine:VisualElement name="words" style="flex-grow: 1; align-items: center; justify-content: center; flex-direction: row; flex-wrap: wrap;">
-                <engine:VisualElement name="words-holder" style="flex-grow: 0; flex-wrap: wrap; flex-direction: row; width: 80%; align-items: stretch; justify-content: center;">
+                <engine:VisualElement name="words-holder" style="flex-grow: 0; flex-wrap: wrap; flex-direction: row; width: 80%; align-items: stretch; justify-content: center; align-content: flex-start;">
                     <engine:VisualElement name="word-div" class="word-div" style="display: none;">
-                        <engine:Label text="Label" name="word" class="word" />
-                    </engine:VisualElement>
-                    <engine:VisualElement name="word-div" class="word-div" style="display: none;">
-                        <engine:Label text="Label" class="word" />
+                        <engine:Label name="word" class="word" />
                     </engine:VisualElement>
                 </engine:VisualElement>
             </engine:VisualElement>
         </engine:VisualElement>
         <engine:VisualElement name="target-word-div" class="row-width" style="flex-grow: 0; position: relative; align-items: center; display: flex; bottom: -768px;">
             <engine:VisualElement name="target-word" class="target-word" style="flex-grow: 0; background-color: rgb(157, 255, 13); border-top-left-radius: 25px; border-top-right-radius: 25px; border-bottom-right-radius: 25px; border-bottom-left-radius: 25px; align-items: center; justify-content: center; display: none;">
-                <engine:Label name="target-letters" class="target-letters lbl-shadow" style="margin-top: 15px; margin-right: 10px; margin-bottom: 15px; margin-left: 10px; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; -unity-font-style: bold;" />
+                <engine:Label name="target-letters" class="target-letters lbl-shadow" style="margin-top: 15px; margin-right: 10px; margin-bottom: 15px; margin-left: 10px; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; -unity-font-style: bold; -unity-text-outline-color: rgb(0, 0, 0); -unity-text-outline-width: 0.5px;" />
             </engine:VisualElement>
         </engine:VisualElement>
         <engine:VisualElement name="shop-bg" style="flex-grow: 1; width: 100%; background-color: rgb(255, 150, 150); display: none;" />
@@ -63,7 +60,6 @@
     </engine:VisualElement>
     <engine:VisualElement name="ref" class="view" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/References/finish-ref.jpeg?fileID=2800000&amp;guid=074260442e4c649eb9c61e8fe424f4c4&amp;type=3#finish-ref&quot;); display: none; opacity: 1;" />
     <engine:VisualElement name="visuals-div" picking-mode="Ignore" class="view" style="flex-grow: 1;" />
-    <engine:VisualElement name="fx-div" picking-mode="Ignore" class="view" style="flex-grow: 1; display: flex;" />
+    <engine:Image name="overlay-fx" picking-mode="Ignore" class="view" style="flex-grow: 1; display: flex;" />
     <ShopView picking-mode="Ignore" style="display: none;" />
-    <CoinsAnim picking-mode="Ignore" class="view" style="position: absolute;" />
 </engine:UXML>

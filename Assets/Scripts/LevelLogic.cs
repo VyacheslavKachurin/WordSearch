@@ -1,13 +1,15 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
+using SingularityGroup.HotReload;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class LevelLogic : MonoBehaviour
 {
     public static event Action<List<Point>> OnWordFound;
+    public static event Action<int> WordListUpdated;
 
     [SerializeField] LevelView _levelView;
     [SerializeField] LineProvider _lineProvider;
@@ -33,7 +35,6 @@ public class LevelLogic : MonoBehaviour
     public static int Step;
     public static int TotalSteps;
 
-    public static int CurrentLevel;
 
     private bool _shouldCheckForFinish = true;
 
@@ -43,7 +44,7 @@ public class LevelLogic : MonoBehaviour
         InputTrigger.OnLetterEnter += HandleLetterEnter;
         InputHandler.OnInputDrag += HandleDrag;
         InputHandler.OnLetterDeselect += HandleLetterDeselect;
-        WordFX.OnAnimDone += CheckIfLevelDone;
+        // WordFX.OnAnimDone += CheckIfLevelDone;
 
 
         _audio = AudioManager.Instance;
@@ -59,13 +60,13 @@ public class LevelLogic : MonoBehaviour
         InputTrigger.OnLetterEnter -= HandleLetterEnter;
         InputHandler.OnInputDrag -= HandleDrag;
         InputHandler.OnLetterDeselect -= HandleLetterDeselect;
-        WordFX.OnAnimDone -= CheckIfLevelDone;
+        //  WordFX.OnAnimDone -= CheckIfLevelDone;
         NavigationRow.OnBackBtnClicked -= HandleBackBtn;
     }
 
 
     [ContextMenu("Check if level done")]
-    private void CheckIfLevelDone()
+    private void IsLevelDone()
     {
 #if UNITY_EDITOR
         if (!_canContinue) return;
@@ -73,10 +74,25 @@ public class LevelLogic : MonoBehaviour
         if (!_shouldCheckForFinish) return;
         if (_words.Count == 0)
         {
-            Debug.Log($"check if level done");
-            _levelView.ShowFinishView();
-            _shouldCheckForFinish = false;
+            Debug.Log($"No words");
+
+            StartCoroutine(LevelDoneCoroutine());
         }
+    }
+
+    [ContextMenu("Log words left")]
+    private void LogWordsLeft()
+    {
+        Debug.Log($"words left: {_words.Count}");
+    }
+
+    private IEnumerator LevelDoneCoroutine()
+    {
+        Debug.Log($"waiting until all particles are done, active particles: {ParticleProvider.IsAnimating}");
+        //yield return new WaitUntil(() => !ParticleProvider.IsAnimating);
+        yield return new WaitForSeconds(1);
+        _levelView.ShowFinishView();
+        _shouldCheckForFinish = false;
     }
 
     private void OnApplicationPause(bool pause)
@@ -99,9 +115,13 @@ public class LevelLogic : MonoBehaviour
 
     private void HandleLetterDeselect(LetterUnit letter)
     {
+        Debug.Log($"letter is null : {letter == null}");
+        Debug.Log($"Level Logic handle letter deselecte");
+        Debug.Log($"letter deselect: {letter.Letter}");
         _tryWordLetterUnits.Remove(letter);
         _tryWord = _tryWord.Substring(0, _tryWord.Length - 1);
-        Debug.Log($"tryWord deselect letter: {_tryWord}");
+        // Debug.Log($"tryWord deselect letter: {_tryWord}");
+        Debug.Log($"Letter deselect: {letter.Letter}");
         _levelView.RemoveLetter(letter.Letter);
         _audio.PlayLetter(_tryWordLetterUnits.Count);
         _lineProvider.RemovePoint();
@@ -125,7 +145,12 @@ public class LevelLogic : MonoBehaviour
         _levelView.AnimateHideWord(isWord);
         _audio.PlaySound(sound);
         _isFirstLetter = true;
-        if (isWord) RemoveWord();
+        if (isWord)
+        {
+            LevelStateService.State.OpenLetters.Add(_tryWordLetterUnits[0].Point);
+            RemoveWord();
+            LevelStateService.State.FirstLetters.Remove(_tryWordLetterUnits[0].Point);
+        }
         else
             foreach (var letter in _tryWordLetterUnits)
                 letter.AnimateSelection(false);
@@ -136,10 +161,26 @@ public class LevelLogic : MonoBehaviour
 
     }
 
+    [ContextMenu("Log Found Letters")]
+    private void LogFoundLetters()
+    {
+        foreach (var point in LevelStateService.State.FoundLetters)
+            Debug.Log($"Found Letters: {point.GetVector()}");
+    }
+
+    [ContextMenu("Log Open letters")]
+    private void LogOpenLetters()
+    {
+        foreach (var point in LevelStateService.State.OpenLetters)
+            Debug.Log($"Open Letters: {point.GetVector()}");
+    }
+
     private void RemoveWord()
     {
         _levelView.HideWord(_tryWord);
         _words.Remove(_tryWord);
+        WordListUpdated?.Invoke(_words.Count);
+
 
         foreach (var letter in _tryWordLetterUnits)
             letter.Disable();
@@ -151,8 +192,19 @@ public class LevelLogic : MonoBehaviour
         LevelStateService.AddFoundWord(_tryWord, _tryWordLetterUnits, lineState);
 
         _levelView.AnimateWord(_tryWordLetterUnits);
+        ParticleProvider.IsAnimating = true;
+        IsLevelDone();
 
     }
+
+    [ContextMenu("Log First Active letters")]
+    private void LogFirstActiveLetters()
+    {
+        Debug.Log($"Active First Letters: {LevelStateService.State.FirstLetters.Count}");
+        foreach (var letter in LevelStateService.State.FirstLetters)
+            Debug.Log($"Letter: {letter.GetVector()}");
+    }
+
 
     private void HandleLetterEnter(LetterUnit letter)
     {
@@ -175,7 +227,7 @@ public class LevelLogic : MonoBehaviour
 
             if (_tryWordLetterUnits.Contains(letter))
             {
-                Debug.Log($"Letter already added: {letter.Letter}");
+                //                Debug.Log($"Letter already added: {letter.Letter}");
                 return;
             }
 
@@ -192,7 +244,7 @@ public class LevelLogic : MonoBehaviour
     private void CompleteLevel()
     {
         _words.Clear();
-        CheckIfLevelDone();
+        IsLevelDone();
     }
 
     [ContextMenu("set stage to 1")]
@@ -207,9 +259,19 @@ public class LevelLogic : MonoBehaviour
         Stage = levelData.Stage;
         Step = levelData.Step;
         TotalSteps = levelData.TotalSteps;
-        CurrentLevel = levelData.Level;
         _shouldCheckForFinish = true;
 
+
+
+    }
+
+    internal void SetState(LevelState levelState)
+    {
+        for (int i = 0; i < levelState.FoundWords.Count; i++)
+        {
+            var word = levelState.FoundWords[i];
+            _words.Remove(word);
+        }
     }
 }
 public enum Direction

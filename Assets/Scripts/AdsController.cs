@@ -78,7 +78,7 @@ public class AdsController : MonoBehaviour, IUnityAdsInitializationListener, IUn
 
     private void OnBannerLoaded()
     {
-        Debug.Log($"Banner Loaded");
+
         BannerOptions options = new BannerOptions
         {
             clickCallback = OnBannerClicked,

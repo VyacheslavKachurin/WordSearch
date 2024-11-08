@@ -15,17 +15,15 @@ public class AbilityLogic : MonoBehaviour
     private void Awake()
     {
         _audioManager = AudioManager.Instance;
-    }
-
-    private void Start()
-    {
         AbilityBtn.OnAbilityClicked += HandleAbility;
     }
+
 
     private void OnDestroy()
     {
         AbilityBtn.OnAbilityClicked -= HandleAbility;
     }
+
 
     private void HandleAbility(Ability ability, int price, AbilityBtn btn)
     {
@@ -53,6 +51,7 @@ public class AbilityLogic : MonoBehaviour
                 RequireAd();
                 break;
         }
+        LevelStateService.SaveState();
 
 
     }
@@ -81,15 +80,17 @@ public class AbilityLogic : MonoBehaviour
         for (int i = 0; i < amount; i++)
         {
             var point = LevelStateService.GetFirstPoint();
+            Debug.Log($"Revealing Letter: {point}");
             var color = _gameBoard.Letters[point.Y, point.X].GetColor();
             var position = _gameBoard.Letters[point.Y, point.X].transform.position;
             _lineProvider.CreateLine(position, color);
+            
         }
+
     }
 
     public void HideFakeLetters()
     {
-
         _audioManager.PlaySound(Sound.Magnet);
         foreach (var point in _data.FakeLetters)
         {

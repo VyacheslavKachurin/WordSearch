@@ -27,8 +27,13 @@ public class LevelBuilder : MonoBehaviour
     {
         CreateLevel();
         _adsController.LoadBanner();
-        LevelView.NextLevelClicked += CreateLevel;
+        LevelView.NextLevelClicked += GoNextLevel;
 
+    }
+
+    private void OnDestroy()
+    {
+        LevelView.NextLevelClicked -= GoNextLevel;
     }
 
 
@@ -36,6 +41,15 @@ public class LevelBuilder : MonoBehaviour
     private void ResetProgress()
     {
         Session.SetLastLevel(1);
+    }
+
+    private void GoNextLevel()
+    {
+
+        var nextLvl = Session.GetLastLevel() + 1;
+        Session.SetLastLevel(nextLvl);
+        LevelStateService.DeleteState();
+        CreateLevel();
     }
 
     [ContextMenu("Create Level")]
@@ -54,8 +68,7 @@ public class LevelBuilder : MonoBehaviour
         }
 #endif
         _levelDataAsset = Resources.Load<TextAsset>($"LevelData/Stage {stage}/LevelData {level}");
-        Debug.Log($"stage={stage} level={level}");
-        Debug.Log($"LevelData asset=null {_levelDataAsset == null}");
+
         _levelData = JsonConvert.DeserializeObject<LevelData>(_levelDataAsset.text);
 
         _gameBoard.BuildBoard(_levelData);
@@ -65,8 +78,6 @@ public class LevelBuilder : MonoBehaviour
         _abilityLogic.SetData(_levelData, _gameBoard);
         StartCoroutine(SetLineSize());
         LoadState();
-
-
 
         SetBg();
     }
@@ -93,6 +104,8 @@ public class LevelBuilder : MonoBehaviour
             _gameBoard.SetState(levelState);
             _lineProvider.SetState(levelState, _gameBoard.Letters);
             _abilityLogic.SetState(levelState);
+            _levelLogic.SetState(levelState);
+
         }
         else
         {
