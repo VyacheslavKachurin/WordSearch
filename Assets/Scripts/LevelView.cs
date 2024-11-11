@@ -21,6 +21,7 @@ public class LevelView : MonoBehaviour
     private Label _levelLbl;
     private VisualElement _visualsDiv;
     private Image _overlayFx;
+    private VisualElement _giftPic;
     private const string WORD_STYLE = "word";
     private const string WORD_DIV_STYLE = "word-div";
     [SerializeField] float _letterAnimStyle = 70;
@@ -60,6 +61,14 @@ public class LevelView : MonoBehaviour
 
     [SerializeField] private Camera _fxCam;
 
+    [SerializeField] private int _prizeAmount = 25;
+    CoinsView _coinsView;
+    [SerializeField] private CoinsFX_Handler _coinsFX_Handler;
+    [SerializeField] private int _prizeCoinsDelay = 100;
+    [SerializeField] private float _rewardDelay = 0.5f;
+    [SerializeField] private Vector2 _startPos;
+    [SerializeField] private int _fxScale = 2;
+
     private void Awake()
     {
         _root = GetComponent<UIDocument>().rootVisualElement;
@@ -72,6 +81,9 @@ public class LevelView : MonoBehaviour
         _levelLbl = _root.Q<Label>("level-lbl");
         _visualsDiv = _root.Q<VisualElement>("visuals-div");
         _overlayFx = _root.Q<Image>("overlay-fx");
+        _giftPic = _root.Q<VisualElement>("giftPic");
+
+        _coinsView = _root.Q<CoinsView>();
 
         InitRenderTexture();
 
@@ -97,7 +109,7 @@ public class LevelView : MonoBehaviour
 
         _navRow = _root.Q<NavigationRow>();
         _navRow.InitBalance(AudioManager.Instance);
-        //     _navRow.SetCoinsView(_root.Q<CoinsView>());
+
         _shopBg = _root.Q<VisualElement>("shop-bg");
 
         NavigationRow.OnShopBtnClicked += ShowShopBg;
@@ -118,6 +130,8 @@ public class LevelView : MonoBehaviour
         _root.RegisterCallback<DetachFromPanelEvent>(e => Unsubscribe());
 
         LevelLogic.WordListUpdated += HandleWordListUpdated;
+
+        NavigationRow.CoinsPicResolved += SetCoinsAnimation;
     }
 
     private void HandleWordListUpdated(int words)
@@ -128,9 +142,42 @@ public class LevelView : MonoBehaviour
         }
     }
 
+    private void SetCoinsAnimation(VisualElement target)
+    {
+        var worldPos = target.GetWorldPosition(_root);
+        _coinsFX_Handler.SetForceField(worldPos, _fxScale);
+    }
+
     private void OnDestroy()
     {
+        NavigationRow.CoinsPicResolved -= SetCoinsAnimation;
+        LevelLogic.WordListUpdated -= HandleWordListUpdated;
 
+
+    }
+
+    [ContextMenu("Play coins FX")]
+    public void PlayCoinsFX()
+    {
+
+        _coinsFX_Handler.PlayCoinsFX(_startPos, _fxScale);
+    }
+
+
+    private void AwardPlayer()
+    {
+        var prize = _prizeAmount;
+        var element = _giftPic;
+        var pos = element.worldBound.position;
+        _coinsView.ShowCoinsLbl(pos, prize);
+        Balance.AddBalance(prize, _prizeCoinsDelay);
+        AudioManager.Instance.PlaySound(Sound.Coins);
+
+        _progressBg = _root.Q<VisualElement>("progress-bg");
+        var worldPos = _progressBg.GetWorldPosition(_root);
+
+
+        _coinsFX_Handler.PlayCoinsFX(worldPos, _fxScale);
 
     }
 
@@ -168,6 +215,7 @@ public class LevelView : MonoBehaviour
 
     public void ShowFinishView()
     {
+        Session.IsSelecting = false;
         Debug.Log($"show finish view");
         _progressLbl.text = $"{LevelLogic.Step}/{LevelLogic.TotalSteps}";
         _finishView.Toggle(true);
@@ -178,20 +226,18 @@ public class LevelView : MonoBehaviour
             _progressBarCoroutine = StartCoroutine(FillProgressBar(LevelLogic.Step, LevelLogic.TotalSteps));
         });
 
-        _finishView.AddToClassList(FINISH_VIEW_IN);
-        if (LevelLogic.Step == LevelLogic.TotalSteps)
-            ShowStageCompleted();
+
 
     }
 
     [ContextMenu("Show Stage Completed")]
     private void ShowStageCompleted()
     {
-        Debug.Log($"Show Stage Completed");
+
         AudioManager.Instance.PlaySound(Sound.StageCompleted);
         _winFX.Play();
         Session.LastStage++;
-        //_nextLvlBtn.SetEnabled(false);
+
 
     }
 
@@ -206,14 +252,37 @@ public class LevelView : MonoBehaviour
     private IEnumerator FillProgressBar(int step, int totalsteps)
     {
         var targetFill = 100 * ((float)step / (float)totalsteps);
-        var currentFill = _progressFill.style.width.value.value;
-        Debug.Log($"targetFill: {targetFill}");
+        var currentFill = 100 * (((float)step - 1) / (float)totalsteps);
+        var canContinue = false;
+        _finishView.RegisterCallbackOnce<TransitionEndEvent>(e =>
+        {
+            canContinue = true;
+        });
+
+        _progressFill.RegisterCallbackOnce<GeometryChangedEvent>(e =>
+        {
+            _finishView.AddToClassList(FINISH_VIEW_IN);
+
+
+        });
+
+        _progressFill.style.width = new StyleLength(new Length(currentFill, LengthUnit.Percent));
+        yield return new WaitUntil(() => canContinue);
+
         while (currentFill < targetFill)
         {
             currentFill += 1f;
             _progressFill.style.width = new StyleLength(new Length(currentFill, LengthUnit.Percent));
             yield return new WaitForSeconds(_fillDelay);
         }
+
+        if (LevelLogic.Step == LevelLogic.TotalSteps)
+        {
+            ShowStageCompleted();
+            yield return new WaitForSeconds(_rewardDelay);
+            AwardPlayer();
+        }
+
         ShowNextLvlBtn();
     }
 
@@ -233,9 +302,6 @@ public class LevelView : MonoBehaviour
         _progressBarCoroutine = null;
         _progressFill.style.width = new StyleLength(new Length(0, LengthUnit.Percent));
         SetBackPicture();
-
-
-
     }
 
     private void InitRenderTexture()

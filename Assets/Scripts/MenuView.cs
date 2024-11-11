@@ -210,12 +210,14 @@ public class MenuView : MonoBehaviour
         }
     }
 
+    
+
     private void UnpackGift(TransitionEndEvent evt)
     {
         Debug.Log($"Unpack gift");
         var randomPrize = UnityEngine.Random.Range(_minPrize, _maxPrize + 1);
         var element = evt.target as VisualElement;
-        var pos = element.worldBound.position;//+ new Vector2(element.worldBound.width / 2, element.worldBound.height / 2);
+        var pos = element.worldBound.position;
         Debug.Log($"Unpack gift pos: {pos}");
         _coinsView.ShowCoinsLbl(pos, randomPrize);
         Balance.AddBalance(randomPrize, _giftCoinsDelay);

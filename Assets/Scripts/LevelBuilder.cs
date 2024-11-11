@@ -68,6 +68,7 @@ public class LevelBuilder : MonoBehaviour
         }
 #endif
         _levelDataAsset = Resources.Load<TextAsset>($"LevelData/Stage {stage}/LevelData {level}");
+        Debug.Log($"Loading textAsset: {stage} {level}");
 
         _levelData = JsonConvert.DeserializeObject<LevelData>(_levelDataAsset.text);
 
