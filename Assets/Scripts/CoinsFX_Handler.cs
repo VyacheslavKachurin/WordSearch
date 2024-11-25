@@ -20,7 +20,7 @@ public class CoinsFX_Handler : MonoBehaviour
 
     public void SetForceField(Vector2 worldPos, int scale = 1)
     {
-        Debug.Log($"Setting Force Field: {worldPos}");
+    
         _forceField.transform.position = worldPos;
         _forceField.transform.localScale = new Vector3(scale, scale, scale);
 

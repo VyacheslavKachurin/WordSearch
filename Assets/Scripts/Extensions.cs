@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -88,4 +90,24 @@ public static class Extensions
         overlayFX.style.backgroundImage = new StyleBackground(Background.FromRenderTexture(renderTexture));
 
     }
+
+    public static Vector2 FindClosestPoint(Dictionary<Direction, Vector2> points, Vector2 touchPoint)
+    {
+
+        Vector2 closestPoint = points.First().Value;
+        float distance = Vector2.Distance(closestPoint, touchPoint);
+
+        foreach (var pair in points)
+        {
+            float currentDistance = Vector2.Distance(pair.Value, touchPoint);
+            if (currentDistance < distance)
+            {
+                closestPoint = pair.Value;
+                distance = currentDistance;
+            }
+        }
+
+        return closestPoint;
+    }
+    
 }

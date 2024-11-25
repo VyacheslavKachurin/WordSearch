@@ -59,6 +59,7 @@ MeshRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -82,7 +83,7 @@ MeshRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingOrder: 100
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &6246550194707134147
 MonoBehaviour:
@@ -226,7 +227,7 @@ BoxCollider2D:
   m_EdgeRadius: 0
 --- !u!50 &2295155177434838575
 Rigidbody2D:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -237,8 +238,8 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
   m_GravityScale: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -269,3 +270,5 @@ MonoBehaviour:
   _foundColor: {r: 1, g: 1, b: 1, a: 1}
   _disableDelay: 0.05
   _rotationLimit: 30
+  _animScaleUp: 1.5
+  _animScaleDuration: 0.3

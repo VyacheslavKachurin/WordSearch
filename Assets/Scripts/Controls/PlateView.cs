@@ -73,13 +73,14 @@ public partial class PlateView : VisualElement
         Debug.Log($"Handle reward");
         HideAdsOffer();
 
-        var pos = _adBtn.worldBound.position;
-        var reward = Session.RewardAmount;
+      //  var pos = _adBtn.worldBound.position;
+    //    var reward = Session.RewardAmount;
 
       //  OnAnimateCoinsRequested(pos, reward, null);
-        Balance.AddBalance(reward, 100);
-        AudioManager.Instance.PlaySound(Sound.Coins);
+     //   Balance.AddBalance(reward, 100);
+      //  AudioManager.Instance.PlaySound(Sound.Coins);
     }
+
 
     private void HideAdsOffer()
     {

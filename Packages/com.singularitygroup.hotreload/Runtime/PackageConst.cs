@@ -5,7 +5,7 @@ namespace SingularityGroup.HotReload {
     internal static class PackageConst {
         //CI changes this property to 'true' for asset store builds.
         //Don't touch unless you know what you are doing
-        public static bool IsAssetStoreBuild => false;
+        public static bool IsAssetStoreBuild => true;
 
         
         public const string Version = "1.12.12";

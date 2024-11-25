@@ -60,7 +60,7 @@
     </engine:VisualElement>
     <engine:VisualElement name="ref" class="view" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/References/finish-ref.jpeg?fileID=2800000&amp;guid=074260442e4c649eb9c61e8fe424f4c4&amp;type=3#finish-ref&quot;); display: none; opacity: 1;" />
     <engine:VisualElement name="visuals-div" picking-mode="Ignore" class="view" style="flex-grow: 1;" />
-    <engine:Image name="overlay-fx" picking-mode="Ignore" class="view" style="flex-grow: 1; display: flex;" />
     <ShopView picking-mode="Ignore" style="display: none;" />
     <CoinsView picking-mode="Ignore" style="position: absolute; width: 100%; height: 100%;" />
+    <engine:Image name="overlay-fx" picking-mode="Ignore" class="view" style="flex-grow: 1; display: flex;" />
 </engine:UXML>

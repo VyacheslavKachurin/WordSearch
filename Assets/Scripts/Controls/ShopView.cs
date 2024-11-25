@@ -16,6 +16,8 @@ public partial class ShopView : VisualElement
     public static event Action OnRemoveAdsClicked;
     public static event Action<int> OnPurchaseInit;
 
+    public VisualElement BuyBtn = null;
+
 
     public ShopView()
     {
@@ -43,7 +45,11 @@ public partial class ShopView : VisualElement
         for (int i = 0; i < _buyBtns.Count; i++)
         {
             var index = i;
-            _buyBtns[i].clicked += () => OnPurchaseInit?.Invoke(index);
+            _buyBtns[index].clicked += () =>
+            {
+                BuyBtn = _buyBtns[index];
+                OnPurchaseInit?.Invoke(index);
+            };
 
         }
         _adsDiv = this.Q<VisualElement>("ads-div");
@@ -51,7 +57,16 @@ public partial class ShopView : VisualElement
         if (Session.NoAds) HideAdsOffer();
         Session.AdsRemoved += HideAdsOffer;
 
-      
+        this.RegisterCallback<DetachFromPanelEvent>((evt) => Unsubscribe());
+       
+        
+    }
+
+    private void Unsubscribe()
+    {
+        NavigationRow.OnShopBtnClicked -= ShowShopView;
+        NavigationRow.OnShopHideClicked -= ShowShopView;
+        Session.AdsRemoved -= HideAdsOffer;
     }
 
     public void InitRemoveAds()
@@ -72,12 +87,6 @@ public partial class ShopView : VisualElement
 
     }
 
-    void OnDestroy()
-    {
-        Debug.Log($"Shop View Destroyed");
-        NavigationRow.OnShopBtnClicked -= ShowShopView;
-        NavigationRow.OnShopHideClicked -= ShowShopView;
-    }
 
     private void ShowShopView()
     {

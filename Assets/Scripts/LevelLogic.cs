@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using SingularityGroup.HotReload;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -42,13 +41,11 @@ public class LevelLogic : MonoBehaviour
     {
         InputHandler.OnInputStop += CheckWord;
         InputTrigger.OnLetterEnter += HandleLetterEnter;
-        InputHandler.OnInputDrag += HandleDrag;
+        InputHandler.OnTriggerMove += HandleTriggerMove;
         InputHandler.OnLetterDeselect += HandleLetterDeselect;
-        // WordFX.OnAnimDone += CheckIfLevelDone;
-
 
         _audio = AudioManager.Instance;
-        _inputHandler.SetLetterUnits(_tryWordLetterUnits);
+        // _inputHandler.SetLetterUnits(_tryWordLetterUnits);
         NavigationRow.OnBackBtnClicked += HandleBackBtn;
         _shouldCheckForFinish = true;
 
@@ -58,7 +55,7 @@ public class LevelLogic : MonoBehaviour
     {
         InputHandler.OnInputStop -= CheckWord;
         InputTrigger.OnLetterEnter -= HandleLetterEnter;
-        InputHandler.OnInputDrag -= HandleDrag;
+        InputHandler.OnTriggerMove -= HandleTriggerMove;
         InputHandler.OnLetterDeselect -= HandleLetterDeselect;
         //  WordFX.OnAnimDone -= CheckIfLevelDone;
         NavigationRow.OnBackBtnClicked -= HandleBackBtn;
@@ -113,25 +110,27 @@ public class LevelLogic : MonoBehaviour
         LevelStateService.SaveState();
     }
 
-    private void HandleLetterDeselect(LetterUnit letter)
+    private void HandleLetterDeselect(LetterUnit letter,Vector2 triggerPos)
     {
-        Debug.Log($"letter is null : {letter == null}");
-        Debug.Log($"Level Logic handle letter deselecte");
-        Debug.Log($"letter deselect: {letter.Letter}");
+//        Debug.Log($"Handle letter deselect: {letter.Letter}");
+        //Debug.Log($"letter is null : {letter == null}");
+        // Debug.Log($"Level Logic handle letter deselecte");
+        //  Debug.Log($"letter deselect: {letter.Letter}");
         _tryWordLetterUnits.Remove(letter);
         _tryWord = _tryWord.Substring(0, _tryWord.Length - 1);
         // Debug.Log($"tryWord deselect letter: {_tryWord}");
-        Debug.Log($"Letter deselect: {letter.Letter}");
+        //Debug.Log($"Letter deselect: {letter.Letter}");
         _levelView.RemoveLetter(letter.Letter);
         _audio.PlayLetter(_tryWordLetterUnits.Count);
-        _lineProvider.RemovePoint();
+        _lineProvider.RemovePoint(_tryWordLetterUnits.Count, triggerPos);
         letter.AnimateSelection(false);
     }
 
 
-    private void HandleDrag(Vector2 point)
+    private void HandleTriggerMove(Vector2 touchPos, Direction direction)
     {
-        _lineProvider.Draw(point);
+        var lastLetter = _tryWordLetterUnits[^1];
+        _lineProvider.Draw(touchPos, direction, lastLetter.transform.position,_tryWordLetterUnits.Count);
     }
 
     private void CheckWord()
@@ -273,10 +272,4 @@ public class LevelLogic : MonoBehaviour
             _words.Remove(word);
         }
     }
-}
-public enum Direction
-{
-    Up, Down, Left, Right,
-    None,
-    Diagonal
 }

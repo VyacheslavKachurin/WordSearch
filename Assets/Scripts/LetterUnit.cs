@@ -29,6 +29,10 @@ public class LetterUnit : MonoBehaviour
 
     [SerializeField] private float _animScaleDuration = 0.3f;
 
+    private List<Direction> _possibleDirections;
+    public List<Direction> PossibleDirections => _possibleDirections;
+    public Vector2 Pos => transform.position;
+
     void Awake()
     {
         _text = GetComponent<TextMeshPro>();
@@ -39,7 +43,12 @@ public class LetterUnit : MonoBehaviour
     [ContextMenu("Log Scale")]
     private void LogScale()
     {
-        Debug.Log(transform.localScale);
+        Debug.Log(transform.position);
+    }
+
+    public void GetPossibleDirections()
+    {
+
     }
 
 
@@ -48,6 +57,11 @@ public class LetterUnit : MonoBehaviour
         _text = GetComponent<TextMeshPro>();
         _text.text = letter.ToString().ToUpper();
         Point = point;
+    }
+
+    public void SetPossibleDirections(List<Direction> possibleDirections)
+    {
+        _possibleDirections = possibleDirections;
     }
 
     internal void SetSize(Vector2 letterSize, float scale)
@@ -119,5 +133,7 @@ public class LetterUnit : MonoBehaviour
         _lineColor = _colorData.GetRandom();
         return (Color)_lineColor;
     }
+
+    public static Vector2 operator -(LetterUnit a, LetterUnit b) => a.transform.position - b.transform.position;
 
 }

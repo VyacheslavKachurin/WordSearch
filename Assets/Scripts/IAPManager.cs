@@ -10,6 +10,7 @@ public class IAPManager : IDetailedStoreListener
     private IStoreController _controller;
     private IExtensionProvider _extensions;
     private ProductCatalog _catalog;
+    public static event Action<int> OnPurchasedCoins;
 
     public IAPManager()
     {
@@ -76,6 +77,7 @@ public class IAPManager : IDetailedStoreListener
         if (item.type == ProductType.Consumable)
         {
             Balance.AddBalance(payout);
+            OnPurchasedCoins?.Invoke((int)payout);
         }
         else
         {

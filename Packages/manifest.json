@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "com.google.external-dependency-manager": "https://github.com/google-unity/external-dependency-manager.git#1.2.177",
+
     "com.unity.ads": "4.4.2",
     "com.unity.collab-proxy": "2.5.2",
     "com.unity.device-simulator.devices": "1.0.0",

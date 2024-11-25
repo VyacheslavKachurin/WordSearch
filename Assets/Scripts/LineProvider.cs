@@ -16,6 +16,14 @@ public class LineProvider : MonoBehaviour
 
     public static Color? LastColor;
 
+    private int _startDrawOrder = 10;
+    private int _currentDrawOrder;
+
+    private void Awake()
+    {
+        _currentDrawOrder = _startDrawOrder;
+    }
+
     internal void Append(Vector2 point)
     {
         if (_line == null) return;
@@ -27,6 +35,7 @@ public class LineProvider : MonoBehaviour
 
     internal void CreateLine(Vector3 point, Color color)
     {
+
         LineRenderer line;
         line = Instantiate(_linePrefab, point, Quaternion.identity);
         line.startWidth = _lineSize;
@@ -38,30 +47,77 @@ public class LineProvider : MonoBehaviour
         line.startColor = color;
         line.endColor = color;
 
+        line.sortingOrder = _currentDrawOrder++;
+
         _lines.Add(line);
         _line = line;
     }
 
-    internal void Draw(Vector2 point)
+    internal void Draw(Vector2 point, Direction direction, Vector2 lastLetterPos, int letterCount)
     {
         if (_line == null) return;
-        if (Vector2.Distance(_line.GetPosition(_line.positionCount - 1), point) > _lineRendererDrawStep)
-            _line.SetPosition(_line.positionCount - 1, point);
+        if (Vector2.Distance(_line.GetPosition(_line.positionCount - 1), point) < _lineRendererDrawStep) return;
+        var lastPos = lastLetterPos;
+
+        if (letterCount > 1)
+            switch (direction)
+            {
+                case Direction.FromUpLeftToDownRight:
+                    if (point.x < lastPos.x && point.y > lastPos.y)
+                        return;
+                    break;
+                case Direction.FromUpRightToDownLeft:
+                    if (point.x > lastPos.x && point.y > lastPos.y)
+                        return;
+                    break;
+                case Direction.FromDownLeftToUpRight:
+                    if (point.x < lastPos.x && point.y < lastPos.y)
+                        return;
+                    break;
+                case Direction.FromDownRightToUpLeft:
+                    if (point.x > lastPos.x && point.y < lastPos.y)
+                        return;
+                    break;
+                default:
+                    break;
+            }
+
+        _line.SetPosition(_line.positionCount - 1, point);
 
     }
 
     internal void FinishDraw(bool keepLine, List<LetterUnit> letters = null)
     {
-        if (!keepLine && _line != null) Destroy(_line.gameObject);
+        if (!keepLine && _line != null)
+        {
+            _currentDrawOrder--;
+            Destroy(_line.gameObject);
+        }
         if (keepLine) CorrectLastPosition(letters);
         _line = null;
     }
 
-    public void RemovePoint()
+    public void RemovePoint(int letterCount, Vector2 triggerPos)
     {
+  //      Debug.Log($"remove point");
         if (_line == null) return;
         _line.positionCount--;
+        if (letterCount == 1)
+        {
+           
+            _line.positionCount = 1;
+            _line.positionCount = 2;
+            _line.SetPosition(1, triggerPos);
+        }
     }
+
+    private Vector3[] GetAllPositions()
+    {
+        Vector3[] positions = new Vector3[_line.positionCount];
+        _line.GetPositions(positions);
+        return positions;
+    }
+
 
     private void CorrectLastPosition(List<LetterUnit> letters)
     {
@@ -77,12 +133,14 @@ public class LineProvider : MonoBehaviour
 
         for (int i = 0; i < levelState.Lines.Count; i++)
         {
+
             var line = Instantiate(_linePrefab);
             line.positionCount = 2;
             line.SetPosition(0, levelState.Lines[i].Positions[0]);
             line.SetPosition(1, levelState.Lines[i].Positions[1]);
             line.startColor = levelState.Lines[i].color;
             line.endColor = levelState.Lines[i].color;
+            line.sortingOrder = _currentDrawOrder++;
             _lines.Add(line);
         }
 
@@ -128,6 +186,7 @@ public class LineProvider : MonoBehaviour
             if (line == null) continue;
             Destroy(line.gameObject);
         }
+        _currentDrawOrder = _startDrawOrder;
         _lines.Clear();
     }
 

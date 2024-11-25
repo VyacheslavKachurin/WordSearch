@@ -7,6 +7,7 @@ using UnityEngine.UIElements;
 using DG.Tweening;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using UnityEditor.Purchasing;
 
 public class LevelView : MonoBehaviour
 {
@@ -42,7 +43,7 @@ public class LevelView : MonoBehaviour
     private Button _nextLvlBtn;
     private VisualElement _progressFill;
     private Label _progressLbl;
-    private VisualElement _progressBg;
+    private VisualElement _cup;
     [SerializeField] private float _fillDelay = 0.01f;
     private Coroutine _progressBarCoroutine;
     private VisualElement _shopBg;
@@ -68,10 +69,12 @@ public class LevelView : MonoBehaviour
     [SerializeField] private float _rewardDelay = 0.5f;
     [SerializeField] private Vector2 _startPos;
     [SerializeField] private int _fxScale = 2;
+    private ShopView _shopView;
 
     private void Awake()
     {
         _root = GetComponent<UIDocument>().rootVisualElement;
+        NavigationRow.CoinsPicResolved += SetCoinsAnimation;
         _levelTheme = _root.Q<Label>("level-theme");
         _wordsHolder = _root.Q<VisualElement>("words-holder");
 
@@ -104,13 +107,15 @@ public class LevelView : MonoBehaviour
 
         _progressFill = _root.Q<VisualElement>("progress-fill");
         _progressLbl = _root.Q<Label>("progress-lbl");
-        _progressBg = _root.Q<VisualElement>("progress-bg");
+        _cup = _root.Q<VisualElement>("cup");
 
 
         _navRow = _root.Q<NavigationRow>();
         _navRow.InitBalance(AudioManager.Instance);
 
         _shopBg = _root.Q<VisualElement>("shop-bg");
+
+        _shopView = _root.Q<ShopView>();
 
         NavigationRow.OnShopBtnClicked += ShowShopBg;
         NavigationRow.OnShopHideClicked += HideShopBg;
@@ -131,7 +136,24 @@ public class LevelView : MonoBehaviour
 
         LevelLogic.WordListUpdated += HandleWordListUpdated;
 
-        NavigationRow.CoinsPicResolved += SetCoinsAnimation;
+
+
+        AdsController.RewardedAdWatched += RewardForAds;
+
+        IAPManager.OnPurchasedCoins += HandlePurchasedCoins;
+
+
+    }
+
+    private void HandlePurchasedCoins(int payout)
+    {
+        AwardPlayer(payout, _shopView.BuyBtn, _shopView.BuyBtn, false);
+        _shopView.BuyBtn = null;
+    }
+
+    private void RewardForAds()
+    {
+        AwardPlayer(Session.RewardAmount, _abilityBtns[Ability.Ads], _abilityBtns[Ability.Ads]);
     }
 
     private void HandleWordListUpdated(int words)
@@ -153,28 +175,29 @@ public class LevelView : MonoBehaviour
         NavigationRow.CoinsPicResolved -= SetCoinsAnimation;
         LevelLogic.WordListUpdated -= HandleWordListUpdated;
 
+        AdsController.RewardedAdWatched -= RewardForAds;
+        IAPManager.OnPurchasedCoins -= HandlePurchasedCoins;
 
     }
 
     [ContextMenu("Play coins FX")]
     public void PlayCoinsFX()
     {
-
         _coinsFX_Handler.PlayCoinsFX(_startPos, _fxScale);
     }
 
 
-    private void AwardPlayer()
+    private void AwardPlayer(int prizeAmount, VisualElement coinsLblRefPos, VisualElement fxStartPos, bool showLbl = true)
     {
-        var prize = _prizeAmount;
-        var element = _giftPic;
+        var prize = prizeAmount;
+        var element = coinsLblRefPos;
         var pos = element.worldBound.position;
-        _coinsView.ShowCoinsLbl(pos, prize);
+        if (showLbl) _coinsView.ShowCoinsLbl(pos, prize);
         Balance.AddBalance(prize, _prizeCoinsDelay);
         AudioManager.Instance.PlaySound(Sound.Coins);
 
-        _progressBg = _root.Q<VisualElement>("progress-bg");
-        var worldPos = _progressBg.GetWorldPosition(_root);
+
+        var worldPos = fxStartPos.GetWorldPosition(_root);
 
 
         _coinsFX_Handler.PlayCoinsFX(worldPos, _fxScale);
@@ -184,8 +207,7 @@ public class LevelView : MonoBehaviour
     private void InitNoAdsPurchase()
     {
         AudioManager.Instance.PlaySound(Sound.Click);
-        ShopView shopView = _root.Q<ShopView>();
-        shopView.InitRemoveAds();
+        _shopView.InitRemoveAds();
     }
 
     private void RemoveAdsBtn()
@@ -261,10 +283,12 @@ public class LevelView : MonoBehaviour
 
         _progressFill.RegisterCallbackOnce<GeometryChangedEvent>(e =>
         {
-            _finishView.AddToClassList(FINISH_VIEW_IN);
+            Debug.Log($"finish view in");
+
 
 
         });
+        _finishView.AddToClassList(FINISH_VIEW_IN);
 
         _progressFill.style.width = new StyleLength(new Length(currentFill, LengthUnit.Percent));
         yield return new WaitUntil(() => canContinue);
@@ -280,7 +304,8 @@ public class LevelView : MonoBehaviour
         {
             ShowStageCompleted();
             yield return new WaitForSeconds(_rewardDelay);
-            AwardPlayer();
+
+            AwardPlayer(_prizeAmount, _giftPic, _cup);
         }
 
         ShowNextLvlBtn();
@@ -465,7 +490,7 @@ public class LevelView : MonoBehaviour
 
     public void RemoveLetter(char letter)
     {
-        Debug.Log($"Level View remove letter is null: {letter == '\0'}");
+        //        Debug.Log($"Level View remove letter is null: {letter == '\0'}");
         if (letter == '\0') return;
         _targetLetters.text = _targetLetters.text.Remove(_targetLetters.text.Length - 1);
     }

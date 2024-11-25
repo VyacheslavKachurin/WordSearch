@@ -12,9 +12,11 @@ public class LevelBuilder : MonoBehaviour
     [SerializeField] AbilityLogic _abilityLogic;
     [SerializeField] AdsController _adsController;
     [SerializeField] BgController _bgController;
+    [SerializeField] private LineProvider _lineProvider;
+
+    [SerializeField] InputHandler _inputHandler;
 
     private LevelData _levelData;
-    [SerializeField] private LineProvider _lineProvider;
 
 #if UNITY_EDITOR
     [SerializeField] private int _targetLevel;
@@ -73,6 +75,10 @@ public class LevelBuilder : MonoBehaviour
         _levelData = JsonConvert.DeserializeObject<LevelData>(_levelDataAsset.text);
 
         _gameBoard.BuildBoard(_levelData);
+        var letterDistances= _gameBoard.GetLetterDistances();
+        var directions = _gameBoard.GetDirectionVectors();
+        _inputHandler.SetDirections(directions);
+        _inputHandler.SetLetterDistances(letterDistances);
 
         _levelView.SetLevelData(_levelData);
         _levelLogic.SetData(_levelData);
