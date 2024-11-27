@@ -15,7 +15,7 @@ public static class Session
     private const string IS_SOUND_ON = "is-sound-on";
 
     public static string TIMESTAMP_KEY = "timestamp";
-    public static string STAGE_KEY = "stage";
+   // public static string STAGE_KEY = "stage";
 
     public static bool IsFirstTime
     {
@@ -29,6 +29,7 @@ public static class Session
         }
     }
 
+/*
     public static int LastStage
     {
         get
@@ -40,10 +41,11 @@ public static class Session
             PlayerPrefs.SetInt(STAGE_KEY, value);
         }
     }
+    */
 
     public static bool IsSelecting = false;
     public static int RewardAmount = 25;
-
+/*
     private static int LastClassicLevel
     {
         get
@@ -55,16 +57,21 @@ public static class Session
             PlayerPrefs.SetInt(LAST_CLASSIC_LEVEL, value);
         }
     }
+    */
 
-    public static int GetLastLevel()
-    {
-        return LastClassicLevel;
-    }
+    /*
+        public static int GetLastLevel()
+        {
+            return LastClassicLevel;
+        }
+        */
 
+/*
     public static void SetLastLevel(int level)
     {
         LastClassicLevel = level;
     }
+    */
 
     public static bool IsMusicOn
     {
@@ -132,8 +139,10 @@ public static class Session
         return answer;
     }
 
+/*
     internal static int GetLastStage()
     {
         return LastStage;
     }
+    */
 }

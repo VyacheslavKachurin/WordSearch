@@ -13,7 +13,6 @@ public class LevelBuilder : MonoBehaviour
     [SerializeField] AdsController _adsController;
     [SerializeField] BgController _bgController;
     [SerializeField] private LineProvider _lineProvider;
-
     [SerializeField] InputHandler _inputHandler;
 
     private LevelData _levelData;
@@ -30,7 +29,6 @@ public class LevelBuilder : MonoBehaviour
         CreateLevel();
         _adsController.LoadBanner();
         LevelView.NextLevelClicked += GoNextLevel;
-
     }
 
     private void OnDestroy()
@@ -39,17 +37,9 @@ public class LevelBuilder : MonoBehaviour
     }
 
 
-    [ContextMenu("Reset Progress")]
-    private void ResetProgress()
-    {
-        Session.SetLastLevel(1);
-    }
-
     private void GoNextLevel()
     {
-
-        var nextLvl = Session.GetLastLevel() + 1;
-        Session.SetLastLevel(nextLvl);
+        GameDataService.IncreaseLevel();
         LevelStateService.DeleteState();
         CreateLevel();
     }
@@ -59,28 +49,30 @@ public class LevelBuilder : MonoBehaviour
     {
         _lineProvider.ResetState();
         Session.IsSelecting = true;
-        var level = Session.GetLastLevel();
-        var stage = Session.GetLastStage();
+
+        var path = GameDataService.GetPathToLevel();
 
 #if UNITY_EDITOR
         if (_loadTargetLevel)
         {
-            level = _targetLevel;
-            stage = _stage;
+
+            path = $"LevelData/Season {_stage}/LevelData {_targetLevel}";
         }
 #endif
-        _levelDataAsset = Resources.Load<TextAsset>($"LevelData/Stage {stage}/LevelData {level}");
-        Debug.Log($"Loading textAsset: {stage} {level}");
+
+        _levelDataAsset = Resources.Load<TextAsset>(path);
+        Debug.Log($"Loading textAsset: {path}");
 
         _levelData = JsonConvert.DeserializeObject<LevelData>(_levelDataAsset.text);
 
         _gameBoard.BuildBoard(_levelData);
-        var letterDistances= _gameBoard.GetLetterDistances();
+        var letterDistances = _gameBoard.GetLetterDistances();
         var directions = _gameBoard.GetDirectionVectors();
         _inputHandler.SetDirections(directions);
         _inputHandler.SetLetterDistances(letterDistances);
 
         _levelView.SetLevelData(_levelData);
+
         _levelLogic.SetData(_levelData);
         _abilityLogic.SetData(_levelData, _gameBoard);
         StartCoroutine(SetLineSize());
@@ -127,7 +119,6 @@ public class LevelBuilder : MonoBehaviour
         var usedLetters = totalLetters - _levelData.FakeLetters.Count;
         var ratio = (float)totalLetters / usedLetters;
         Debug.Log($"Ratio: {totalLetters} / {usedLetters}  = {ratio}");
-
     }
 
 }

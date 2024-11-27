@@ -70,7 +70,7 @@ public class Services : MonoBehaviour
     [ContextMenu("Clear Level Progress")]
     public void ClearLevelProgress()
     {
-        Session.SetLastLevel(1);
+       // Session.SetLastLevel(1);
     }
 
     [ContextMenu("Clear coins data")]
@@ -86,9 +86,10 @@ public class Services : MonoBehaviour
         ClearCoinsData();
         RemoveAdsPurchase();
         ClearGiftData();
-        Session.LastStage = 1;
-        Session.SetLastLevel(1);
+       // Session.LastStage = 1;
+       // Session.SetLastLevel(1);
         DeleteState();
+        GameDataService.ClearProgress();
     }
 
     [ContextMenu("Clear Gift Data")]

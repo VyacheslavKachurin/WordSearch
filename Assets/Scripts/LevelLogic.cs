@@ -30,7 +30,7 @@ public class LevelLogic : MonoBehaviour
     [SerializeField] private bool _canContinue = false;
 #endif
 
-    public static int Stage;
+    // public static int Stage;
     public static int Step;
     public static int TotalSteps;
 
@@ -89,7 +89,7 @@ public class LevelLogic : MonoBehaviour
         Debug.Log($"waiting until all particles are done, active particles: {ParticleProvider.IsAnimating}");
         //yield return new WaitUntil(() => !ParticleProvider.IsAnimating);
         yield return new WaitForSeconds(1);
-        _levelView.ShowFinishView();
+        _levelView.ShowFinishView(GameDataService.GameData.Episode, GameDataService.GameData.TotalEpisodes);
         _shouldCheckForFinish = false;
     }
 
@@ -247,18 +247,21 @@ public class LevelLogic : MonoBehaviour
         IsLevelDone();
     }
 
+/*
     [ContextMenu("set stage to 1")]
     private void SetStageTo1()
     {
-        Session.LastStage = 1;
+      //  Session.LastStage = 1;
     }
+    */
 
     internal void SetData(LevelData levelData)
     {
+        var gameData = GameDataService.GameData;
         _words = levelData.Words.ToList();
-        Stage = levelData.Stage;
-        Step = levelData.Step;
-        TotalSteps = levelData.TotalSteps;
+        // Stage = levelData.Stage;
+        //   Step = levelData.Step;
+        TotalSteps = gameData.TotalEpisodes;
         _shouldCheckForFinish = true;
 
 

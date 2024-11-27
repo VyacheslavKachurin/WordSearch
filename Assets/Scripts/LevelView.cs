@@ -102,7 +102,7 @@ public class LevelView : MonoBehaviour
 
         _finishView = _root.Q<VisualElement>("finish-view");
         _nextLvlBtn = _finishView.Q<Button>("next-lvl-btn");
-        _nextLvlBtn.clicked += HandleNextLvlBtn;
+        _nextLvlBtn.clicked += HandleNextLvlClick;
 
         _progressFill = _root.Q<VisualElement>("progress-fill");
         _progressLbl = _root.Q<Label>("progress-lbl");
@@ -119,7 +119,7 @@ public class LevelView : MonoBehaviour
         NavigationRow.OnShopBtnClicked += ShowShopBg;
         NavigationRow.OnShopHideClicked += HideShopBg;
 
-        SetBackPicture();
+
 
         _removeAdsBtn = _root.Q<Button>("remove-ads-btn");
 
@@ -234,17 +234,17 @@ public class LevelView : MonoBehaviour
         _shopBg.Toggle(false);
     }
 
-    public void ShowFinishView()
+    public void ShowFinishView(int episode, int totalEpisodes)
     {
         Session.IsSelecting = false;
         Debug.Log($"show finish view");
-        _progressLbl.text = $"{LevelLogic.Step}/{LevelLogic.TotalSteps}";
+        _progressLbl.text = $"{episode}/{totalEpisodes}";
         _finishView.Toggle(true);
 
         _finishView.RegisterCallbackOnce<TransitionEndEvent>(e =>
         {
             if (_progressBarCoroutine != null) return;
-            _progressBarCoroutine = StartCoroutine(FillProgressBar(LevelLogic.Step, LevelLogic.TotalSteps));
+            _progressBarCoroutine = StartCoroutine(FillProgressBar(episode, totalEpisodes));
         });
 
 
@@ -257,7 +257,7 @@ public class LevelView : MonoBehaviour
 
         AudioManager.Instance.PlaySound(Sound.StageCompleted);
         _winFX.Play();
-        Session.LastStage++;
+        //  Session.LastStage++;
 
 
     }
@@ -265,15 +265,16 @@ public class LevelView : MonoBehaviour
     [ContextMenu("Show Finish View")]
     public void ShowFinish()
     {
-        ShowFinishView();
+        var gameData = GameDataService.GameData;
+        ShowFinishView(gameData.Episode, gameData.TotalEpisodes);
     }
 
 
 
-    private IEnumerator FillProgressBar(int step, int totalsteps)
+    private IEnumerator FillProgressBar(int episode, int totalEpisodes)
     {
-        var targetFill = 100 * ((float)step / (float)totalsteps);
-        var currentFill = 100 * (((float)step - 1) / (float)totalsteps);
+        var targetFill = 100 * ((float)episode / (float)totalEpisodes);
+        var currentFill = 100 * (((float)episode - 1) / (float)totalEpisodes);
         var canContinue = false;
         _finishView.RegisterCallbackOnce<TransitionEndEvent>(e =>
         {
@@ -299,11 +300,10 @@ public class LevelView : MonoBehaviour
             yield return new WaitForSeconds(_fillDelay);
         }
 
-        if (LevelLogic.Step == LevelLogic.TotalSteps)
+        if (episode == totalEpisodes)
         {
             ShowStageCompleted();
             yield return new WaitForSeconds(_rewardDelay);
-
             AwardPlayer(_prizeAmount, _giftPic, _cup);
         }
 
@@ -317,7 +317,7 @@ public class LevelView : MonoBehaviour
 
     }
 
-    private void HandleNextLvlBtn()
+    private void HandleNextLvlClick()
     {
         AudioManager.Instance.PlaySound(Sound.Click);
         NextLevelClicked?.Invoke();
@@ -362,9 +362,10 @@ public class LevelView : MonoBehaviour
     {
         _levelTheme.text = data.Subject;
         FillWords(data.Words);
-        _levelLbl.text = $"Level: {data.Level}";
+        _levelLbl.text = $"Level: {GameDataService.GameData.Level}";
 
         ResetBtns();
+        SetBackPicture();
 
         // country
         // level
