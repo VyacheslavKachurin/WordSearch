@@ -149,6 +149,7 @@ public class GameBoard : MonoBehaviour
         var diagonal = Vector2.Distance(_letters[1, 1].Pos, _letters[0, 0].Pos);
         return new List<float> { horizontal, vertical, diagonal };
     }
+
 }
 
 

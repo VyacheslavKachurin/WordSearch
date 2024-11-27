@@ -37,6 +37,7 @@ public class LevelLogic : MonoBehaviour
 
     private bool _shouldCheckForFinish = true;
 
+
     private void Start()
     {
         InputHandler.OnInputStop += CheckWord;
@@ -110,9 +111,9 @@ public class LevelLogic : MonoBehaviour
         LevelStateService.SaveState();
     }
 
-    private void HandleLetterDeselect(LetterUnit letter,Vector2 triggerPos)
+    private void HandleLetterDeselect(LetterUnit letter, Vector2 triggerPos)
     {
-//        Debug.Log($"Handle letter deselect: {letter.Letter}");
+        //        Debug.Log($"Handle letter deselect: {letter.Letter}");
         //Debug.Log($"letter is null : {letter == null}");
         // Debug.Log($"Level Logic handle letter deselecte");
         //  Debug.Log($"letter deselect: {letter.Letter}");
@@ -130,7 +131,7 @@ public class LevelLogic : MonoBehaviour
     private void HandleTriggerMove(Vector2 touchPos, Direction direction)
     {
         var lastLetter = _tryWordLetterUnits[^1];
-        _lineProvider.Draw(touchPos, direction, lastLetter.transform.position,_tryWordLetterUnits.Count);
+        _lineProvider.Draw(touchPos, direction, lastLetter.transform.position, _tryWordLetterUnits.Count);
     }
 
     private void CheckWord()

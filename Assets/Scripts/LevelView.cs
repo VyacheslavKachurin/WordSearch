@@ -6,8 +6,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using DG.Tweening;
 using System.Collections;
-using UnityEngine.SceneManagement;
-using UnityEditor.Purchasing;
+
 
 public class LevelView : MonoBehaviour
 {

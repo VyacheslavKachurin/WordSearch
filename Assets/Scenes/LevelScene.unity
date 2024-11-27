@@ -1003,6 +1003,10 @@ PrefabInstance:
       value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 6683193778254643701, guid: ad42d697363c9480a967da157ecda282, type: 3}
+      propertyPath: _gameBoard
+      value: 
+      objectReference: {fileID: 1362269165}
+    - target: {fileID: 6683193778254643701, guid: ad42d697363c9480a967da157ecda282, type: 3}
       propertyPath: _debugSprite
       value: 
       objectReference: {fileID: 7482667652216324306, guid: a73cd924276584977ba6660cc20faea4, type: 3}
@@ -1110,7 +1114,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 653042333132667601, guid: 17a33570626f24b789e8d24a2885aba7, type: 3}
       propertyPath: _stage
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 653042333132667601, guid: 17a33570626f24b789e8d24a2885aba7, type: 3}
       propertyPath: _gameBoard
@@ -1130,7 +1134,7 @@ PrefabInstance:
       objectReference: {fileID: 1609788870}
     - target: {fileID: 653042333132667601, guid: 17a33570626f24b789e8d24a2885aba7, type: 3}
       propertyPath: _targetLevel
-      value: 5
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 653042333132667601, guid: 17a33570626f24b789e8d24a2885aba7, type: 3}
       propertyPath: _abilityLogic

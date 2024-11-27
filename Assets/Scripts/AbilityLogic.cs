@@ -84,7 +84,7 @@ public class AbilityLogic : MonoBehaviour
             var color = _gameBoard.Letters[point.Y, point.X].GetColor();
             var position = _gameBoard.Letters[point.Y, point.X].transform.position;
             _lineProvider.CreateLine(position, color);
-            
+
         }
 
     }
@@ -92,7 +92,7 @@ public class AbilityLogic : MonoBehaviour
     public void HideFakeLetters()
     {
         _audioManager.PlaySound(Sound.Magnet);
-        foreach (var point in _data.FakeLetters)
+        foreach (var point in LevelStateService.GetSomeFakeLetters(_data))
         {
             _gameBoard.Letters[point.Y, point.X].Hide();
 

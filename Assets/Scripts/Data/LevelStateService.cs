@@ -38,6 +38,14 @@ public class LevelStateService
         return false;
     }
 
+
+    public static List<Point> GetSomeFakeLetters(LevelData data)
+    {
+        int amountToTake = Convert.ToInt32(data.FakeLetters.Count * 0.7f);
+        State.RevealedFakeLetters ??= data.FakeLetters.OrderBy(x => UnityEngine.Random.Range(0f, 1f)).Take(amountToTake).ToList();
+        return State.RevealedFakeLetters;
+    }
+
     public static void DeleteState()
     {
         if (!System.IO.File.Exists(_prePath + _fileName)) return;

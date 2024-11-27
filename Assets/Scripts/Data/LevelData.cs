@@ -1,6 +1,7 @@
 
+using System;
 using System.Collections.Generic;
-
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Scripting;
 
@@ -32,6 +33,9 @@ public class LevelData
     public List<Point> FakeLetters;
     [Preserve]
     public List<Point> FirstLetters;
+
+
+
     [Preserve]
     public LevelData(int level, string subject, List<string> words, char[,] matrix, int width, int height, int stage, int step, int totalSteps, List<Point> fakeLetters, List<Point> firstLetters)
     {
@@ -49,6 +53,7 @@ public class LevelData
     }
     [Preserve]
     public LevelData() { }
+
 
 }
 
@@ -72,4 +77,6 @@ public class Point
     {
         return new Vector2(X, Y);
     }
+
+
 }

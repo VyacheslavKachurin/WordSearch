@@ -49,7 +49,6 @@ public class InputHandler : MonoBehaviour
     [ContextMenu("ImitateInput")]
     private void ImitateInput()
     {
-
         _trigger = Instantiate(_inputTriggerPrefab, _firstLetter.transform.position, Quaternion.identity);
         _nextPosition = _targetLetter.transform.position;
         _isMoving = true;
@@ -104,7 +103,7 @@ public class InputHandler : MonoBehaviour
 
         if (!isOnDirection)
         {
-          //  Debug.Log($"we are not on direction;current dir: {_direction}");
+            //  Debug.Log($"we are not on direction;current dir: {_direction}");
             _letterUnits.Remove(unit);
             OnLetterDeselect?.Invoke(unit, _trigger.RbPosition);
             if (_letterUnits.Count == 1)
@@ -131,18 +130,32 @@ public class InputHandler : MonoBehaviour
 
         if (_touch.phase == TouchPhase.Began)
         {
-            if (!IsOnGameField(_touch.position)) return;
+            if (!IsOnGameField(_touch.position))
+            {
+                Debug.Log($"not on game field");
+                return;
+            }
+
             // var pos = ToWorldPosition(_touch.position);
 
             var ray = _cam.ScreenPointToRay(_touch.position);
             var hit = Physics2D.Raycast(ray.origin, ray.direction, Mathf.Infinity, _letterMask);
-            if (!hit) return;
-            if (!hit.collider.name.Contains("Letter"))
+
+            if (hit && hit.collider.name.Contains("Letter"))
             {
-                Debug.Log($"collider name: {hit.collider.name}");
-                return;
+                _lastHitCollider = hit.collider;
             }
-            _lastHitCollider = hit.collider;
+            else
+            {
+
+                var worldTouchPos = Camera.main.ScreenToWorldPoint(_touch.position);
+                var letters = Physics2D.OverlapCircleAll(worldTouchPos, _horizontalDistance);
+                Debug.Log($"letters count: {letters.Length}");
+
+                _lastHitCollider = FindTheClosestLetter(letters, worldTouchPos);
+                if (_lastHitCollider == null) return;
+            }
+
 
             ShowPositions(_lastHitCollider.GetComponent<LetterUnit>());
 
@@ -154,7 +167,7 @@ public class InputHandler : MonoBehaviour
 
         if (_touch.phase == TouchPhase.Moved && _isSelecting)
         {
-             if (!IsOnGameField(_touch.position)) return;
+            if (!IsOnGameField(_touch.position)) return;
             if (_isMoving) return;
 
             if (Vector2.Distance(_lastHitCollider.transform.position, _cam.ScreenToWorldPoint(_touch.position)) < _upLeft.magnitude * 0.7f)
@@ -165,7 +178,6 @@ public class InputHandler : MonoBehaviour
 
             else
             {
-                Vector2 closestPoint;
 
                 var lastLetter = _lastHitCollider.GetComponent<LetterUnit>(); // TODO : FIX IT
                 if (_letterUnits.Count < 2) SetDirection(_touch.position, lastLetter);
@@ -226,6 +238,26 @@ public class InputHandler : MonoBehaviour
             _letterUnits.Clear();
         }
 
+    }
+
+
+    private Collider2D? FindTheClosestLetter(Collider2D[] letters, Vector3 worldTouchPos)
+    {
+        Debug.Log($"start looping letters");
+        Transform closest = null;
+        var closestDistance = _horizontalDistance;
+        foreach (var letter in letters)
+        {
+            var distance = Vector2.Distance(worldTouchPos, letter.transform.position);
+            if (distance < closestDistance)
+            {
+                closest = letter.transform;
+                closestDistance = distance;
+            }
+        }
+        if (closest == null) return null;
+        else
+            return closest.TryGetComponent<Collider2D>(out var collider) ? collider : null;
     }
 
 
@@ -487,7 +519,7 @@ public class InputHandler : MonoBehaviour
         {
             if (pair.Value == closestPoint)
             {
-             
+
                 _direction = pair.Key;
                 break;
             }
