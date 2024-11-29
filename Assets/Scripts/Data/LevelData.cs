@@ -27,9 +27,14 @@ public class LevelData
     [Preserve]
     public List<Point> FirstLetters;
 
+    [Preserve]
+    public List<Point> LastLetters;
+
+
+
 
     [Preserve]
-    public LevelData(string subject, List<string> words, char[,] matrix, int width, int height, List<Point> fakeLetters, List<Point> firstLetters)
+    public LevelData(string subject, List<string> words, char[,] matrix, int width, int height, List<Point> fakeLetters, List<Point> firstLetters, List<Point> lastLetters)
     {
         Subject = subject;
         Words = words;
@@ -38,6 +43,7 @@ public class LevelData
         Height = height;
         FakeLetters = fakeLetters;
         FirstLetters = firstLetters;
+        LastLetters = lastLetters;
     }
 
     [Preserve]

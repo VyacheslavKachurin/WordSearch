@@ -86,25 +86,25 @@ public class LineProvider : MonoBehaviour
 
     }
 
-    internal void FinishDraw(bool keepLine, List<LetterUnit> letters = null)
+    internal void FinishDraw(bool keepLine, List<LetterUnit> letters = null, bool correctLastPos = true)
     {
         if (!keepLine && _line != null)
         {
             _currentDrawOrder--;
             Destroy(_line.gameObject);
         }
-        if (keepLine) CorrectLastPosition(letters);
+        if (keepLine && correctLastPos) CorrectLastPosition(letters);
         _line = null;
     }
 
     public void RemovePoint(int letterCount, Vector2 triggerPos)
     {
-  //      Debug.Log($"remove point");
+        //      Debug.Log($"remove point");
         if (_line == null) return;
         _line.positionCount--;
         if (letterCount == 1)
         {
-           
+
             _line.positionCount = 1;
             _line.positionCount = 2;
             _line.SetPosition(1, triggerPos);
@@ -121,11 +121,8 @@ public class LineProvider : MonoBehaviour
 
     private void CorrectLastPosition(List<LetterUnit> letters)
     {
-
         if (_line.positionCount > letters.Count) _line.positionCount = letters.Count;
         _line.SetPosition(_line.positionCount - 1, letters[^1].transform.position);
-
-
     }
 
     internal void SetState(LevelState levelState, LetterUnit[,] letters)
@@ -177,7 +174,7 @@ public class LineProvider : MonoBehaviour
     }
 
     [ContextMenu("Reset State")]
-    internal void ResetState()
+    public void ResetState()
     {
         Debug.Log($"Reset state called");
         if (_lines.Count == 0) return;

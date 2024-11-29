@@ -2,6 +2,9 @@ using UnityEngine;
 using Newtonsoft.Json;
 using System.Collections;
 using System;
+using System.Collections.Generic;
+using UnityEditor;
+using System.IO;
 
 public class LevelBuilder : MonoBehaviour
 {
@@ -23,7 +26,6 @@ public class LevelBuilder : MonoBehaviour
     [SerializeField] private int _stage;
 #endif
 
-
     private void Start()
     {
         CreateLevel();
@@ -31,11 +33,64 @@ public class LevelBuilder : MonoBehaviour
         LevelView.NextLevelClicked += GoNextLevel;
     }
 
+    [ContextMenu("Build Level")]
+    private void StartBuildLevel()
+    {
+        StartCoroutine(BuildLevel());
+    }
+
+    private IEnumerator BuildLevel()
+    {
+        do
+        {
+            ClearLines();
+            CreateLevel();
+            DrawLines();
+            MakeScreenShot();
+            yield return new WaitForSeconds(0.1f);
+        }
+        while (GameDataService.IncreaseLevel());
+
+
+    }
+
+    private void MakeScreenShot()
+    {
+        var season = GameDataService.GameData.Season;
+        var episode = GameDataService.GameData.Episode;
+        var subject = _levelData.Subject;
+        var path = $"Pics/S{season}_E{episode}_{subject}.png";
+        Debug.Log($"Screenshot path: {path}");
+        ScreenCapture.CaptureScreenshot(path);
+
+    }
+
+    [ContextMenu("Clear Lines")]
+    private void ClearLines()
+    {
+        _lineProvider.ResetState();
+    }
+
+    private void DrawLines()
+    {
+        for (int i = 0; i < _levelData.FirstLetters.Count; i++)
+        {
+            var firstLetter = _levelData.FirstLetters[i];
+            var lastLetter = _levelData.LastLetters[i];
+            var firstUnit = _gameBoard.Letters[firstLetter.Y, firstLetter.X];
+            var color = firstUnit.GetColor();
+            var lastUnit = _gameBoard.Letters[lastLetter.Y, lastLetter.X];
+            _lineProvider.CreateLine(firstUnit.transform.position, color);
+            _lineProvider.Append(lastUnit.transform.position);
+            _lineProvider.FinishDraw(true, null, false);
+
+        }
+    }
+
     private void OnDestroy()
     {
         LevelView.NextLevelClicked -= GoNextLevel;
     }
-
 
     private void GoNextLevel()
     {

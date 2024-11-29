@@ -8,11 +8,9 @@ public class BgController : MonoBehaviour
 
     public Texture2D GetBackView()
     {
-
         var texture = Resources.Load("BG/" + GameDataService.GameData.Season) as Texture2D;
         return texture;
     }
-
 
     public void CreateBackView()
     {

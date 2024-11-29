@@ -201,7 +201,7 @@ MonoBehaviour:
     - line: '|     Bratwurst: 0'
     - line: '|     Standalone: 0'
     - line: '|     VisionOS: 0'
-    - line: '|     iPhone: 1'
+    - line: '|     iPhone: 3'
     - line: '|     tvOS: 0'
     - line: '|   overrideDefaultApplicationIdentifier: 1'
     - line: '|   AndroidBundleVersionCode: 1'

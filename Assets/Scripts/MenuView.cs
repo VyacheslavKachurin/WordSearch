@@ -85,6 +85,7 @@ public class MenuView : MonoBehaviour
         if (Session.NoAds) HideAdsBtn();
 
         TryRemoveBanner();
+        GameDataService.LoadGame();
         SetBackPicture();
 
         EnableSettingsBtn();

@@ -2,6 +2,7 @@ using System;
 
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class InputHandler : MonoBehaviour
@@ -40,7 +41,6 @@ public class InputHandler : MonoBehaviour
     private Vector2? _nextPosition;
     private Vector2 _triggerDirection;
 
-
     [SerializeField] private LetterUnit _targetLetter;
     [SerializeField] private LetterUnit _firstLetter;
 
@@ -77,14 +77,11 @@ public class InputHandler : MonoBehaviour
         if (!_letterUnits.Contains(unit))
         {
             _letterUnits.Add(unit);
-
         }
         if (_letterUnits.Count == 1)
             _direction = Direction.None;
-
         //        Debug.Log($"Letter units count: {_letterUnits.Count}");
         _lastHitCollider = unit.GetComponent<Collider2D>();
-
         // _nextPosition = unit.transform.position;
 
     }
@@ -107,7 +104,18 @@ public class InputHandler : MonoBehaviour
             _letterUnits.Remove(unit);
             OnLetterDeselect?.Invoke(unit, _trigger.RbPosition);
             if (_letterUnits.Count == 1)
+            {
                 _lastHitCollider = _letterUnits[0].GetComponent<Collider2D>();
+                //  _trigger.RbPosition = _letterUnits[0].transform.position;
+
+                var touchPos = Camera.main.ScreenToWorldPoint(_touch.position);
+                if (Vector2.Distance(_trigger.RbPosition, touchPos) > _horizontalDistance)
+                {
+                    FinishSelecting();
+                }
+                //   _isMoving = false;
+                //  _nextPosition = _letterUnits[0].transform.position;
+            }
 
         }
     }
@@ -146,7 +154,6 @@ public class InputHandler : MonoBehaviour
             }
             else
             {
-
                 var worldTouchPos = Camera.main.ScreenToWorldPoint(_touch.position);
                 var letters = Physics2D.OverlapCircleAll(worldTouchPos, _horizontalDistance);
                 Debug.Log($"letters count: {letters.Length}");
@@ -155,14 +162,12 @@ public class InputHandler : MonoBehaviour
                 if (_lastHitCollider == null) return;
             }
 
-
             ShowPositions(_lastHitCollider.GetComponent<LetterUnit>());
 
             _trigger = Instantiate(_inputTriggerPrefab, _lastHitCollider.transform.position, Quaternion.identity);
             _direction = Direction.None;
             _isSelecting = true;
         }
-
 
         if (_touch.phase == TouchPhase.Moved && _isSelecting)
         {
@@ -177,7 +182,6 @@ public class InputHandler : MonoBehaviour
 
             else
             {
-
                 var lastLetter = _lastHitCollider.GetComponent<LetterUnit>(); // TODO : FIX IT
                 if (_letterUnits.Count < 2) SetDirection(_touch.position, lastLetter);
 
@@ -192,21 +196,26 @@ public class InputHandler : MonoBehaviour
                 return;
 
             }
-          
+
         }
 
 
         if (_touch.phase == TouchPhase.Ended && _isSelecting)
         {
-            StopSelecting();
-            DeletePositions();
-            _lastHitCollider = null;
-            _direction = Direction.None;
-            _nextPosition = null;
-            _isMoving = false;
-            _letterUnits.Clear();
+            FinishSelecting();
         }
 
+    }
+
+    private void FinishSelecting()
+    {
+        StopSelecting();
+        DeletePositions();
+        _lastHitCollider = null;
+        _direction = Direction.None;
+        _nextPosition = null;
+        _isMoving = false;
+        _letterUnits.Clear();
     }
 
 
@@ -232,20 +241,24 @@ public class InputHandler : MonoBehaviour
 
     private void FixedUpdate()
     {
-
         if (!_isMoving) return;
-
 
         Vector2 targetPosition = (Vector2)_nextPosition;
         Vector2 currentPosition = _trigger.Rb.position;
         float step = _speed * Time.fixedDeltaTime;
 
+        /*
+                if (Vector2.Distance(currentPosition, targetPosition) > _horizontalDistance / 2)
+                {
+                    _isMoving = false;
+                    return;
+                }
+                */
+
 
         _trigger.Rb.position = Vector2.MoveTowards(currentPosition, targetPosition, step);
-    
 
         OnTriggerMove?.Invoke(_trigger.RbPosition, _direction);
-
 
         if (Vector2.Distance(_trigger.Rb.position, targetPosition) < 0.1f)
         {
@@ -253,18 +266,15 @@ public class InputHandler : MonoBehaviour
 
             _isMoving = false;
         }
-
     }
-
 
 
     private Vector2 GetNewPosition(Vector2 touchPos, LetterUnit letter)
     {
-
         var worldTouchPos = _cam.ScreenToWorldPoint(touchPos);
         var possibleDirections = letter.PossibleDirections;
         var isDirectionAvailable = possibleDirections.Contains(_direction);
-    
+
         Vector2 newPos = letter.Pos;
         switch (_direction)
         {
@@ -367,8 +377,6 @@ public class InputHandler : MonoBehaviour
     }
 
 
-    
-
     private bool IsOnDirection(Vector2 triggerPos)
     {
         //Debug.Log($"letter units count:{_letterUnits.Count}");
@@ -385,7 +393,6 @@ public class InputHandler : MonoBehaviour
 
         else
         {
-        
             return false;
         }
     }
@@ -401,13 +408,10 @@ public class InputHandler : MonoBehaviour
         {
             if (pair.Value == closestPoint)
             {
-
                 _direction = pair.Key;
                 break;
             }
         }
-
-
     }
 
 
@@ -459,8 +463,6 @@ public class InputHandler : MonoBehaviour
 
         return letterPos + addedVector;
     }
-
-
 
     private void ShowPositions(LetterUnit letterUnit)
     {
