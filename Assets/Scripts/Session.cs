@@ -25,6 +25,7 @@ public static class Session
         }
         set
         {
+            
             PlayerPrefs.SetInt(IS_FIRST_TIME, value ? 1 : 0);
         }
     }

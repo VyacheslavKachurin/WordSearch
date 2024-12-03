@@ -130,7 +130,9 @@ public class LetterUnit : MonoBehaviour
 
     internal Color GetColor()
     {
+
         _lineColor = _colorData.GetRandom();
+   
         return (Color)_lineColor;
     }
 

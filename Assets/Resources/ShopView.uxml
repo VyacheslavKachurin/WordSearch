@@ -56,5 +56,10 @@
                 </engine:Button>
             </engine:VisualElement>
         </engine:VisualElement>
+        <engine:VisualElement name="network-div" style="flex-grow: 1; position: absolute; width: 100%; height: 100%; align-items: center; justify-content: center; display: none; background-color: rgba(0, 0, 0, 0.51);">
+            <engine:VisualElement style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/ads-bg.png?fileID=2800000&amp;guid=7d9032c377a74428dbf7f28daa533318&amp;type=3#ads-bg&quot;); width: 963px; height: 417px; align-items: center; justify-content: center; padding-left: 50px; padding-right: 50px; -unity-text-align: upper-center;">
+                <engine:Label text="You need to enable internet connection to access purchases" style="font-size: 45px; white-space: normal; -unity-font-style: bold;" />
+            </engine:VisualElement>
+        </engine:VisualElement>
     </engine:VisualElement>
 </engine:UXML>

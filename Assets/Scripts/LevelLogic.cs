@@ -130,6 +130,7 @@ public class LevelLogic : MonoBehaviour
 
     private void HandleTriggerMove(Vector2 touchPos, Direction direction)
     {
+        if(_tryWordLetterUnits.Count == 0) return;
         var lastLetter = _tryWordLetterUnits[^1];
         _lineProvider.Draw(touchPos, direction, lastLetter.transform.position, _tryWordLetterUnits.Count);
     }

@@ -31,6 +31,7 @@ public class LevelBuilder : MonoBehaviour
         CreateLevel();
         _adsController.LoadBanner();
         LevelView.NextLevelClicked += GoNextLevel;
+        
     }
 
     [ContextMenu("Build Level")]

@@ -87,6 +87,8 @@ public class LevelView : MonoBehaviour
 
         _coinsView = _root.Q<CoinsView>();
 
+
+
         InitRenderTexture();
 
 
@@ -139,20 +141,21 @@ public class LevelView : MonoBehaviour
 
         AdsController.RewardedAdWatched += RewardForAds;
 
-        IAPManager.OnPurchasedCoins += HandlePurchasedCoins;
+        IAPManager.OnPurchasedCoins += AnimatePurchasedCoins;
 
 
     }
 
-    private void HandlePurchasedCoins(int payout)
+    private void AnimatePurchasedCoins(int payout)
     {
-        AwardPlayer(payout, _shopView.BuyBtn, _shopView.BuyBtn, false);
+        PlayAward(payout, _shopView.BuyBtn, _shopView.BuyBtn, false);
         _shopView.BuyBtn = null;
     }
 
     private void RewardForAds()
     {
-        AwardPlayer(Session.RewardAmount, _abilityBtns[Ability.Ads], _abilityBtns[Ability.Ads]);
+        PlayAward(Session.RewardAmount, _abilityBtns[Ability.Ads], _abilityBtns[Ability.Ads]);
+        Balance.AddBalance(Session.RewardAmount);
     }
 
     private void HandleWordListUpdated(int words)
@@ -175,7 +178,7 @@ public class LevelView : MonoBehaviour
         LevelLogic.WordListUpdated -= HandleWordListUpdated;
 
         AdsController.RewardedAdWatched -= RewardForAds;
-        IAPManager.OnPurchasedCoins -= HandlePurchasedCoins;
+        IAPManager.OnPurchasedCoins -= AnimatePurchasedCoins;
 
     }
 
@@ -186,13 +189,13 @@ public class LevelView : MonoBehaviour
     }
 
 
-    private void AwardPlayer(int prizeAmount, VisualElement coinsLblRefPos, VisualElement fxStartPos, bool showLbl = true)
+    private void PlayAward(int prizeAmount, VisualElement coinsLblRefPos, VisualElement fxStartPos, bool showLbl = true)
     {
         var prize = prizeAmount;
         var element = coinsLblRefPos;
         var pos = element.worldBound.position;
         if (showLbl) _coinsView.ShowCoinsLbl(pos, prize);
-        Balance.AddBalance(prize, _prizeCoinsDelay);
+
         AudioManager.Instance.PlaySound(Sound.Coins);
 
 
@@ -304,7 +307,8 @@ public class LevelView : MonoBehaviour
         {
             ShowStageCompleted();
             yield return new WaitForSeconds(_rewardDelay);
-            AwardPlayer(_prizeAmount, _giftPic, _cup);
+            PlayAward(_prizeAmount, _giftPic, _cup);
+            Balance.AddBalance(_prizeAmount, _prizeCoinsDelay);
         }
 
         ShowNextLvlBtn();
@@ -490,9 +494,10 @@ public class LevelView : MonoBehaviour
 
     public void RemoveLetter(char letter)
     {
-        //        Debug.Log($"Level View remove letter is null: {letter == '\0'}");
         if (letter == '\0') return;
-        _targetLetters.text = _targetLetters.text.Remove(_targetLetters.text.Length - 1);
+        var startIndex = _targetLetters.text.Length - 1;
+        if (startIndex < 0) return;
+        _targetLetters.text = _targetLetters.text.Remove(startIndex);
     }
 
     public void ToggleWord(bool show, Color color = default)

@@ -20,7 +20,6 @@ public class IAPManager : IDetailedStoreListener
         _catalog = JsonUtility.FromJson<ProductCatalog>(Resources.Load<TextAsset>("IAPProductCatalog").text);
         foreach (var item in _catalog.allProducts)
         {
-
             builder.AddProduct(item.id, item.type);
         }
 
@@ -41,11 +40,12 @@ public class IAPManager : IDetailedStoreListener
 
     public void BuyCoins(int i)
     {
-        Debug.Log($"try buy coins");
+       
         var product = _catalog.allProducts.ToList()[i];
 
         _controller.InitiatePurchase(product.id);
     }
+
 
     public void RemoveAds()
     {

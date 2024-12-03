@@ -43,6 +43,8 @@ public class MenuView : MonoBehaviour
     [SerializeField] private float _hideGiftDelay = 0.5f;
     [SerializeField] private Camera _fxCam;
     private Image _overlayFx;
+    private Label _usernameLbl;
+    private ShopView _shopView;
 
     private void Start()
     {
@@ -81,7 +83,6 @@ public class MenuView : MonoBehaviour
 
         Session.AdsRemoved += HideAdsBtn;
 
-
         if (Session.NoAds) HideAdsBtn();
 
         TryRemoveBanner();
@@ -96,6 +97,11 @@ public class MenuView : MonoBehaviour
 
         _overlayFx = _root.Q<Image>("overlay-fx");
         _overlayFx.SetRenderTexture(_fxCam);
+
+        _usernameLbl = _root.Q<Label>("username-lbl");
+        _usernameLbl.text = "<color=#FF0000>" + GameDataService.GetUsername() + "</color>";
+        IAPManager.OnPurchasedCoins += AnimatePurchasedCoins;
+        _shopView = _root.Q<ShopView>();
     }
 
     private void SetCoinsAnimation(VisualElement target)
@@ -166,6 +172,31 @@ public class MenuView : MonoBehaviour
         NavigationRow.OnShopBtnClicked -= ShowShopBg;
         NavigationRow.OnShopHideClicked -= HideShopBg;
         NavigationRow.CoinsPicResolved -= SetCoinsAnimation;
+        IAPManager.OnPurchasedCoins -= AnimatePurchasedCoins;
+
+    }
+
+    private void AnimatePurchasedCoins(int payout)
+    {
+        PlayAward(payout, _shopView.BuyBtn, _shopView.BuyBtn, false);
+        _shopView.BuyBtn = null;
+    }
+
+    private void PlayAward(int prizeAmount, VisualElement coinsLblRefPos, VisualElement fxStartPos, bool showLbl = true)
+    {
+        var prize = prizeAmount;
+        var element = coinsLblRefPos;
+        var pos = element.worldBound.position;
+        if (showLbl) _coinsView.ShowCoinsLbl(pos, prize);
+
+        AudioManager.Instance.PlaySound(Sound.Coins);
+
+
+        var worldPos = fxStartPos.GetWorldPosition(_root);
+
+
+        _coinsFX_Handler.PlayCoinsFX(worldPos, 1);
+
     }
 
     private void SetGiftBtns()
@@ -211,7 +242,7 @@ public class MenuView : MonoBehaviour
         }
     }
 
-    
+
 
     private void UnpackGift(TransitionEndEvent evt)
     {
@@ -233,12 +264,13 @@ public class MenuView : MonoBehaviour
 
 
 
-    [ContextMenu("Show gift view")]
+    // [ContextMenu("Show gift view")]
     public void ShowGiftView()
     {
-        //_giftDiv.RemoveFromClassList(GIFT_ANIM_OUT);
+        _giftDiv.RemoveFromClassList(GIFT_ANIM_OUT);
         _fadePnl.Toggle(true);
         _giftView.Toggle(true);
+        _giftDiv.Toggle(true);
         //_giftDiv.Toggle(true);
         _giftDiv.AddToClassList(GIFT_ANIM_IN);
         AudioManager.Instance.PlaySound(Sound.WindOpen);
@@ -285,10 +317,10 @@ public class MenuView : MonoBehaviour
             //_giftDiv.RemoveFromClassList(GIFT_ANIM_OUT);
             _fadePnl.Toggle(false);
 
+
         });
 
         _giftDiv.AddToClassList(GIFT_ANIM_OUT);
-
 
 
         foreach (var btn in _giftBtns)

@@ -93,6 +93,10 @@ public class LineProvider : MonoBehaviour
             _currentDrawOrder--;
             Destroy(_line.gameObject);
         }
+        else
+        {
+            LastColor = _line.startColor;
+        }
         if (keepLine && correctLastPos) CorrectLastPosition(letters);
         _line = null;
     }

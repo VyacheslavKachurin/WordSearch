@@ -156,13 +156,12 @@ public class InputHandler : MonoBehaviour
             {
                 var worldTouchPos = Camera.main.ScreenToWorldPoint(_touch.position);
                 var letters = Physics2D.OverlapCircleAll(worldTouchPos, _horizontalDistance);
-                Debug.Log($"letters count: {letters.Length}");
 
                 _lastHitCollider = FindTheClosestLetter(letters, worldTouchPos);
                 if (_lastHitCollider == null) return;
             }
 
-            ShowPositions(_lastHitCollider.GetComponent<LetterUnit>());
+            //ShowPositions(_lastHitCollider.GetComponent<LetterUnit>());
 
             _trigger = Instantiate(_inputTriggerPrefab, _lastHitCollider.transform.position, Quaternion.identity);
             _direction = Direction.None;
@@ -182,7 +181,7 @@ public class InputHandler : MonoBehaviour
 
             else
             {
-                var lastLetter = _lastHitCollider.GetComponent<LetterUnit>(); // TODO : FIX IT
+                if (!_lastHitCollider.TryGetComponent<LetterUnit>(out var lastLetter)) return; // TODO : FIX IT
                 if (_letterUnits.Count < 2) SetDirection(_touch.position, lastLetter);
 
                 var newPos = GetNewPosition(_touch.position, lastLetter);
@@ -210,7 +209,7 @@ public class InputHandler : MonoBehaviour
     private void FinishSelecting()
     {
         StopSelecting();
-        DeletePositions();
+        //    DeletePositions();
         _lastHitCollider = null;
         _direction = Direction.None;
         _nextPosition = null;
@@ -221,7 +220,6 @@ public class InputHandler : MonoBehaviour
 
     private Collider2D? FindTheClosestLetter(Collider2D[] letters, Vector3 worldTouchPos)
     {
-        Debug.Log($"start looping letters");
         Transform closest = null;
         var closestDistance = _horizontalDistance;
         foreach (var letter in letters)

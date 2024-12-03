@@ -1,16 +1,34 @@
 using System;
 using System.Threading.Tasks;
 using UnityEngine;
+using System.Net.NetworkInformation;
+using Ping = System.Net.NetworkInformation.Ping;
+
 
 public class Services : MonoBehaviour
 {
-    
+
     private IAPManager _iAPManager;
 
     private void Awake()
     {
         InitPurchases();
 
+    }
+
+    public static bool IsNetworkAvailable()
+    {
+        try
+        {
+            using Ping ping = new Ping();
+            string host = "google.com"; // Can use any reliable host
+            PingReply reply = ping.Send(host, 1000); // Timeout of 1000 milliseconds
+            return reply.Status == IPStatus.Success;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
 
     [ContextMenu("Delete State")]
@@ -70,7 +88,7 @@ public class Services : MonoBehaviour
     [ContextMenu("Clear Level Progress")]
     public void ClearLevelProgress()
     {
-       // Session.SetLastLevel(1);
+        // Session.SetLastLevel(1);
     }
 
     [ContextMenu("Clear coins data")]
@@ -86,8 +104,8 @@ public class Services : MonoBehaviour
         ClearCoinsData();
         RemoveAdsPurchase();
         ClearGiftData();
-       // Session.LastStage = 1;
-       // Session.SetLastLevel(1);
+        // Session.LastStage = 1;
+        // Session.SetLastLevel(1);
         DeleteState();
         GameDataService.ClearProgress();
     }

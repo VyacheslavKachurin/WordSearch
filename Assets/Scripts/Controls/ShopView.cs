@@ -1,7 +1,6 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -17,7 +16,7 @@ public partial class ShopView : VisualElement
     public static event Action<int> OnPurchaseInit;
 
     public VisualElement BuyBtn = null;
-
+    private VisualElement _networkDiv;
 
     public ShopView()
     {
@@ -37,7 +36,12 @@ public partial class ShopView : VisualElement
         _noAdsBtn.clicked += () =>
         {
             Debug.Log($"Remove Ads Btn Clicked ");
-            OnRemoveAdsClicked?.Invoke();
+            if (Services.IsNetworkAvailable())
+                OnRemoveAdsClicked?.Invoke();
+            else
+            {
+                RequireNetwork();
+            }
         };
 
         _buyBtns = this.Query<Button>("shop-item").ToList();
@@ -48,7 +52,13 @@ public partial class ShopView : VisualElement
             _buyBtns[index].clicked += () =>
             {
                 BuyBtn = _buyBtns[index];
-                OnPurchaseInit?.Invoke(index);
+                if (Services.IsNetworkAvailable())
+                    OnPurchaseInit?.Invoke(index);
+                else
+                {
+                    RequireNetwork();
+                }
+
             };
 
         }
@@ -58,9 +68,12 @@ public partial class ShopView : VisualElement
         Session.AdsRemoved += HideAdsOffer;
 
         this.RegisterCallback<DetachFromPanelEvent>((evt) => Unsubscribe());
-       
-        
+        _networkDiv = this.Q<VisualElement>("network-div");
+
+
     }
+
+
 
     private void Unsubscribe()
     {
@@ -85,6 +98,20 @@ public partial class ShopView : VisualElement
         this.Toggle(false);
         Session.IsSelecting = true;
 
+    }
+
+    private void RequireNetwork()
+    {
+        var go = AudioManager.Instance;
+        go.PlaySound(Sound.WrongWord);
+        go.StartCoroutine(NetworkCoroutine());
+    }
+
+    private IEnumerator NetworkCoroutine()
+    {
+        _networkDiv.Toggle(true);
+        yield return new WaitForSeconds(3);
+        _networkDiv.Toggle(false);
     }
 
 

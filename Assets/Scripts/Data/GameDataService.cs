@@ -12,6 +12,9 @@ public static class GameDataService
 
     public static GameData GameData { get; private set; }
 
+    private const string USERNAME_KEY = "Username";
+
+
 
     public static GameData CreateGame()
     {
@@ -20,6 +23,22 @@ public static class GameDataService
         GameData = new GameData(1, 1, totalEpisodes, 1);
         SaveGame();
         return GameData;
+    }
+
+    public static string GetUsername()
+    {
+        string username = "";
+        if (PlayerPrefs.HasKey(USERNAME_KEY))
+            username = PlayerPrefs.GetString(USERNAME_KEY);
+        else
+        {
+            username = Guid.NewGuid().ToString();
+            username = username.Substring(0, 4);
+            username = "Guest_" + username;
+            PlayerPrefs.SetString(USERNAME_KEY, username);
+        }
+
+        return username;
     }
 
     public static void SaveGame()
