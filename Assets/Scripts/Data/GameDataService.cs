@@ -10,9 +10,10 @@ public static class GameDataService
     private static string _prePath = Application.persistentDataPath;
     private const string _fileName = "/GameData.json";
 
-    public static GameData GameData { get; private set; }
+    public static GameData GameData { get; set; }
 
     private const string USERNAME_KEY = "Username";
+
 
 
 
@@ -48,7 +49,15 @@ public static class GameDataService
         System.IO.File.WriteAllText(_prePath + _fileName, json);
     }
 
-    private static int CountEpisodes(int season)
+    public static void DeleteGame()
+    {
+        if (System.IO.File.Exists(_prePath + _fileName))
+        {
+            System.IO.File.Delete(_prePath + _fileName);
+        }
+    }
+
+    public static int CountEpisodes(int season)
     {
         var path = $"LevelData/Season {season}";
         var files = Resources.LoadAll(path).Select(x => x.name);
@@ -76,6 +85,7 @@ public static class GameDataService
 
     public static string GetPathToLevel()
     {
+
         var game = LoadGame();
         var path = $"LevelData/Season {game.Season}/LevelData {game.Episode}";
         return path;
@@ -92,6 +102,8 @@ public static class GameDataService
             if (Resources.Load($"LevelData/Season {GameData.Season + 1}/LevelData 1") == null)
             {
                 Debug.Log($"Game Over");
+                Session.IsGameWon = true;
+                SaveGame();
                 return false;
             }
 

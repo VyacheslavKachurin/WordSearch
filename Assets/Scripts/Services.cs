@@ -13,7 +13,12 @@ public class Services : MonoBehaviour
     private void Awake()
     {
         InitPurchases();
+    }
 
+    [ContextMenu("Restore Purchases")]
+    private void RestorePurchases()
+    {
+        _iAPManager.RestorePurchases();
     }
 
     public static bool IsNetworkAvailable()
@@ -47,6 +52,7 @@ public class Services : MonoBehaviour
 
         ShopView.OnPurchaseInit += BuyCoins;
         ShopView.OnRemoveAdsClicked += RemoveAds;
+        ShopView.OnRestoreClicked += RestorePurchases;
     }
 
     [ContextMenu("Log Store Items")]
@@ -65,6 +71,7 @@ public class Services : MonoBehaviour
     {
         ShopView.OnPurchaseInit -= BuyCoins;
         ShopView.OnRemoveAdsClicked -= RemoveAds;
+        ShopView.OnRestoreClicked -= RestorePurchases;
 
     }
 
@@ -108,6 +115,8 @@ public class Services : MonoBehaviour
         // Session.SetLastLevel(1);
         DeleteState();
         GameDataService.ClearProgress();
+        GameDataService.DeleteGame();
+        Session.IsGameWon = false;
     }
 
     [ContextMenu("Clear Gift Data")]

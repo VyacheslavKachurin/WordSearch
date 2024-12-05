@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using DG.Tweening;
 using System.Collections;
+using System.Collections.Specialized;
 
 
 public class LevelView : MonoBehaviour
@@ -63,15 +64,21 @@ public class LevelView : MonoBehaviour
 
     [SerializeField] private int _prizeAmount = 25;
     CoinsView _coinsView;
+    private VisualElement _levelStats;
     [SerializeField] private CoinsFX_Handler _coinsFX_Handler;
     [SerializeField] private int _prizeCoinsDelay = 100;
     [SerializeField] private float _rewardDelay = 0.5f;
     [SerializeField] private Vector2 _startPos;
     [SerializeField] private int _fxScale = 2;
     private ShopView _shopView;
+    private VisualElement _finalStats;
+    private Button _checkUpdatesBtn;
 
     private void Awake()
     {
+      //  AdsController.Instance = new AdsController();
+       // AdsController.Instance.Init();
+
         _root = GetComponent<UIDocument>().rootVisualElement;
         NavigationRow.CoinsPicResolved += SetCoinsAnimation;
         _levelTheme = _root.Q<Label>("level-theme");
@@ -86,6 +93,7 @@ public class LevelView : MonoBehaviour
         _giftPic = _root.Q<VisualElement>("giftPic");
 
         _coinsView = _root.Q<CoinsView>();
+        _levelStats = _root.Q<VisualElement>("level-stats");
 
 
 
@@ -117,6 +125,9 @@ public class LevelView : MonoBehaviour
         _shopBg = _root.Q<VisualElement>("shop-bg");
 
         _shopView = _root.Q<ShopView>();
+        _finalStats = _root.Q<VisualElement>("final-stats");
+
+        _checkUpdatesBtn = _root.Q<Button>("check-updates-btn");
 
         NavigationRow.OnShopBtnClicked += ShowShopBg;
         NavigationRow.OnShopHideClicked += HideShopBg;
@@ -144,6 +155,26 @@ public class LevelView : MonoBehaviour
         IAPManager.OnPurchasedCoins += AnimatePurchasedCoins;
 
 
+    }
+
+
+    public void ShowGameOver(bool isViewActive = true)
+    {
+        Debug.Log($"Show Game Over");
+        if (!isViewActive)
+        {
+            _finishView.Toggle(true);
+            _finishView.AddToClassList(FINISH_VIEW_IN);
+            _levelStats.Toggle(false);
+            _finalStats.Toggle(true);
+        }
+        else
+        {
+            _levelStats.Toggle(false);
+            _finalStats.Toggle(true);
+        }
+
+        _checkUpdatesBtn.clicked += () => Application.OpenURL($"itms-apps://itunes.apple.com/app/id{Session.AppId}"); ;
     }
 
     private void AnimatePurchasedCoins(int payout)
@@ -242,13 +273,15 @@ public class LevelView : MonoBehaviour
         Session.IsSelecting = false;
         Debug.Log($"show finish view");
         _progressLbl.text = $"{episode}/{totalEpisodes}";
-        _finishView.Toggle(true);
 
+        _finishView.Toggle(true);
         _finishView.RegisterCallbackOnce<TransitionEndEvent>(e =>
         {
             if (_progressBarCoroutine != null) return;
             _progressBarCoroutine = StartCoroutine(FillProgressBar(episode, totalEpisodes));
         });
+
+        _finishView.AddToClassList(FINISH_VIEW_IN);
 
 
 
@@ -266,7 +299,7 @@ public class LevelView : MonoBehaviour
     }
 
     [ContextMenu("Show Finish View")]
-    public void ShowFinish()
+    private void ShowFinish()
     {
         var gameData = GameDataService.GameData;
         ShowFinishView(gameData.Episode, gameData.TotalEpisodes);
@@ -276,6 +309,7 @@ public class LevelView : MonoBehaviour
 
     private IEnumerator FillProgressBar(int episode, int totalEpisodes)
     {
+        Debug.Log($"Fill progress bar: {episode}/{totalEpisodes}");
         var targetFill = 100 * ((float)episode / (float)totalEpisodes);
         var currentFill = 100 * (((float)episode - 1) / (float)totalEpisodes);
         var canContinue = false;
@@ -286,8 +320,6 @@ public class LevelView : MonoBehaviour
 
         _progressFill.RegisterCallbackOnce<GeometryChangedEvent>(e =>
         {
-            Debug.Log($"finish view in");
-
 
 
         });
@@ -325,6 +357,8 @@ public class LevelView : MonoBehaviour
     {
         AudioManager.Instance.PlaySound(Sound.Click);
         NextLevelClicked?.Invoke();
+        if (Session.IsGameWon)
+            return;
         _finishView.Toggle(false);
         _finishView.RemoveFromClassList(FINISH_VIEW_IN);
         _progressBarCoroutine = null;

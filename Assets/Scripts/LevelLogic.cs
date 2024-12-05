@@ -111,6 +111,8 @@ public class LevelLogic : MonoBehaviour
         LevelStateService.SaveState();
     }
 
+
+
     private void HandleLetterDeselect(LetterUnit letter, Vector2 triggerPos)
     {
         //        Debug.Log($"Handle letter deselect: {letter.Letter}");
@@ -130,7 +132,7 @@ public class LevelLogic : MonoBehaviour
 
     private void HandleTriggerMove(Vector2 touchPos, Direction direction)
     {
-        if(_tryWordLetterUnits.Count == 0) return;
+        if (_tryWordLetterUnits.Count == 0) return;
         var lastLetter = _tryWordLetterUnits[^1];
         _lineProvider.Draw(touchPos, direction, lastLetter.transform.position, _tryWordLetterUnits.Count);
     }
@@ -248,13 +250,13 @@ public class LevelLogic : MonoBehaviour
         IsLevelDone();
     }
 
-/*
-    [ContextMenu("set stage to 1")]
-    private void SetStageTo1()
-    {
-      //  Session.LastStage = 1;
-    }
-    */
+    /*
+        [ContextMenu("set stage to 1")]
+        private void SetStageTo1()
+        {
+          //  Session.LastStage = 1;
+        }
+        */
 
     internal void SetData(LevelData levelData)
     {

@@ -12,10 +12,13 @@ public class IAPManager : IDetailedStoreListener
     private ProductCatalog _catalog;
     public static event Action<int> OnPurchasedCoins;
 
+    private IAppleExtensions _appleExtensions;
+
     public IAPManager()
     {
 
         var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
+
 
         _catalog = JsonUtility.FromJson<ProductCatalog>(Resources.Load<TextAsset>("IAPProductCatalog").text);
         foreach (var item in _catalog.allProducts)
@@ -35,12 +38,34 @@ public class IAPManager : IDetailedStoreListener
         this._controller = controller;
         this._extensions = extensions;
 
+
+    }
+
+    public void RestorePurchases()
+    {
+        _appleExtensions = _extensions.GetExtension<IAppleExtensions>();
+        _appleExtensions.RestoreTransactions(TransactionsCallback);
+    }
+
+    private void TransactionsCallback(bool result, string message)
+    {
+        if (result)
+        {
+            _appleExtensions.RefreshAppReceipt((success) =>
+            {
+                Debug.Log($"Refresh App Receipt success: {success}");
+            }, (error) =>
+            {
+                Debug.Log($"Refresh App Receipt error: {error}");
+            }
+            );
+        }
     }
 
 
     public void BuyCoins(int i)
     {
-       
+
         var product = _catalog.allProducts.ToList()[i];
 
         _controller.InitiatePurchase(product.id);
@@ -82,6 +107,10 @@ public class IAPManager : IDetailedStoreListener
         else
         {
             Session.NoAds = true;
+            var adsController = AdsController.Instance;
+
+            adsController?.RemoveBanner();
+
         }
 
         AudioManager.Instance.PlaySound(Sound.Coins);

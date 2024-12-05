@@ -17,6 +17,7 @@ public static class AppMetricaActivator
         if (Session.IsFirstTime)
             Session.IsFirstTime = false;
         AppMetricaPush.Activate();
+        
 
     }
 

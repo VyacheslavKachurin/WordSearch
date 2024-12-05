@@ -8,6 +8,12 @@
                     <engine:Button text="REMOVE ADS $5.99" name="no-ads-btn" style="background-image: url(&quot;project://database/Assets/Sprites/ad-btn.png?fileID=2800000&amp;guid=b4aa0edaf6dc245c7876a03656ce14e4&amp;type=3#ad-btn&quot;); width: 567px; height: 124px; color: rgb(255, 255, 255); font-size: 40px; -unity-font-style: bold;" />
                 </engine:VisualElement>
             </engine:VisualElement>
+            <engine:VisualElement name="restore-div" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Sprites/ads-bg.png?fileID=2800000&amp;guid=7d9032c377a74428dbf7f28daa533318&amp;type=3#ads-bg&quot;); justify-content: center; align-items: center; width: 964px;">
+                <engine:Button text="RESTORE PURCHASES" name="restore-btn" style="background-image: url(&quot;project://database/Assets/Sprites/ad-btn.png?fileID=2800000&amp;guid=b4aa0edaf6dc245c7876a03656ce14e4&amp;type=3#ad-btn&quot;); width: 567px; height: 124px; color: rgb(255, 255, 255); font-size: 40px; -unity-font-style: bold; margin-top: 75px; margin-bottom: 75px; margin-left: 150px; margin-right: 150px;" />
+            </engine:VisualElement>
+            <engine:VisualElement name="removed-ads-div" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Sprites/ads-bg.png?fileID=2800000&amp;guid=7d9032c377a74428dbf7f28daa533318&amp;type=3#ads-bg&quot;); width: 964px; height: 417px; justify-content: space-evenly; margin-bottom: 72px; display: none;">
+                <engine:Label text="Hooray! &#10;Ads are removed!" class="lbl-shadow" style="font-size: 54px;" />
+            </engine:VisualElement>
             <engine:VisualElement name="list" style="flex-grow: 1;">
                 <engine:Button name="shop-item" class="shop-item">
                     <engine:VisualElement style="flex-grow: 1; justify-content: center; flex-direction: row;">

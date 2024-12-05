@@ -14,9 +14,12 @@ public partial class ShopView : VisualElement
 
     public static event Action OnRemoveAdsClicked;
     public static event Action<int> OnPurchaseInit;
+    public static event Action OnRestoreClicked;
 
     public VisualElement BuyBtn = null;
     private VisualElement _networkDiv;
+    private Button _restoreBtn;
+    private VisualElement _removedAdsDiv;
 
     public ShopView()
     {
@@ -63,14 +66,19 @@ public partial class ShopView : VisualElement
 
         }
         _adsDiv = this.Q<VisualElement>("ads-div");
-
+        _removedAdsDiv = this.Q<VisualElement>("removed-ads-div");
         if (Session.NoAds) HideAdsOffer();
         Session.AdsRemoved += HideAdsOffer;
 
         this.RegisterCallback<DetachFromPanelEvent>((evt) => Unsubscribe());
         _networkDiv = this.Q<VisualElement>("network-div");
+        _restoreBtn = this.Q<Button>("restore-btn");
+        _restoreBtn.clicked += AskRestorePurchase;
+    }
 
-
+    private void AskRestorePurchase()
+    {
+        OnRestoreClicked?.Invoke();
     }
 
 
@@ -91,6 +99,7 @@ public partial class ShopView : VisualElement
     public void HideAdsOffer()
     {
         _adsDiv.Toggle(false);
+        _removedAdsDiv.Toggle(true);
     }
 
     private void HideShopView()

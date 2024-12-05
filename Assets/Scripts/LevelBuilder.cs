@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 using System.IO;
+using UnityEngine.Advertisements;
 
 public class LevelBuilder : MonoBehaviour
 {
@@ -20,18 +21,25 @@ public class LevelBuilder : MonoBehaviour
 
     private LevelData _levelData;
 
+
 #if UNITY_EDITOR
-    [SerializeField] private int _targetLevel;
+    [SerializeField] private int _episode;
     [SerializeField] private bool _loadTargetLevel = false;
-    [SerializeField] private int _stage;
+    [SerializeField] private int _season;
 #endif
 
+    void Awake()
+    {
+
+        _adsController.Init();
+
+    }
     private void Start()
     {
         CreateLevel();
-        _adsController.LoadBanner();
+
         LevelView.NextLevelClicked += GoNextLevel;
-        
+
     }
 
     [ContextMenu("Build Level")]
@@ -51,8 +59,6 @@ public class LevelBuilder : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
         }
         while (GameDataService.IncreaseLevel());
-
-
     }
 
     private void MakeScreenShot()
@@ -95,14 +101,23 @@ public class LevelBuilder : MonoBehaviour
 
     private void GoNextLevel()
     {
-        GameDataService.IncreaseLevel();
-        LevelStateService.DeleteState();
-        CreateLevel();
+        if (GameDataService.IncreaseLevel())
+        {
+            LevelStateService.DeleteState();
+            CreateLevel();
+        }
+        else
+        {
+            _levelView.ShowGameOver();
+        }
+
     }
+
 
     [ContextMenu("Create Level")]
     public void CreateLevel()
     {
+
         _lineProvider.ResetState();
         Session.IsSelecting = true;
 
@@ -111,8 +126,12 @@ public class LevelBuilder : MonoBehaviour
 #if UNITY_EDITOR
         if (_loadTargetLevel)
         {
+            path = $"LevelData/Season {_season}/LevelData {_episode}";
+            // GameDataService.CreateGame();
 
-            path = $"LevelData/Season {_stage}/LevelData {_targetLevel}";
+            var episodes = GameDataService.CountEpisodes(_season);
+            GameDataService.GameData = new GameData(_season, 1, episodes, _episode);
+
         }
 #endif
 
@@ -135,6 +154,16 @@ public class LevelBuilder : MonoBehaviour
         LoadState();
 
         SetBg();
+        var gameData = GameDataService.GameData;
+
+        if (Session.IsGameWon)
+        {
+            _levelView.ShowGameOver(false);
+        }
+        else
+        {
+            EventSender.SendLevelReached(gameData.Season, gameData.Episode, gameData.Level);
+        }
     }
 
     private void SetBg()

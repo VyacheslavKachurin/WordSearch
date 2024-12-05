@@ -51,6 +51,7 @@ public class AbilityLogic : MonoBehaviour
                 RequireAd();
                 break;
         }
+        EventSender.SendAbilityEvent(ability);
         LevelStateService.SaveState();
 
 

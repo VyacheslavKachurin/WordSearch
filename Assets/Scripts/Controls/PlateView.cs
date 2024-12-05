@@ -73,12 +73,12 @@ public partial class PlateView : VisualElement
         Debug.Log($"Handle reward");
         HideAdsOffer();
 
-      //  var pos = _adBtn.worldBound.position;
-    //    var reward = Session.RewardAmount;
+        //  var pos = _adBtn.worldBound.position;
+        //    var reward = Session.RewardAmount;
 
-      //  OnAnimateCoinsRequested(pos, reward, null);
-     //   Balance.AddBalance(reward, 100);
-      //  AudioManager.Instance.PlaySound(Sound.Coins);
+        //  OnAnimateCoinsRequested(pos, reward, null);
+        //   Balance.AddBalance(reward, 100);
+        //  AudioManager.Instance.PlaySound(Sound.Coins);
     }
 
 
@@ -124,11 +124,10 @@ public partial class PlateView : VisualElement
 
     private void HandleAdBtn()
     {
-        Debug.Log($"Ads controller is null : {AdsController.Instance == null}");
-        var AdController = AdsController.Instance;
-        AdController = AdController != null ? AdController : GameObject.Find("AdsController").GetComponent<AdsController>();
-        AdController.ShowRewardedAd();
-
+        // Debug.Log($"Ads controller is null : {AdsController.Instance == null}");
+        //  var AdController = AdsController.Instance;
+        //AdController = AdController != null ? AdController : GameObject.Find("AdsController").GetComponent<AdsController>();
+        AdsController.Instance.ShowRewardedAd();
     }
 
     private void HandleCloseBtn()
@@ -143,7 +142,7 @@ public partial class PlateView : VisualElement
 
     public void ShowPlate(Plate plate)
     {
-        Debug.Log($"Showing plate: {plate}");
+
         _main.pickingMode = PickingMode.Position;
         _currentPlate = plate == Plate.Ads ? _adsPlate : _settingsPlate;
         _fadePanel.Toggle(true);

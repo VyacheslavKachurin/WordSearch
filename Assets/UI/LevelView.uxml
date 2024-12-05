@@ -37,7 +37,7 @@
     <PlateView picking-mode="Ignore" name="PlateView" class="view" />
     <engine:VisualElement name="finish-view" class="view finish-view" style="flex-grow: 1; align-items: center; justify-content: center; display: none;">
         <engine:Button name="remove-ads-btn" style="background-image: url(&quot;project://database/Assets/Sprites/ads-btn.png?fileID=2800000&amp;guid=4f9e86ee199ed4fb18fb67b2945640e5&amp;type=3#ads-btn&quot;); width: 150px; height: 150px; position: absolute; right: 100px; top: 150px;" />
-        <engine:VisualElement style="flex-grow: 1; align-items: center; justify-content: space-evenly;">
+        <engine:VisualElement name="level-stats" style="flex-grow: 1; align-items: center; justify-content: space-evenly; display: flex;">
             <engine:VisualElement name="header" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/amazingBg.png?fileID=2800000&amp;guid=93f3db373fb824774bda0673f4829053&amp;type=3#amazingBg&quot;); width: 782px; border-top-left-radius: 25px; border-top-right-radius: 25px; border-bottom-right-radius: 25px; border-bottom-left-radius: 25px; align-items: center; justify-content: center; padding-top: 0; padding-bottom: 32px; height: 240px;">
                 <engine:Label text="Amazing!" class="lbl lbl-shadow" style="font-size: 64px; color: rgb(53, 35, 65);" />
             </engine:VisualElement>
@@ -55,6 +55,21 @@
                     </engine:VisualElement>
                 </engine:VisualElement>
                 <engine:Button text="Next Level" name="next-lvl-btn" class="lbl lbl-shadow next-lvl-btn" style="background-image: url(&quot;project://database/Assets/Sprites/time-mode.png?fileID=2800000&amp;guid=f83b086586d68492a9f957e6d1439dce&amp;type=3#time-mode&quot;); padding-left: 75px; padding-right: 75px; padding-top: 30px; padding-bottom: 30px;" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement name="final-stats" style="flex-grow: 1; align-items: center; justify-content: space-evenly; position: absolute; height: 100%; width: 100%; display: none;">
+            <engine:VisualElement name="header" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/amazingBg.png?fileID=2800000&amp;guid=93f3db373fb824774bda0673f4829053&amp;type=3#amazingBg&quot;); width: 782px; border-top-left-radius: 25px; border-top-right-radius: 25px; border-bottom-right-radius: 25px; border-bottom-left-radius: 25px; align-items: center; justify-content: center; padding-top: 0; padding-bottom: 32px; height: 240px;">
+                <engine:Label text="Congratulations!" class="lbl lbl-shadow" style="font-size: 64px; color: rgb(53, 35, 65);" />
+                <engine:VisualElement name="crown" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Sprites/FinalView/Crown.png?fileID=2800000&amp;guid=917de9a8b40134868887e82ee117979f&amp;type=3#Crown&quot;); position: absolute; width: 319px; height: 263px; top: -86%;" />
+            </engine:VisualElement>
+            <engine:VisualElement name="middle" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/FinalView/MessageBg.png?fileID=2800000&amp;guid=5c088e301465a41c88af6144d2bb4935&amp;type=3#MessageBg&quot;); align-items: center; justify-content: center; width: 974px; flex-wrap: wrap; flex-direction: column; position: relative; padding-left: 64px; padding-right: 64px; padding-bottom: 145px; padding-top: 69px;">
+                <engine:Label text="You succesfully passed all the available levels in the game!" class="lbl" style="color: rgb(0, 0, 0); flex-wrap: wrap; flex-direction: column; -unity-text-align: middle-center; white-space: pre-wrap; font-size: 54px;" />
+                <engine:VisualElement style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/FinalView/RefreshIcon.png?fileID=2800000&amp;guid=3e1369fd3eae84202902d0e94fc543a2&amp;type=3#RefreshIcon&quot;); width: 103px; height: 87px; margin-top: 37px; margin-bottom: 43px;" />
+                <engine:Label text="We regularly add new content." class="lbl" style="color: rgb(0, 0, 0); flex-wrap: wrap; flex-direction: column; -unity-text-align: middle-center; white-space: pre-wrap; font-size: 54px;" />
+                <engine:Label text="Make sure you have the latest version of the game installed so you don&apos;t miss out on new levels." class="lbl" style="color: rgb(0, 0, 0); flex-wrap: wrap; flex-direction: column; -unity-text-align: middle-center; white-space: pre-wrap; font-size: 54px;" />
+            </engine:VisualElement>
+            <engine:VisualElement style="flex-grow: 0;">
+                <engine:Button text="CHECK UPDATES" name="check-updates-btn" class="lbl lbl-shadow" style="background-image: url(&quot;project://database/Assets/Sprites/time-mode.png?fileID=2800000&amp;guid=f83b086586d68492a9f957e6d1439dce&amp;type=3#time-mode&quot;); padding-left: 75px; padding-right: 75px; padding-top: 30px; padding-bottom: 30px; width: 842px; height: 211px;" />
             </engine:VisualElement>
         </engine:VisualElement>
     </engine:VisualElement>

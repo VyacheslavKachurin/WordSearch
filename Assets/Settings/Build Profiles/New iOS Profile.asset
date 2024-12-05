@@ -40,8 +40,8 @@ MonoBehaviour:
     - line: '|   targetDevice: 0'
     - line: '|   useOnDemandResources: 0'
     - line: '|   accelerometerFrequency: 0'
-    - line: '|   companyName: DefaultCompany'
-    - line: '|   productName: WordSearch'
+    - line: '|   companyName: KVANTUM'
+    - line: '|   productName: Word Search Relax Game'
     - line: '|   defaultCursor: {instanceID: 0}'
     - line: '|   cursorHotspot: {x: 0, y: 0}'
     - line: '|   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b:
@@ -172,7 +172,7 @@ MonoBehaviour:
     - line: '|   loadStoreDebugModeEnabled: 0'
     - line: '|   visionOSBundleVersion: 1.0'
     - line: '|   tvOSBundleVersion: 1.0'
-    - line: '|   bundleVersion: 1.5'
+    - line: '|   bundleVersion: 1.6'
     - line: '|   preloadedAssets: []'
     - line: '|   metroInputSource: 0'
     - line: '|   wsaTransparentSwapchain: 0'
@@ -1001,7 +1001,7 @@ MonoBehaviour:
         m_ConnectProfiler: 0
         m_BuildWithDeepProfilingSupport: 0
         m_AllowDebugging: 0
-        m_WaitForManagedDebugger: 0
+        m_WaitForManagedDebugger: 1
         m_ManagedDebuggerFixedPort: 0
         m_ExplicitNullChecks: 0
         m_ExplicitDivideByZeroChecks: 0

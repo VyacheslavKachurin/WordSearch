@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
-
+using Unity.Notifications.iOS;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
@@ -48,6 +48,10 @@ public class MenuView : MonoBehaviour
 
     private void Start()
     {
+        //  AdsController.Instance = new AdsController();
+
+        //  AdsController.Instance.Init();
+
         _root = GetComponent<UIDocument>().rootVisualElement;
 
         _fadePnl = _root.Q<FadePanel>();
@@ -102,6 +106,8 @@ public class MenuView : MonoBehaviour
         _usernameLbl.text = "<color=#FF0000>" + GameDataService.GetUsername() + "</color>";
         IAPManager.OnPurchasedCoins += AnimatePurchasedCoins;
         _shopView = _root.Q<ShopView>();
+
+
     }
 
     private void SetCoinsAnimation(VisualElement target)
@@ -141,16 +147,13 @@ public class MenuView : MonoBehaviour
     [ContextMenu("Remove banner")]
     private void TryRemoveBanner()
     {
-        var adsControllerObj = GameObject.Find("AdsController");
-        if (!adsControllerObj) return;
-        var adsController = adsControllerObj.GetComponent<AdsController>();
-
-        if (adsController) adsController.RemoveBanner();
+        AdsController.Instance?.RemoveBanner();
     }
 
     private void HideAdsBtn()
     {
         _adsBtn.style.visibility = Visibility.Hidden;
+        //AdsController.Instance?.RemoveBanner();
     }
 
     private void BuyNoAds()
@@ -303,6 +306,26 @@ public class MenuView : MonoBehaviour
     {
         _shopBg.Toggle(true);
     }
+    /*
+    IEnumerator RequestAuthorization()
+    {
+        var authorizationOption = AuthorizationOption.Alert | AuthorizationOption.Badge;
+        using (var req = new AuthorizationRequest(authorizationOption, true))
+        {
+            while (!req.IsFinished)
+            {
+                yield return null;
+            };
+
+            string res = "\n RequestAuthorization:";
+            res += "\n finished: " + req.IsFinished;
+            res += "\n granted :  " + req.Granted;
+            res += "\n error:  " + req.Error;
+            res += "\n deviceToken:  " + req.DeviceToken;
+            Debug.Log(res);
+        }
+    }
+    */
 
     public IEnumerator HidingGift(bool isInstant = false)
     {
