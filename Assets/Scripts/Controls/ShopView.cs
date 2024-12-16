@@ -39,12 +39,15 @@ public partial class ShopView : VisualElement
         _noAdsBtn.clicked += () =>
         {
             Debug.Log($"Remove Ads Btn Clicked ");
-            if (Services.IsNetworkAvailable())
-                OnRemoveAdsClicked?.Invoke();
-            else
+            Services.IsNetworkAvailable((result) =>
             {
-                RequireNetwork();
-            }
+                if (result)
+                    OnRemoveAdsClicked?.Invoke();
+                else
+                {
+                    RequireNetwork();
+                }
+            });
         };
 
         _buyBtns = this.Query<Button>("shop-item").ToList();
@@ -55,12 +58,15 @@ public partial class ShopView : VisualElement
             _buyBtns[index].clicked += () =>
             {
                 BuyBtn = _buyBtns[index];
-                if (Services.IsNetworkAvailable())
-                    OnPurchaseInit?.Invoke(index);
-                else
+                Services.IsNetworkAvailable((result) =>
                 {
-                    RequireNetwork();
-                }
+                    if (result)
+                        OnPurchaseInit?.Invoke(index);
+                    else
+                    {
+                        RequireNetwork();
+                    }
+                });
 
             };
 
@@ -78,7 +84,17 @@ public partial class ShopView : VisualElement
 
     private void AskRestorePurchase()
     {
-        OnRestoreClicked?.Invoke();
+        Services.IsNetworkAvailable((result) =>
+            {
+                if (result)
+                    OnRestoreClicked?.Invoke();
+                else
+                {
+                    RequireNetwork();
+                }
+            });
+
+
     }
 
 

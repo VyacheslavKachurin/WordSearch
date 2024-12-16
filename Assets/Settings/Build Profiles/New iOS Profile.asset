@@ -41,7 +41,7 @@ MonoBehaviour:
     - line: '|   useOnDemandResources: 0'
     - line: '|   accelerometerFrequency: 0'
     - line: '|   companyName: KVANTUM'
-    - line: '|   productName: Word Search Relax Game'
+    - line: '|   productName: Play & Learn. Everyday Trivia-Game'
     - line: '|   defaultCursor: {instanceID: 0}'
     - line: '|   cursorHotspot: {x: 0, y: 0}'
     - line: '|   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b:
@@ -51,7 +51,7 @@ MonoBehaviour:
     - line: '|   m_SplashScreenOverlayOpacity: 1'
     - line: '|   m_SplashScreenAnimation: 0'
     - line: '|   m_SplashScreenLogoStyle: 1'
-    - line: '|   m_SplashScreenDrawMode: 1'
+    - line: '|   m_SplashScreenDrawMode: 0'
     - line: '|   m_SplashScreenBackgroundAnimationZoom: 1'
     - line: '|   m_SplashScreenLogoAnimationZoom: 1'
     - line: '|   m_SplashScreenBackgroundLandscapeAspect: 1'
@@ -69,7 +69,7 @@ MonoBehaviour:
     - line: '|     width: 1'
     - line: '|     height: 1'
     - line: '|   m_SplashScreenLogos:'
-    - line: '|   - logo: {fileID: 1404028623067837608, guid: c19ef840dc45d4815900aeab9ba7d8d4,
+    - line: '|   - logo: {fileID: -5917997935372504609, guid: a614867ece6894585be325e11eb8e93c,
         type: 3}'
     - line: '|     duration: 2'
     - line: '|   m_VirtualRealitySplashScreen: {instanceID: 0}'
@@ -172,7 +172,7 @@ MonoBehaviour:
     - line: '|   loadStoreDebugModeEnabled: 0'
     - line: '|   visionOSBundleVersion: 1.0'
     - line: '|   tvOSBundleVersion: 1.0'
-    - line: '|   bundleVersion: 1.6'
+    - line: '|   bundleVersion: 1.7'
     - line: '|   preloadedAssets: []'
     - line: '|   metroInputSource: 0'
     - line: '|   wsaTransparentSwapchain: 0'
@@ -201,7 +201,7 @@ MonoBehaviour:
     - line: '|     Bratwurst: 0'
     - line: '|     Standalone: 0'
     - line: '|     VisionOS: 0'
-    - line: '|     iPhone: 3'
+    - line: '|     iPhone: 2'
     - line: '|     tvOS: 0'
     - line: '|   overrideDefaultApplicationIdentifier: 1'
     - line: '|   AndroidBundleVersionCode: 1'
@@ -324,7 +324,7 @@ MonoBehaviour:
     - line: '|   - m_BuildTarget: '
     - line: '|     m_Icons:'
     - line: '|     - serializedVersion: 2'
-    - line: '|       m_Icon: {fileID: 2800000, guid: c19ef840dc45d4815900aeab9ba7d8d4,
+    - line: '|       m_Icon: {fileID: 2800000, guid: a614867ece6894585be325e11eb8e93c,
         type: 3}'
     - line: '|       m_Width: 128'
     - line: '|       m_Height: 128'
@@ -1001,7 +1001,7 @@ MonoBehaviour:
         m_ConnectProfiler: 0
         m_BuildWithDeepProfilingSupport: 0
         m_AllowDebugging: 0
-        m_WaitForManagedDebugger: 1
+        m_WaitForManagedDebugger: 0
         m_ManagedDebuggerFixedPort: 0
         m_ExplicitNullChecks: 0
         m_ExplicitDivideByZeroChecks: 0

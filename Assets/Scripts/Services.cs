@@ -1,17 +1,21 @@
 using System;
+using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
-using System.Net.NetworkInformation;
-using Ping = System.Net.NetworkInformation.Ping;
+using UnityEngine.Networking;
+
+
 
 
 public class Services : MonoBehaviour
 {
 
     private IAPManager _iAPManager;
+    public static Services Instance;
 
     private void Awake()
     {
+        Instance = this;
         InitPurchases();
     }
 
@@ -21,19 +25,35 @@ public class Services : MonoBehaviour
         _iAPManager.RestorePurchases();
     }
 
-    public static bool IsNetworkAvailable()
+
+    public static void IsNetworkAvailable(Action<bool> syncResult)
     {
-        try
+        var result = false;
+        Instance.StartCoroutine(CheckInternetConnection((r) =>
         {
-            using Ping ping = new Ping();
-            string host = "google.com"; // Can use any reliable host
-            PingReply reply = ping.Send(host, 1000); // Timeout of 1000 milliseconds
-            return reply.Status == IPStatus.Success;
+            result = r;
+            syncResult(result);
         }
-        catch (Exception)
+        ));
+
+
+    }
+
+
+    public static IEnumerator CheckInternetConnection(Action<bool> syncResult)
+    {
+        const string echoServer = "https://google.com";
+
+        bool result;
+        using (var request = UnityWebRequest.Get(echoServer))
         {
-            return false;
+            
+            request.timeout = 3;
+            yield return request.SendWebRequest();
+            //  result = !request.isNetworkError && !request.isHttpError && request.responseCode == 200;
+            result = request.result == UnityWebRequest.Result.Success;
         }
+        syncResult(result);
     }
 
     [ContextMenu("Delete State")]
@@ -72,6 +92,7 @@ public class Services : MonoBehaviour
         ShopView.OnPurchaseInit -= BuyCoins;
         ShopView.OnRemoveAdsClicked -= RemoveAds;
         ShopView.OnRestoreClicked -= RestorePurchases;
+        Instance = null;
 
     }
 
