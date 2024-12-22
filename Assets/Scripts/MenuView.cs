@@ -1,138 +1,196 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using DG.Tweening;
-using Unity.Notifications.iOS;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 public class MenuView : MonoBehaviour
 {
-    [SerializeField] private string _levelScene = "LevelScene";
+
+    public static event Action<Vector2, Vector2> AwardRequested;
 
     private VisualElement _root;
-    private FadePanel _fadePnl;
+    private Label _levelNumberLbl;
+    private VisualElement _sliderFill;
+    private Button _timeBtn;
+    private Button _collectionsBtn;
+
+    private VisualElement _blurPnl;
     private VisualElement _giftDiv;
     private VisualElement _giftView;
 
-    private List<Button> _giftBtns;
+    private List<Button> _giftPickBtns;
 
-    private const string GIFT_ANIM_IN = "gift-anim-in";
-    private const string GIFT_ANIM_OUT = "gift-anim-out";
+    private const string PANEL_ANIM_IN = "panel-anim-in";
+    private const string GIFT_PICK_HIDE = "gift-pick-hide";
+    private const string GIFT_PICK_WIN = "gift-pick-win";
 
-    private const string BOX_HIDE = "box-hide";
-    private const string BOX_WIN = "box-win";
-
-    private NavigationRow _navRow;
-
-    [SerializeField] private int _minPrize = 20;
-    [SerializeField] private int _maxPrize = 50;
     private Button _classicBtn;
-    private Button _giftsViewBtn;
-    [SerializeField] private int _giftCoinsDelay = 100;
+    private Button _giftBtn;
+    private Button _settingsBtn;
+
     private VisualElement _grantedDiv;
     private VisualElement _interactionDiv;
-    private Label _newGiftLbl;
+    private Label _newGiftTimerLbl;
     private Button _giftCloseBtn;
     private VisualElement _shopBg;
     private Button _adsBtn;
     private CoinsView _coinsView;
-    [SerializeField] private Vector2 _fakeGiftPos;
-    [SerializeField] private CoinsFX_Handler _coinsFX_Handler;
+    private PlateView _plateView;
+
     [SerializeField] private float _hideGiftDelay = 0.5f;
     [SerializeField] private Camera _fxCam;
     private Image _overlayFx;
-    private Label _usernameLbl;
     private ShopView _shopView;
 
-    private void Start()
+    public IShopItems ShopItems
     {
-        //  AdsController.Instance = new AdsController();
+        get { return _shopView; }
+        set { _shopView = value as ShopView; }
+    }
 
-        //  AdsController.Instance.Init();
+    public static event Action<Vector2> OnCoinsFXRequested;
 
+
+    // private IPrizeProvider _prizeProvider;
+    private Button _clickedBtn;
+
+    private ShopBtn _shopBtn;
+    private VisualElement _backDiv;
+    private Button _backBtn;
+    private VisualElement _menuDiv;
+    public static event Action<bool> PlayClicked;
+
+    private void Awake()
+    {
         _root = GetComponent<UIDocument>().rootVisualElement;
 
-        _fadePnl = _root.Q<FadePanel>();
-        _giftDiv = _root.Q<VisualElement>("gift-div");
-        _giftView = _root.Q<VisualElement>("gift-view");
-        _navRow = _root.Q<NavigationRow>();
+        InitMenuDiv();
+        InitGiftView();
+        InitOverlayFx();
+        //
+        InitShopBtn();
+        InitShopView();
+        InitBackBtn();
 
+        _blurPnl = _root.Q<VisualElement>("blur-panel");
 
         _coinsView = _root.Q<CoinsView>();
 
-        _navRow.InitBalance(AudioManager.Instance);
+        _plateView = _root.Q<PlateView>();
+        _plateView.SetBlur(_blurPnl);
 
-        _classicBtn = _root.Q<Button>("classic-btn");
-        _classicBtn.clicked += HandleClassicBtn;
+        _menuDiv = _root.Q<VisualElement>("menu-div");
 
-        _giftsViewBtn = _root.Q<Button>("gift-btn");
-        _giftsViewBtn.clicked += ShowGiftView;
-
-        _grantedDiv = _root.Q<VisualElement>("granted-div");
-        _interactionDiv = _root.Q<VisualElement>("interaction-div");
-        _newGiftLbl = _root.Q<Label>("new-gift-lbl");
-
-        _giftCloseBtn = _root.Q<Button>("gift-close-btn");
-        _giftCloseBtn.clicked += () => StartCoroutine(HidingGift(true));
-
-        _shopBg = _root.Q<VisualElement>("shop-bg");
-
-        NavigationRow.OnShopBtnClicked += ShowShopBg;
-        NavigationRow.OnShopHideClicked += HideShopBg;
-
-        _adsBtn = _root.Q<Button>("ads-btn");
         _adsBtn.clicked += BuyNoAds;
 
-        Session.AdsRemoved += HideAdsBtn;
+    }
 
-        if (Session.NoAds) HideAdsBtn();
+    private void InitBackBtn()
+    {
+        _backDiv = _root.Q<VisualElement>("back-div");
+        _backBtn = _root.Q<Button>("back-btn");
+        _backBtn.clicked += HandleBackClick;
 
-        TryRemoveBanner();
-        GameDataService.LoadGame();
-        SetBackPicture();
+    }
 
-        EnableSettingsBtn();
+    private void HandleBackClick()
+    {
+        _shopView.Hide();
+        _backDiv.Toggle(false);
+        _menuDiv.Toggle(true);
+        _blurPnl.Toggle(false);
+        AudioManager.Instance.PlaySound(Sound.WindClose);
+    }
 
-        NavigationRow.CoinsPicResolved += SetCoinsAnimation;
-
-        SetGiftBtns();
-
-        _overlayFx = _root.Q<Image>("overlay-fx");
-        _overlayFx.SetRenderTexture(_fxCam);
-
-        _usernameLbl = _root.Q<Label>("username-lbl");
-        _usernameLbl.text = "<color=#FF0000>" + GameDataService.GetUsername() + "</color>";
-        IAPManager.OnPurchasedCoins += AnimatePurchasedCoins;
+    private void InitShopView()
+    {
         _shopView = _root.Q<ShopView>();
-
+        ShopItems = _shopView;
 
     }
 
-    private void SetCoinsAnimation(VisualElement target)
+    private void InitShopBtn()
     {
-        var worldPos = target.GetWorldPosition(_root);
-        _coinsFX_Handler.SetForceField(worldPos);
+        _shopBtn = _root.Q<ShopBtn>();
+        _shopBtn.SetRoot(_root);
+        _shopBtn.InitBalance();
+        ShopBtn.ShopClicked += ShowShopView;
     }
 
-
-    [ContextMenu("Create Sprite")]
-    private void CreateSprite()
+    private void ShowShopView()
     {
-        var sprite = Sprite.Create(new Texture2D(1, 1), new Rect(0, 0, 1, 1), new Vector2(0.5f, 0.5f));
-        var go = new GameObject();
-        go.AddComponent<SpriteRenderer>().sprite = sprite;
-        go.transform.position = _navRow.GetCoinsPicPos();
+        _menuDiv.Toggle(false);
+        _shopView.Show();
+        _backDiv.Toggle(true);
+
     }
 
-
-
-    private void EnableSettingsBtn()
+    private void InitOverlayFx()
     {
-        var plateView = _root.Q<PlateView>();
-        plateView.SubscribeToSettingsClick();
+        _overlayFx = _root.Q<Image>("overlay-fx");
+        _overlayFx.Toggle(true);
+        _overlayFx.SetRenderTexture(_fxCam);
     }
+
+    private void InitGiftView()
+    {
+        _giftView = _root.Q<VisualElement>("gift-view");
+        _giftDiv = _root.Q<VisualElement>("gift-div");
+        _giftDiv.RemoveFromClassList(PANEL_ANIM_IN);
+
+        _giftCloseBtn = _root.Q<Button>("gift-close-btn");
+        _giftCloseBtn.clicked += () => StartCoroutine(HidingGiftView(true));
+
+        _interactionDiv = _root.Q<VisualElement>("interaction-div");
+        _grantedDiv = _root.Q<VisualElement>("granted-div");
+
+        InitGiftPicBtns();
+
+        //last element
+        _newGiftTimerLbl = _root.Q<Label>("new-gift-timer-lbl");
+    }
+
+    private void InitMenuDiv()
+    {
+        _adsBtn = _root.Q<Button>("ads-btn");
+        _giftBtn = _root.Q<Button>("gift-btn");
+        _giftBtn.clicked += ShowGiftView;
+
+        _settingsBtn = _root.Q<Button>("settings-btn");
+        _settingsBtn.clicked += ShowSettings;
+
+        _levelNumberLbl = _root.Q<Label>("level-number-lbl");
+        _sliderFill = _root.Q<VisualElement>("slider-fill");
+
+        _classicBtn = _root.Q<Button>("classic-btn");
+        _classicBtn.clicked += HandleClassicClick;
+
+        _timeBtn = _root.Q<Button>("time-btn");
+        _timeBtn.clicked += HandleTimeBtn;
+
+        _collectionsBtn = _root.Q<Button>("collections-btn");
+        _collectionsBtn.clicked += HandleCollectionsClick;
+
+    }
+
+
+
+    private void HandleCollectionsClick()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void HandleTimeBtn()
+    {
+        PlayClicked?.Invoke(false);
+    }
+
+    private void ShowSettings()
+    {
+        _plateView.ShowPlate(Plate.Settings);
+    }
+
 
     public void SetBackPicture()
     {
@@ -150,7 +208,7 @@ public class MenuView : MonoBehaviour
         AdsController.Instance?.RemoveBanner();
     }
 
-    private void HideAdsBtn()
+    public void HideAdsBtn()
     {
         _adsBtn.style.visibility = Visibility.Hidden;
         //AdsController.Instance?.RemoveBanner();
@@ -158,58 +216,41 @@ public class MenuView : MonoBehaviour
 
     private void BuyNoAds()
     {
-        ShopView shopView = _root.Q<ShopView>();
-        shopView.InitRemoveAds();
+        _shopView.InitRemoveAds();
     }
 
-    private void HandleClassicBtn()
+    private void HandleClassicClick()
     {
-        AudioManager.Instance.PlaySound(Sound.Click);
-        SceneManager.LoadScene(_levelScene);
+        PlayClicked?.Invoke(true);
     }
 
     void OnDestroy()
     {
-        _navRow?.Unsubscribe();
-
-        NavigationRow.OnShopBtnClicked -= ShowShopBg;
-        NavigationRow.OnShopHideClicked -= HideShopBg;
-        NavigationRow.CoinsPicResolved -= SetCoinsAnimation;
-        IAPManager.OnPurchasedCoins -= AnimatePurchasedCoins;
-
+        _adsBtn.clicked -= BuyNoAds;
+        ShopBtn.ShopClicked -= ShowShopView;
     }
 
-    private void AnimatePurchasedCoins(int payout)
-    {
-        PlayAward(payout, _shopView.BuyBtn, _shopView.BuyBtn, false);
-        _shopView.BuyBtn = null;
-    }
 
-    private void PlayAward(int prizeAmount, VisualElement coinsLblRefPos, VisualElement fxStartPos, bool showLbl = true)
+    public Vector2 ShowCoinsPopup(int payout)
     {
-        var prize = prizeAmount;
-        var element = coinsLblRefPos;
+        var prize = payout;
+        var element = _shopView.BuyBtn;
         var pos = element.worldBound.position;
-        if (showLbl) _coinsView.ShowCoinsLbl(pos, prize);
-
+        _coinsView.ShowCoinsLbl(pos, prize);
         AudioManager.Instance.PlaySound(Sound.Coins);
-
-
-        var worldPos = fxStartPos.GetWorldPosition(_root);
-
-
-        _coinsFX_Handler.PlayCoinsFX(worldPos, 1);
-
+        var worldPos = element.GetWorldPosition(_root);
+        _shopView.BuyBtn = null;
+        return worldPos;
     }
 
-    private void SetGiftBtns()
+    private void InitGiftPicBtns()
     {
-        _giftBtns = _interactionDiv.Query<Button>().ToList();
+        _giftPickBtns = _interactionDiv.Query<Button>().ToList();
 
-        foreach (var btn in _giftBtns)
+        foreach (var btn in _giftPickBtns)
         {
-            btn.RegisterCallback<ClickEvent>(HandleGiftClicked);
-            btn.AddToClassList(BOX_HIDE);
+            btn.RegisterCallback<ClickEvent>(HandleGiftPickClick);
+            btn.AddToClassList(GIFT_PICK_HIDE);
         }
         _giftCloseBtn.Toggle(false);
 
@@ -224,65 +265,80 @@ public class MenuView : MonoBehaviour
 
     }
 
-    private void HandleGiftClicked(ClickEvent evt)
+    private void HandleGiftPickClick(ClickEvent evt)
     {
-        Debug.Log($"Handle gift btn");
-        AudioManager.Instance.PlaySound(Sound.Click);
-        var btn = evt.currentTarget as Button;
 
-        var otherBtns = _giftBtns.FindAll(x => x != btn);
+        _clickedBtn = evt.currentTarget as Button;
+        HideOtherGiftPicks(_clickedBtn);
+        AudioManager.Instance.PlaySound(Sound.Click);
+
+        _clickedBtn.RegisterCallbackOnce<TransitionEndEvent>(RequestAward);
+        _clickedBtn.AddToClassList(GIFT_PICK_WIN);
+
+        foreach (var b in _giftPickBtns)
+        {
+            b.UnregisterCallback<ClickEvent>(HandleGiftPickClick);
+        }
+    }
+
+
+    private void HideOtherGiftPicks(Button clickedBtn)
+    {
+        var otherBtns = _giftPickBtns.FindAll(x => x != clickedBtn);
         foreach (var b in otherBtns)
         {
-            b.AddToClassList(BOX_HIDE);
-        }
-        btn.RegisterCallbackOnce<TransitionEndEvent>(UnpackGift);
-
-        btn.AddToClassList(BOX_WIN);
-
-        foreach (var b in _giftBtns)
-        {
-            b.UnregisterCallback<ClickEvent>(HandleGiftClicked);
+            b.AddToClassList(GIFT_PICK_HIDE);
         }
     }
 
 
 
-    private void UnpackGift(TransitionEndEvent evt)
+    private void RequestAward(TransitionEndEvent evt)
     {
-        Debug.Log($"Unpack gift");
-        var randomPrize = UnityEngine.Random.Range(_minPrize, _maxPrize + 1);
-        var element = evt.target as VisualElement;
-        var pos = element.worldBound.position;
-        Debug.Log($"Unpack gift pos: {pos}");
-        _coinsView.ShowCoinsLbl(pos, randomPrize);
-        Balance.AddBalance(randomPrize, _giftCoinsDelay);
-        AudioManager.Instance.PlaySound(Sound.Coins);
-        Session.WasGiftReceived = true;
-        StartCoroutine(HidingGift(false));
+        //  var randomPrize = _randomPrize;
+        var targetGiftPick = evt.target as VisualElement;
+        var giftPickPos = targetGiftPick.worldBound.position;
+        var worldPos = targetGiftPick.GetWorldPosition(_root);
 
-        var btn = evt.target as VisualElement;
-        var worldPos = btn.GetWorldPosition(_root);
-        _coinsFX_Handler.PlayCoinsFX(worldPos);
+        AwardRequested?.Invoke(giftPickPos, worldPos);
+
+        //  StartCoroutine(HidingGiftView(false));
+    }
+
+    public void ShowCoinsPopup(Vector2 pos, int coins, Action callback)
+    {
+        _coinsView.ShowCoinsLbl(pos, coins, callback);
     }
 
 
+    public void HideCoinsPopup()
+    {
+        _coinsView.HideAsync();
+    }
+
+    /*
+        private int GetRandomPrize()
+        {
+            return _prizeProvider.GetRandomPrize();
+        }
+        */
 
     // [ContextMenu("Show gift view")]
     public void ShowGiftView()
     {
-        _giftDiv.RemoveFromClassList(GIFT_ANIM_OUT);
-        _fadePnl.Toggle(true);
+        _blurPnl.Toggle(true);
+        _blurPnl.PlaceBehind(_giftView);
+
         _giftView.Toggle(true);
-        _giftDiv.Toggle(true);
-        //_giftDiv.Toggle(true);
-        _giftDiv.AddToClassList(GIFT_ANIM_IN);
+
+        _giftDiv.AddToClassList(PANEL_ANIM_IN);
         AudioManager.Instance.PlaySound(Sound.WindOpen);
 
         if (Session.WasGiftReceived)
         {
             _interactionDiv.Toggle(false);
             _grantedDiv.Toggle(true);
-            _newGiftLbl.text = $"come back in {Session.GiftTimeLeft()}";
+            _newGiftTimerLbl.text = $"come back in {Session.GiftTimeLeft()}";
             _giftCloseBtn.Toggle(true);
         }
         else
@@ -291,62 +347,30 @@ public class MenuView : MonoBehaviour
             _grantedDiv.Toggle(false);
         }
 
-        foreach (var btn in _giftBtns)
-            btn.RemoveFromClassList(BOX_HIDE);
+        foreach (var btn in _giftPickBtns)
+            btn.RemoveFromClassList(GIFT_PICK_HIDE);
 
 
     }
 
-    private void HideShopBg()
+    public IEnumerator HidingGiftView(bool isInstant = false)
     {
-        _shopBg.Toggle(false);
-    }
 
-    private void ShowShopBg()
-    {
-        _shopBg.Toggle(true);
-    }
-    /*
-    IEnumerator RequestAuthorization()
-    {
-        var authorizationOption = AuthorizationOption.Alert | AuthorizationOption.Badge;
-        using (var req = new AuthorizationRequest(authorizationOption, true))
-        {
-            while (!req.IsFinished)
-            {
-                yield return null;
-            };
-
-            string res = "\n RequestAuthorization:";
-            res += "\n finished: " + req.IsFinished;
-            res += "\n granted :  " + req.Granted;
-            res += "\n error:  " + req.Error;
-            res += "\n deviceToken:  " + req.DeviceToken;
-            Debug.Log(res);
-        }
-    }
-    */
-
-    public IEnumerator HidingGift(bool isInstant = false)
-    {
         var delayTime = isInstant ? 0 : _hideGiftDelay;
         yield return new WaitForSeconds(delayTime);
         AudioManager.Instance.PlaySound(Sound.WindClose);
         _giftDiv.RegisterCallbackOnce<TransitionEndEvent>(e =>
         {
             _giftView.Toggle(false);
-            _giftDiv.Toggle(false);
-            //_giftDiv.RemoveFromClassList(GIFT_ANIM_IN);
-            //_giftDiv.RemoveFromClassList(GIFT_ANIM_OUT);
-            _fadePnl.Toggle(false);
 
+            _blurPnl.Toggle(false);
 
         });
 
-        _giftDiv.AddToClassList(GIFT_ANIM_OUT);
+        _giftDiv.RemoveFromClassList(PANEL_ANIM_IN);
 
 
-        foreach (var btn in _giftBtns)
+        foreach (var btn in _giftPickBtns)
         {
             btn.style.opacity = 1;
             btn.style.scale = new StyleScale(Vector3.one);
@@ -354,4 +378,15 @@ public class MenuView : MonoBehaviour
         }
 
     }
+
+    internal void SetLevelData(int lastLevel, int lastEpisode, int lastTotalEpisodes)
+    {
+        _levelNumberLbl.text = lastLevel.ToString();
+        float percentWidth = 0;
+        if (lastEpisode > 1)
+            percentWidth = (lastEpisode - 1) / (float)lastTotalEpisodes * 100;
+
+        _sliderFill.style.width = new StyleLength(new Length(percentWidth, LengthUnit.Percent));
+    }
+
 }

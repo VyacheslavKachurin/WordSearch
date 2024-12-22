@@ -118,7 +118,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5728744426035675355, guid: 0d173bd7b2b944bd89be9149206e1c9b, type: 3}
       propertyPath: m_Parameters.m_GravityCurve.scalar
-      value: 50
+      value: 70
       objectReference: {fileID: 0}
     - target: {fileID: 5728744426035675355, guid: 0d173bd7b2b944bd89be9149206e1c9b, type: 3}
       propertyPath: m_Parameters.m_VectorFieldSpeedCurve.scalar

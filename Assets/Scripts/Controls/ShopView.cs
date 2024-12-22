@@ -5,12 +5,13 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 [UxmlElement]
-public partial class ShopView : VisualElement
+public partial class ShopView : VisualElement, IShopItems
 {
-    private List<Button> _buyBtns;
-    private Button _noAdsBtn;
-    private VisualElement _adsDiv;
-    private NavigationRow _navRow;
+    // private List<Button> _buyBtns;
+    private Button _removeAdsBtn;
+    private VisualElement _itemsDiv;
+    private VisualElement _noAdsDiv;
+    // private NavigationRow _navRow;
 
     public static event Action OnRemoveAdsClicked;
     public static event Action<int> OnPurchaseInit;
@@ -21,22 +22,36 @@ public partial class ShopView : VisualElement
     private Button _restoreBtn;
     private VisualElement _removedAdsDiv;
 
+    private VisualElement _adsOfferDiv;
+    private VisualElement _adsRemovedDiv;
+
+    private VisualTreeAsset _purchaseBtnTemplate;
+    private List<Button> _buyBtns = new();
+    //public static event Action<int, Button> OnBtnClicked;
+
     public ShopView()
     {
         var template = Resources.Load<VisualTreeAsset>("ShopView");
         var instance = template.Instantiate();
         instance.style.flexGrow = 1;
-        instance.pickingMode = PickingMode.Ignore;
+        // instance.pickingMode = PickingMode.Ignore;
         Add(instance);
-        style.position = Position.Absolute;
+
+        _purchaseBtnTemplate = Resources.Load<VisualTreeAsset>("PurchaseBtnTemplate");
+
+        // style.position = Position.Absolute;
         style.flexGrow = 1;
         style.height = new StyleLength(new Length(100, LengthUnit.Percent));
         style.width = new StyleLength(new Length(100, LengthUnit.Percent));
 
-        NavigationRow.OnShopBtnClicked += ShowShopView;
-        NavigationRow.OnShopHideClicked += HideShopView;
-        _noAdsBtn = this.Q<Button>("no-ads-btn");
-        _noAdsBtn.clicked += () =>
+
+        _removeAdsBtn = this.Q<Button>("remove-ads-btn");
+        _itemsDiv = this.Q<VisualElement>("items-div");
+
+        _adsOfferDiv = this.Q<VisualElement>("ads-offer-div");
+        _adsRemovedDiv = this.Q<VisualElement>("ads-removed-div");
+
+        _removeAdsBtn.clicked += () =>
         {
             Debug.Log($"Remove Ads Btn Clicked ");
             Services.IsNetworkAvailable((result) =>
@@ -50,37 +65,52 @@ public partial class ShopView : VisualElement
             });
         };
 
-        _buyBtns = this.Query<Button>("shop-item").ToList();
-
-        for (int i = 0; i < _buyBtns.Count; i++)
-        {
-            var index = i;
-            _buyBtns[index].clicked += () =>
-            {
-                BuyBtn = _buyBtns[index];
-                Services.IsNetworkAvailable((result) =>
-                {
-                    if (result)
-                        OnPurchaseInit?.Invoke(index);
-                    else
-                    {
-                        RequireNetwork();
-                    }
-                });
-
-            };
-
-        }
-        _adsDiv = this.Q<VisualElement>("ads-div");
-        _removedAdsDiv = this.Q<VisualElement>("removed-ads-div");
+        _noAdsDiv = this.Q<VisualElement>("ads-div");
+        _removedAdsDiv = this.Q<VisualElement>("ads-removed-div");
         if (Session.NoAds) HideAdsOffer();
         Session.AdsRemoved += HideAdsOffer;
 
         this.RegisterCallback<DetachFromPanelEvent>((evt) => Unsubscribe());
         _networkDiv = this.Q<VisualElement>("network-div");
-        _restoreBtn = this.Q<Button>("restore-btn");
+        _restoreBtn = this.Q<Button>("restore-purchase-btn");
         _restoreBtn.clicked += AskRestorePurchase;
     }
+
+    public void AddItem(int index, int coinsAmount, string price)
+    {
+        var template = _purchaseBtnTemplate;
+        var instance = template.Instantiate();
+        instance.Q<Label>("coins-lbl").text = coinsAmount.ToString();
+#if !UNITY_EDITOR
+        Debug.Log($"Price: {price}");
+#endif
+        instance.Q<Label>("price-lbl").text = price;
+        _itemsDiv.Add(instance);
+
+        _buyBtns.Add(instance.Q<Button>());
+        _buyBtns[index].clicked += () =>
+        {
+            var pointer = index;
+            var btn = _buyBtns[pointer];
+            BuyBtn = btn;
+            Services.IsNetworkAvailable((result) =>
+            {
+                if (result)
+                {
+                    OnPurchaseInit?.Invoke(index);
+
+                }
+                else
+                {
+                    RequireNetwork();
+                }
+            });
+
+
+        };
+    }
+
+
 
     private void AskRestorePurchase()
     {
@@ -101,8 +131,8 @@ public partial class ShopView : VisualElement
 
     private void Unsubscribe()
     {
-        NavigationRow.OnShopBtnClicked -= ShowShopView;
-        NavigationRow.OnShopHideClicked -= ShowShopView;
+        NavigationRow.OnShopBtnClicked -= Show;
+        NavigationRow.OnShopHideClicked -= Show;
         Session.AdsRemoved -= HideAdsOffer;
     }
 
@@ -114,23 +144,21 @@ public partial class ShopView : VisualElement
 
     public void HideAdsOffer()
     {
-        _adsDiv.Toggle(false);
+        _adsOfferDiv.Toggle(false);
         _removedAdsDiv.Toggle(true);
-    }
-
-    private void HideShopView()
-    {
-        this.Toggle(false);
-        Session.IsSelecting = true;
-
     }
 
     private void RequireNetwork()
     {
+        Debug.Log($"Require Network");
+        throw new NotImplementedException();
+
         var go = AudioManager.Instance;
         go.PlaySound(Sound.WrongWord);
         go.StartCoroutine(NetworkCoroutine());
     }
+
+
 
     private IEnumerator NetworkCoroutine()
     {
@@ -140,11 +168,21 @@ public partial class ShopView : VisualElement
     }
 
 
-    private void ShowShopView()
+    public void Show()
     {
         if (this.style.display == DisplayStyle.Flex) return;
-        Session.IsSelecting = false;
-        this.Toggle(true);
 
+        AudioManager.Instance.PlaySound(Sound.WindOpen);
+        this.Toggle(true);
     }
+
+    internal void Hide()
+    {
+        this.Toggle(false);
+    }
+}
+
+public interface IShopItems
+{
+    public void AddItem(int index, int coinsAmount, string price);
 }

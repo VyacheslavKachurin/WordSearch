@@ -156,7 +156,6 @@ public class LineProvider : MonoBehaviour
             var isThere = levelState.FoundLetters.Any(x => x.X == point.X && x.Y == point.Y);
             if (isThere)
             {
-                Debug.Log($"Found letter: {point}");
                 continue;
             }
 

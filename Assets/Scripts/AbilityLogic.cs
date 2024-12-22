@@ -7,6 +7,8 @@ public class AbilityLogic : MonoBehaviour
     private LevelData _data;
     private GameBoard _gameBoard;
 
+    IAdsRequest _adsRequest;
+
     public static event Action OnCashRequested;
 
     public static event Action OnFakeLettersRemoved;
@@ -24,12 +26,11 @@ public class AbilityLogic : MonoBehaviour
         AbilityBtn.OnAbilityClicked -= HandleAbility;
     }
 
-
     private void HandleAbility(Ability ability, int price, AbilityBtn btn)
     {
         if (!Balance.UseAbility(price))
         {
-            OnCashRequested?.Invoke();
+            _adsRequest.RequestAds();
             return;
         }
 
@@ -47,9 +48,11 @@ public class AbilityLogic : MonoBehaviour
             case Ability.Firework:
                 RevealSquare();
                 break;
+                /*
             case Ability.Ads:
                 RequireAd();
                 break;
+                */
         }
         EventSender.SendAbilityEvent(ability);
         LevelStateService.SaveState();
@@ -57,10 +60,11 @@ public class AbilityLogic : MonoBehaviour
 
     }
 
-    public void SetData(LevelData levelData, GameBoard gameBoard)
+    public void SetData(LevelData levelData, GameBoard gameBoard, IAdsRequest adsRequest)
     {
         _data = levelData;
         _gameBoard = gameBoard;
+        _adsRequest = adsRequest;
 
     }
 

@@ -950,6 +950,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3c4cf9b888954143a1737c515783f39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &2066536709
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2066536711}
+  - component: {fileID: 2066536710}
+  m_Layer: 0
+  m_Name: IAPManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2066536710
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2066536709}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c577e15c436445f7b0441270a75a14a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &2066536711
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2066536709}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.41392526, y: -0.19269069, z: -0.13668877}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &916487363140881407
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1084,12 +1128,20 @@ PrefabInstance:
       value: LevelLogic
       objectReference: {fileID: 0}
     - target: {fileID: 7508644550789951793, guid: d21a5ff31f2c647b68d33541c6086c2c, type: 3}
+      propertyPath: _canvas
+      value: 
+      objectReference: {fileID: 332169769}
+    - target: {fileID: 7508644550789951793, guid: d21a5ff31f2c647b68d33541c6086c2c, type: 3}
       propertyPath: _levelView
       value: 
       objectReference: {fileID: 1148785180}
     - target: {fileID: 7508644550789951793, guid: d21a5ff31f2c647b68d33541c6086c2c, type: 3}
       propertyPath: _canContinue
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7508644550789951793, guid: d21a5ff31f2c647b68d33541c6086c2c, type: 3}
+      propertyPath: _useTestData
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7508644550789951793, guid: d21a5ff31f2c647b68d33541c6086c2c, type: 3}
       propertyPath: _inputHandler
@@ -1099,6 +1151,10 @@ PrefabInstance:
       propertyPath: _lineProvider
       value: 
       objectReference: {fileID: 454222631}
+    - target: {fileID: 7508644550789951793, guid: d21a5ff31f2c647b68d33541c6086c2c, type: 3}
+      propertyPath: _adsController
+      value: 
+      objectReference: {fileID: 659600968}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1136,6 +1192,10 @@ PrefabInstance:
       propertyPath: _levelView
       value: 
       objectReference: {fileID: 1148785180}
+    - target: {fileID: 653042333132667601, guid: 17a33570626f24b789e8d24a2885aba7, type: 3}
+      propertyPath: _iapManager
+      value: 
+      objectReference: {fileID: 2066536710}
     - target: {fileID: 653042333132667601, guid: 17a33570626f24b789e8d24a2885aba7, type: 3}
       propertyPath: _levelLogic
       value: 
@@ -1412,6 +1472,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 687783264}
     - target: {fileID: 7295536969090361296, guid: 1b0b483e238b44b25b28c6fced1dac6a, type: 3}
+      propertyPath: _fillAdd
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7295536969090361296, guid: 1b0b483e238b44b25b28c6fced1dac6a, type: 3}
+      propertyPath: _fxScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7295536969090361296, guid: 1b0b483e238b44b25b28c6fced1dac6a, type: 3}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
@@ -1425,7 +1493,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7295536969090361296, guid: 1b0b483e238b44b25b28c6fced1dac6a, type: 3}
       propertyPath: _fillDelay
-      value: 0.03
+      value: 0.005
       objectReference: {fileID: 0}
     - target: {fileID: 7295536969090361296, guid: 1b0b483e238b44b25b28c6fced1dac6a, type: 3}
       propertyPath: _wordFoundFX
@@ -1599,3 +1667,4 @@ SceneRoots:
   - {fileID: 245393401}
   - {fileID: 25732378}
   - {fileID: 659600967}
+  - {fileID: 2066536711}

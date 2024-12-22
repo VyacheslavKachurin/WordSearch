@@ -51,7 +51,7 @@ public static class Balance
         }
     }
 
-    public static void AddBalance(double amount, int delay = 0)
+    public static void AddBalance(double amount)
     {
         Debug.Log($"Adding {amount}");
         // AnimateBalance((int)amount, delay);

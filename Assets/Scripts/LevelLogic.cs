@@ -2,32 +2,27 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class LevelLogic : MonoBehaviour
 {
     public static event Action<List<Point>> OnWordFound;
-    public static event Action<int> WordListUpdated;
 
     [SerializeField] LevelView _levelView;
     [SerializeField] LineProvider _lineProvider;
-
-    [SerializeField] InputHandler _inputHandler;
 
     private AudioManager _audio;
     private bool _isFirstLetter = true;
     private string _tryWord = string.Empty;
     private List<LetterUnit> _tryWordLetterUnits = new();
 
-
     private List<string> _words;
 
-    [SerializeField] private LayerMask _ignoreRaycastLayer;
-    [SerializeField] private string _menuScene = "MenuScene";
 
 #if UNITY_EDITOR
-    [SerializeField] private bool _canContinue = false;
+    [SerializeField] private bool _useTestData = false;
 #endif
 
     // public static int Stage;
@@ -37,6 +32,12 @@ public class LevelLogic : MonoBehaviour
 
     private bool _shouldCheckForFinish = true;
 
+    [SerializeField] Canvas _canvas;
+
+#if UNITY_EDITOR
+    [SerializeField] private int _editorEpisode;
+    [SerializeField] private int _editorTotalEpisodes;
+#endif
 
     private void Start()
     {
@@ -47,9 +48,16 @@ public class LevelLogic : MonoBehaviour
 
         _audio = AudioManager.Instance;
         // _inputHandler.SetLetterUnits(_tryWordLetterUnits);
-        NavigationRow.OnBackBtnClicked += HandleBackBtn;
         _shouldCheckForFinish = true;
 
+        LevelView.OnGameViewToggle += HideGameObjects;
+        LevelView.OnBackClicked += HandleBackClick;
+
+    }
+
+    public void HideGameObjects(bool isVisible)
+    {
+        _canvas.sortingOrder = isVisible ? 0 : 999;
     }
 
     private void OnDestroy()
@@ -58,60 +66,80 @@ public class LevelLogic : MonoBehaviour
         InputTrigger.OnLetterEnter -= HandleLetterEnter;
         InputHandler.OnTriggerMove -= HandleTriggerMove;
         InputHandler.OnLetterDeselect -= HandleLetterDeselect;
-        //  WordFX.OnAnimDone -= CheckIfLevelDone;
-        NavigationRow.OnBackBtnClicked -= HandleBackBtn;
+        LevelView.OnGameViewToggle -= HideGameObjects;
     }
 
 
     [ContextMenu("Check if level done")]
-    private void IsLevelDone()
+    private void CheckFinishCondition()
     {
-#if UNITY_EDITOR
-        if (!_canContinue) return;
-#endif
         if (!_shouldCheckForFinish) return;
         if (_words.Count == 0)
+            FinishLevel();
+    }
+
+
+    private async void FinishLevel()
+    {
+        Session.IsSelecting = false;
+
+        var episode = GameDataService.GameData.Episode;
+        var totalEpisodes = GameDataService.GameData.TotalEpisodes;
+
+#if UNITY_EDITOR
+        if (_useTestData)
         {
-            Debug.Log($"No words");
-
-            StartCoroutine(LevelDoneCoroutine());
+            episode = _editorEpisode;
+            totalEpisodes = _editorTotalEpisodes;
         }
-    }
+#endif
+        var isStageCompleted = episode == totalEpisodes;
 
-    [ContextMenu("Log words left")]
-    private void LogWordsLeft()
-    {
-        Debug.Log($"words left: {_words.Count}");
-    }
+        _levelView.ShowFinishView(episode, totalEpisodes, isStageCompleted);
 
-    private IEnumerator LevelDoneCoroutine()
-    {
-        Debug.Log($"waiting until all particles are done, active particles: {ParticleProvider.IsAnimating}");
-        //yield return new WaitUntil(() => !ParticleProvider.IsAnimating);
-        yield return new WaitForSeconds(1);
-        _levelView.ShowFinishView(GameDataService.GameData.Episode, GameDataService.GameData.TotalEpisodes);
         _shouldCheckForFinish = false;
+        HideGameObjects(false);
+
     }
+
+    [ContextMenu("Finish Level")]
+    private void FinishLevelImmediate()
+    {
+        FinishLevel();
+    }
+
 
     private void OnApplicationPause(bool pause)
     {
-
         SaveState();
     }
 
-    private void HandleBackBtn()
+    private void HandleBackClick()
     {
-        SaveState();
-        SceneManager.LoadScene(_menuScene, LoadSceneMode.Single);
+        AudioManager.Instance.PlaySound(Sound.Click);
+
+        var isShopOpen = _levelView.HideShopView();
+        if (isShopOpen)
+        {
+            Session.IsSelecting = true;
+            HideGameObjects(true);
+        }
+        else
+        {
+            var adsController = AdsController.Instance;
+            adsController.RemoveBanner();
+            LevelStateService.SaveState();
+            SceneManager.LoadScene(0);
+        }
     }
+
+
 
     [ContextMenu("Save State")]
     private void SaveState()
     {
         LevelStateService.SaveState();
     }
-
-
 
     private void HandleLetterDeselect(LetterUnit letter, Vector2 triggerPos)
     {
@@ -182,7 +210,10 @@ public class LevelLogic : MonoBehaviour
     {
         _levelView.HideWord(_tryWord);
         _words.Remove(_tryWord);
-        WordListUpdated?.Invoke(_words.Count);
+
+
+        UpdateLightingAbility();
+
 
 
         foreach (var letter in _tryWordLetterUnits)
@@ -196,8 +227,14 @@ public class LevelLogic : MonoBehaviour
 
         _levelView.AnimateWord(_tryWordLetterUnits);
         ParticleProvider.IsAnimating = true;
-        IsLevelDone();
+        CheckFinishCondition();
 
+    }
+
+    private void UpdateLightingAbility()
+    {
+        if (_words.Count < 3)
+            _levelView.DisableLighting();
     }
 
     [ContextMenu("Log First Active letters")]
@@ -243,31 +280,15 @@ public class LevelLogic : MonoBehaviour
         }
     }
 
-    [ContextMenu("Complete Level")]
-    private void CompleteLevel()
-    {
-        _words.Clear();
-        IsLevelDone();
-    }
-
-    /*
-        [ContextMenu("set stage to 1")]
-        private void SetStageTo1()
-        {
-          //  Session.LastStage = 1;
-        }
-        */
-
     internal void SetData(LevelData levelData)
     {
+        HideGameObjects(true);
         var gameData = GameDataService.GameData;
         _words = levelData.Words.ToList();
         // Stage = levelData.Stage;
         //   Step = levelData.Step;
         TotalSteps = gameData.TotalEpisodes;
         _shouldCheckForFinish = true;
-
-
 
     }
 
@@ -278,5 +299,6 @@ public class LevelLogic : MonoBehaviour
             var word = levelState.FoundWords[i];
             _words.Remove(word);
         }
+
     }
 }

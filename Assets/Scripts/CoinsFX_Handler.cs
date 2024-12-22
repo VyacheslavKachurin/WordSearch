@@ -10,7 +10,6 @@ public class CoinsFX_Handler : MonoBehaviour
 
     public void PlayCoinsFX(Vector2 startPos, int scale = 1)
     {
-        Debug.Log($"Playing Coins FX: {startPos}");
         var zeroPos = startPos;
         var fx = Instantiate(_coins, new Vector2(zeroPos.x, zeroPos.y), Quaternion.identity);
         fx.transform.localScale = new Vector3(scale, scale, scale);

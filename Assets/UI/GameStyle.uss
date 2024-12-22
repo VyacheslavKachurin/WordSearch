@@ -1,5 +1,5 @@
 .unity-label {
-    -unity-font-definition: url("project://database/Assets/Fonts/helvetica-neue-5/HelveticaNeueRoman%20SDF.asset?fileID=11400000&guid=2a99dce4bc3f4406ba2276ce36b97de6&type=2#HelveticaNeueRoman SDF");
+    -unity-font-definition: url("project://database/Assets/Fonts/helvetica-neue-5/HelveticaNeueBold.otf?fileID=12800000&guid=be9fe7aa4e3c540f0b7aa579e0c61e0e&type=3#HelveticaNeueBold");
     -unity-text-align: middle-center;
     letter-spacing: 5px;
 }
@@ -24,6 +24,14 @@
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
 }
 
 .nav-lbl {
@@ -73,4 +81,31 @@
     position: absolute;
     height: 100%;
     width: 100%;
+}
+
+.bold {
+    -unity-font-definition: url("project://database/Assets/Fonts/helvetica-neue-5/HelveticaNeueBold.otf?fileID=12800000&guid=be9fe7aa4e3c540f0b7aa579e0c61e0e&type=3#HelveticaNeueBold");
+    color: rgb(255, 255, 255);
+}
+
+.panel-anim {
+    flex-grow: 0;
+    display: none;
+    transition-duration: 0.5s;
+    transition-timing-function: ease;
+    scale: 0 0;
+}
+
+.gift-pick-win {
+    scale: 1.3 1.3;
+}
+
+.panel-anim-in {
+    scale: 1 1;
+}
+
+.red-btn {
+    background-image: url("project://database/Assets/Sprites/ads-btn.png?fileID=2800000&guid=4f9e86ee199ed4fb18fb67b2945640e5&type=3#ads-btn");
+    width: 136px;
+    height: 136px;
 }

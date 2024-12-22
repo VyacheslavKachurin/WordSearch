@@ -73,7 +73,6 @@ public static class GameDataService
         {
             string json = System.IO.File.ReadAllText(_prePath + _fileName);
             GameData = JsonConvert.DeserializeObject<GameData>(json);
-            Debug.Log($"Game Exists");
         }
         else
         {

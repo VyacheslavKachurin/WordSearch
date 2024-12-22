@@ -15,7 +15,8 @@ public static class Session
     private const string IS_SOUND_ON = "is-sound-on";
 
     public static string TIMESTAMP_KEY = "timestamp";
-    // public static string STAGE_KEY = "stage";
+
+    public static bool IsClassicGame;
 
     public static bool IsFirstTime
     {
@@ -25,7 +26,6 @@ public static class Session
         }
         set
         {
-
             PlayerPrefs.SetInt(IS_FIRST_TIME, value ? 1 : 0);
         }
     }

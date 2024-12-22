@@ -34,3 +34,8 @@
 .target-word-left {
     translate: -20px 0;
 }
+
+.finish-view-hide {
+    opacity: 0;
+    background-color: rgba(0, 0, 0, 0.63);
+}

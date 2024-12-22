@@ -1,9 +1,10 @@
 .plate {
     background-image: url("project://database/Assets/Sprites/ads-bg.png?fileID=2800000&guid=7d9032c377a74428dbf7f28daa533318&type=3#ads-bg");
-    width: 963px;
-    height: 417px;
+    width: 1085px;
     transition-duration: 300ms;
-    transition-timing-function: ease-in-back;
+    transition-timing-function: ease;
+    scale: 0 0;
+    color: rgb(255, 255, 255);
 }
 
 .close-btn {
@@ -13,6 +14,10 @@
     position: absolute;
     top: -40px;
     left: -40px;
+}
+
+.plate-show {
+    scale: 1 1;
 }
 
 .lbl-div {
@@ -28,11 +33,6 @@
 
 .switch-on {
     background-image: url("project://database/Assets/Sprites/switch-on.png?fileID=2800000&guid=f1700c018a9564f7493427a872f636c8&type=3#switch-on");
-}
-
-.switch {
-    width: 205px;
-    height: 76px;
 }
 
 .plate-show-off {

@@ -1,10 +1,11 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Purchasing;
 using UnityEngine.Purchasing.Extension;
 
-public class IAPManager : IDetailedStoreListener
+public class IAPManager : MonoBehaviour, IDetailedStoreListener
 {
 
     private IStoreController _controller;
@@ -14,11 +15,27 @@ public class IAPManager : IDetailedStoreListener
 
     private IAppleExtensions _appleExtensions;
 
-    public IAPManager()
+    private async void Awake()
     {
+        await InitUGS();
+        Init();
 
+        ShopView.OnPurchaseInit += BuyCoins;
+        ShopView.OnRemoveAdsClicked += RemoveAds;
+        ShopView.OnRestoreClicked += RestorePurchases;
+    }
+
+    private void OnDestroy()
+    {
+        ShopView.OnPurchaseInit -= BuyCoins;
+        ShopView.OnRemoveAdsClicked -= RemoveAds;
+        ShopView.OnRestoreClicked -= RestorePurchases;
+
+    }
+
+    private void Init()
+    {
         var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
-
 
         _catalog = JsonUtility.FromJson<ProductCatalog>(Resources.Load<TextAsset>("IAPProductCatalog").text);
         foreach (var item in _catalog.allProducts)
@@ -27,7 +44,6 @@ public class IAPManager : IDetailedStoreListener
         }
 
         UnityPurchasing.Initialize(this, builder);
-
     }
 
     /// <summary>
@@ -38,13 +54,16 @@ public class IAPManager : IDetailedStoreListener
         this._controller = controller;
         this._extensions = extensions;
 
-
     }
 
     public void RestorePurchases()
     {
         _appleExtensions = _extensions.GetExtension<IAppleExtensions>();
         _appleExtensions.RestoreTransactions(TransactionsCallback);
+    }
+    private async Task InitUGS()
+    {
+        await UGS.Init();
     }
 
     private void TransactionsCallback(bool result, string message)
@@ -70,7 +89,6 @@ public class IAPManager : IDetailedStoreListener
 
         _controller.InitiatePurchase(product.id);
     }
-
 
     public void RemoveAds()
     {
@@ -146,9 +164,26 @@ public class IAPManager : IDetailedStoreListener
     {
         foreach (var item in _controller.products.all)
         {
-            //   Debug.Log(item.definition.id);
+            var a = item;
+            Debug.Log(item.definition.id);
         }
     }
+
+    public void FillUpShopItems(IShopItems shopItems)
+    {
+        var items = _catalog.allValidProducts.Where(x => x.type == ProductType.Consumable).ToList();
+        var itemsController = _controller.products.all.Where(x => x.definition.type == ProductType.Consumable).ToList();
+
+        for (int i = 0; i < items.Count; i++)
+        {
+            var coinsAmount = (int)items[i].Payouts[0].quantity;
+            var price = itemsController[i].metadata.localizedPriceString;
+            var index = i;
+            shopItems.AddItem(index, coinsAmount, price);
+        }
+
+    }
+
 
 
 }

@@ -1,0 +1,14 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/ShopBtnMenuStyle.uss?fileID=7433441132597879392&amp;guid=a0834ea861e3544bc85d827b16e4c0c8&amp;type=3#ShopBtnMenuStyle" />
+    <engine:Button name="shop-btn" class="shop-btn" style="padding-right: 13px; padding-left: 13px; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; flex-direction: row; background-image: url(&quot;project://database/Assets/Sprites/ShopBgNew.png?fileID=2800000&amp;guid=b5d953b60db1d48a384ff79d13cf10cf&amp;type=3#ShopBgNew&quot;); background-color: rgba(255, 255, 255, 0); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;">
+        <engine:VisualElement name="inner-bg" class="inner-bg" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Sprites/ShopInnerBg.png?fileID=2800000&amp;guid=81dbfb58297184294a13b66eb99ea1c5&amp;type=3#ShopInnerBg&quot;); flex-shrink: 0; flex-direction: row; align-items: center; padding-left: 14px;">
+            <engine:VisualElement name="shop-coin-icon" style="flex-shrink: 0; background-image: url(&quot;project://database/Assets/Sprites/coin-big.png?fileID=2800000&amp;guid=35d1d1e52133544ccbac3d76c6cca714&amp;type=3#coin-big&quot;); width: 60px; height: 60px;" />
+            <engine:VisualElement name="label-div" style="flex-grow: 1; align-items: center; padding-left: 8px;">
+                <engine:Label text="14.8 K" name="balance-lbl" class="lbl-shadow balance-lbl" style="-unity-font-definition: url(&quot;project://database/Assets/Fonts/helvetica-neue-5/HelveticaNeueBold.otf?fileID=12800000&amp;guid=be9fe7aa4e3c540f0b7aa579e0c61e0e&amp;type=3#HelveticaNeueBold&quot;); color: rgb(255, 255, 255);" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement name="shop-icon-div" class="shop-icon-div" style="flex-grow: 1; align-items: flex-end; justify-content: center; flex-shrink: 0; padding-right: 10px;">
+            <engine:VisualElement name="shop-icon" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/ShopIcon.png?fileID=2800000&amp;guid=aa47609c6b68645f299c02eccd0238d6&amp;type=3#ShopIcon&quot;); width: 77px; height: 72px;" />
+        </engine:VisualElement>
+    </engine:Button>
+</engine:UXML>

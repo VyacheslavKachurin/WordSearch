@@ -21,7 +21,6 @@ public class LevelStateService
         if (State == null) return;
 
         System.IO.File.WriteAllText(_prePath + _fileName, json);
-
     }
 
     public static bool LoadState(out LevelState levelState)
@@ -55,7 +54,8 @@ public class LevelStateService
 
     internal static void CreateState(LevelData levelData)
     {
-        State = new(false, levelData.FirstLetters, new List<string>(), new List<Point>(), new List<LineState>(), new List<Point>());
+        var level = GameDataService.GameData.Level;
+        State = new(false, levelData.FirstLetters, new List<string>(), new List<Point>(), new List<LineState>(), new List<Point>(), level);
     }
 
     internal static void AddFoundWord(string tryWord, List<LetterUnit> foundLetters, LineState lineState)

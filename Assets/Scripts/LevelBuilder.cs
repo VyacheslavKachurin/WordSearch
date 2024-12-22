@@ -19,6 +19,8 @@ public class LevelBuilder : MonoBehaviour
     [SerializeField] private LineProvider _lineProvider;
     [SerializeField] InputHandler _inputHandler;
 
+    [SerializeField] private IAPManager _iapManager;
+
     private LevelData _levelData;
 
 
@@ -30,15 +32,18 @@ public class LevelBuilder : MonoBehaviour
 
     void Awake()
     {
-
+        Debug.Log($" is classic game: {Session.IsClassicGame}");
         _adsController.Init();
-
     }
+
     private void Start()
     {
         CreateLevel();
 
         LevelView.NextLevelClicked += GoNextLevel;
+
+        IShopItems shopItems = _levelView.ShopItems;
+        _iapManager.FillUpShopItems(shopItems);
 
     }
 
@@ -128,7 +133,6 @@ public class LevelBuilder : MonoBehaviour
         {
             path = $"LevelData/Season {_season}/LevelData {_episode}";
             // GameDataService.CreateGame();
-
             var episodes = GameDataService.CountEpisodes(_season);
             GameDataService.GameData = new GameData(_season, 1, episodes, _episode);
 
@@ -149,16 +153,17 @@ public class LevelBuilder : MonoBehaviour
         _levelView.SetLevelData(_levelData);
 
         _levelLogic.SetData(_levelData);
-        _abilityLogic.SetData(_levelData, _gameBoard);
+        _abilityLogic.SetData(_levelData, _gameBoard, _levelView);
         StartCoroutine(SetLineSize());
         LoadState();
+        _levelView.SetProgressBar(GameDataService.GameData.Episode, GameDataService.GameData.TotalEpisodes);
 
         SetBg();
         var gameData = GameDataService.GameData;
 
         if (Session.IsGameWon)
         {
-            _levelView.ShowGameOver(false);
+            _levelView.ShowGameOver();
         }
         else
         {
@@ -182,6 +187,7 @@ public class LevelBuilder : MonoBehaviour
 
     public void LoadState()
     {
+        Debug.Log($"Load state called");
         if (LevelStateService.LoadState(out var levelState))
         {
             _levelView.SetState(levelState);
@@ -189,6 +195,12 @@ public class LevelBuilder : MonoBehaviour
             _lineProvider.SetState(levelState, _gameBoard.Letters);
             _abilityLogic.SetState(levelState);
             _levelLogic.SetState(levelState);
+
+            if (levelState.FoundWords.Count == _levelData.Words.Count)
+            {
+                Debug.Log($"Level done");
+                _levelView.ShowFinishView(GameDataService.GameData.Episode, GameDataService.GameData.TotalEpisodes);
+            }
 
         }
         else
