@@ -93,6 +93,21 @@ public class LevelView : MonoBehaviour, IAdsRequest
     const string FINISH_VIEW_HIDE = "finish-view-hide";
 
     private bool _isSliderDone;
+    private VisualElement _classicDiv;
+    private VisualElement _timeDiv;
+    private Label _timeWordLbl;
+    private VisualElement _timeFill;
+    [SerializeField] private Color _blinkColor = new(255, 86, 79);
+
+    private bool _isBlinking;
+    public bool IsBlinking
+    {
+        get { return _isBlinking; }
+    }
+
+    public static event Action<bool> OnPauseNeeded;
+
+    public static event Action OnSettingsClicked;
 
     private void Awake()
     {
@@ -149,7 +164,7 @@ public class LevelView : MonoBehaviour, IAdsRequest
         _plateView.Toggle(true);
 
         _settingsBtn = _root.Q<Button>("settings-btn");
-        _settingsBtn.clicked += ShowSettings;
+        _settingsBtn.clicked += HandleSettingsClick;
 
         _root.RegisterCallback<DetachFromPanelEvent>(e => Unsubscribe());
 
@@ -167,6 +182,20 @@ public class LevelView : MonoBehaviour, IAdsRequest
 
         InitShopBtn();
         InitFinishView();
+        InitGameModes();
+    }
+
+    private void InitGameModes()
+    {
+        _classicDiv = _root.Q<VisualElement>("classic-div");
+        _timeDiv = _root.Q<VisualElement>("time-div");
+        _timeWordLbl = _root.Q<Label>("time-word-lbl");
+        _timeFill = _root.Q<VisualElement>("time-fill");
+    }
+
+    public void UpdateTimer(float percent)
+    {
+        _timeFill.style.width = new StyleLength(new Length(percent, LengthUnit.Percent));
     }
 
     private void InitFinishView()
@@ -183,9 +212,12 @@ public class LevelView : MonoBehaviour, IAdsRequest
     }
 
 
-    private void ShowSettings()
+    private void HandleSettingsClick()
     {
-        Session.IsSelecting = false;
+        OnSettingsClicked?.Invoke();
+    }
+    public void ShowSettings()
+    {
         _plateView.ShowPlate(Plate.Settings);
         _plateView.PlaceInFront(_shopView);
         _blurPnl.PlaceBehind(_plateView);
@@ -201,11 +233,13 @@ public class LevelView : MonoBehaviour, IAdsRequest
         _shopBtn.RegisterCallback<GeometryChangedEvent>(SetCoinsAnimation);
     }
 
-    private void ShowShopView()
+    private async void ShowShopView()
     {
         Session.IsSelecting = false;
         Debug.Log($"Show Shop View");
         _levelView.Toggle(false);
+        while (_levelView.resolvedStyle.width > 0)
+            await Task.Yield();
         _shopView.Show();
         OnGameViewToggle?.Invoke(false);
 
@@ -215,6 +249,7 @@ public class LevelView : MonoBehaviour, IAdsRequest
     {
         Session.IsSelecting = false;
         _plateView.ShowPlate(Plate.Ads);
+        OnPauseNeeded?.Invoke(true);
     }
 
     public void ShowGameOver()
@@ -240,6 +275,7 @@ public class LevelView : MonoBehaviour, IAdsRequest
         PlayAward(Session.RewardAmount, _adsBtn, _adsBtn);
         Balance.AddBalance(Session.RewardAmount);
         Session.IsSelecting = true;
+        OnPauseNeeded?.Invoke(false);
     }
 
     public void DisableLighting()
@@ -346,7 +382,7 @@ public class LevelView : MonoBehaviour, IAdsRequest
 
     }
 
-    public void SetProgressBar(int episode, int totalEpisodes)
+    public void InitProgressBar(int episode, int totalEpisodes)
     {
         var currentFill = 100 * (((float)episode - 1) / (float)totalEpisodes);
         _progressFill.style.width = new StyleLength(new Length(currentFill, LengthUnit.Percent));
@@ -370,7 +406,7 @@ public class LevelView : MonoBehaviour, IAdsRequest
         {
             currentFill += _fillAdd;
             _progressFill.style.width = new StyleLength(new Length(currentFill, LengthUnit.Percent));
-            yield return new WaitForSeconds(_fillDelay);
+            yield return new WaitForSeconds(_fillDelay / 4);
         }
         _isSliderDone = true;
     }
@@ -430,9 +466,9 @@ public class LevelView : MonoBehaviour, IAdsRequest
     {
         foreach (var pair in _abilityBtns)
         {
-
             pair.Value.SetEnabled(true);
         }
+
     }
 
     public void SetLevelData(LevelData data)
@@ -441,7 +477,13 @@ public class LevelView : MonoBehaviour, IAdsRequest
         _finishView.Toggle(false);
         _finishView.AddToClassList(FINISH_VIEW_HIDE);
         _levelView.Toggle(true);
-        FillWords(data.Words);
+        if (Session.IsClassicGame)
+        {
+            FillWords(data.Words);
+            _abilityBtns[Ability.Freeze].Toggle(false);
+        }
+
+
         _levelLbl.text = $"Level: {GameDataService.GameData.Level}";
         ResetBtns();
         //SetBackPicture();
@@ -540,15 +582,14 @@ public class LevelView : MonoBehaviour, IAdsRequest
             {Ability.Lighting, _root.Q<AbilityBtn>("lighting-btn")},
             {Ability.Hint, _root.Q<AbilityBtn>("hint-btn")},
             {Ability.Magnet, _root.Q<AbilityBtn>("magnet-btn")},
-            {Ability.Firework, _root.Q<AbilityBtn>("firework-btn")},
-           // {Ability.Ads, _root.Q<AbilityBtn>("ads-btn")}
+            {Ability.Freeze, _root.Q<AbilityBtn>("freeze-btn")}
         };
     }
-
 
     private void FillWords(List<string> words)
     {
         _wordsHolder.Clear();
+        _classicDiv.Toggle(true);
 
         foreach (var word in words)
         {
@@ -584,6 +625,7 @@ public class LevelView : MonoBehaviour, IAdsRequest
 
     public async void HideWord(string word)
     {
+        if (!Session.IsClassicGame) return;
         await Task.Delay((int)_letterAnimDuration * 1000);
         var label = _words[word];
         if (label.ClassListContains(WORD_GRAY)) return;
@@ -673,11 +715,59 @@ public class LevelView : MonoBehaviour, IAdsRequest
     {
         if (_shopView.style.display == DisplayStyle.Flex)
         {
-            _levelView.Toggle(true);
             _shopView.Hide();
+
+            _levelView.Toggle(true);
             return true;
         }
         return false;
+    }
+
+    internal void SetTimeMode()
+    {
+        _classicDiv.Toggle(false);
+        _timeDiv.Toggle(true);
+
+        foreach (Button ability in _abilityBtns.Values.Cast<Button>())
+        {
+            ability.Toggle(false);
+        }
+        _abilityBtns[Ability.Freeze].Toggle(true);
+        UpdateTimer(100);
+    }
+
+    internal void ShowTimeOver()
+    {
+        _plateView.ShowPlate(Plate.Timeout);
+    }
+
+    internal void SetTimeWord(string targetWord)
+    {
+        _timeWordLbl.text = targetWord;
+    }
+
+    public void BlinkTimer()
+    {
+        var defaultColor = _timeFill.resolvedStyle.backgroundColor;
+        _timeFill.style.backgroundColor = defaultColor;
+
+        StartCoroutine(BlinkTimerCoroutine(defaultColor, _blinkColor));
+    }
+
+    private IEnumerator BlinkTimerCoroutine(StyleColor defaultColor, Color blinkColor)
+    {
+        _isBlinking = true;
+        var timeLeft = 0.5f;
+        while (timeLeft >= 0)
+        {
+            _timeFill.style.backgroundColor = blinkColor;
+            yield return new WaitForSeconds(0.1f);
+            _timeFill.style.backgroundColor = defaultColor;
+            yield return new WaitForSeconds(0.1f);
+            timeLeft -= 0.2f;
+        }
+        _isBlinking = false;
+        _timeFill.style.backgroundColor = defaultColor;
     }
 }
 

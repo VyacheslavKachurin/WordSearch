@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Scripting;
 using UnityEngine.UIElements;
 
 public class MenuController : MonoBehaviour, IPrizeProvider
@@ -19,6 +22,30 @@ public class MenuController : MonoBehaviour, IPrizeProvider
         ShopBtn.ShopCoinGeometryChanged += SetForceFieldPos;
 
         MenuView.PlayClicked += HandlePlayClick;
+        MenuView.OnCollectionsClicked += HandleCollectionsClick;
+        MenuView.OnBackClicked += HandleBackClick;
+
+
+    }
+
+    private void HandleBackClick()
+    {
+        var currentView = _menuView.GetCurrentView();
+        if (currentView == ViewOpen.Shop)
+            _menuView.HideShopView();
+        else
+            _menuView.HideCollectionsView();
+        AudioManager.Instance.PlaySound(Sound.WindClose);
+
+    }
+
+    private void HandleCollectionsClick()
+    {
+        _menuView.ShowMenuView(false);
+        _menuView.ShowCollectionsView();
+        _menuView.ShowBackBtn();
+        AudioManager.Instance.PlaySound(Sound.WindOpen);
+
     }
 
     private void HandlePlayClick(bool IsClassicGame)
@@ -30,7 +57,7 @@ public class MenuController : MonoBehaviour, IPrizeProvider
     private void Start()
     {
         IShopItems shopItems = _menuView.ShopItems;
-        _iapManager.FillUpShopItems(shopItems);
+
 
         IAPManager.OnPurchasedCoins += HandleAward;
 
@@ -38,6 +65,9 @@ public class MenuController : MonoBehaviour, IPrizeProvider
         if (Session.NoAds) _menuView.HideAdsBtn();
 
         SetGameData();
+        PopulateCollectionsView();
+        _iapManager.InjectShopItems(shopItems);
+
     }
 
     private void HandleAward(int payout)
@@ -110,8 +140,85 @@ public class MenuController : MonoBehaviour, IPrizeProvider
         ShopBtn.ShopCoinGeometryChanged -= SetForceFieldPos;
         MenuView.AwardRequested -= HandleAwardRequest;
         IAPManager.OnPurchasedCoins -= HandleAward;
+        MenuView.OnCollectionsClicked -= HandleCollectionsClick;
+        MenuView.OnBackClicked -= HandleBackClick;
 
     }
+
+    private void PopulateCollectionsView()
+    {
+        var seasons = GameDataService.LoadStampData().Seasons;
+
+        var index = 0;
+        VisualElement page = null;
+        VisualElement firstRow = null;
+        VisualElement secondRow = null;
+        VisualElement targetRow = null;
+
+        for (int i = 0; i < seasons.Count; i++)
+        {
+            if (index == 0)
+            {
+                page = GetPage();
+                firstRow = page.Q<VisualElement>("first-row");
+                secondRow = page.Q<VisualElement>("second-row");
+            }
+            targetRow = index <= 3 ? firstRow : secondRow;
+            var season = seasons[i];
+
+            var stampItem = new PlaceStamp();
+            var caption = season.Name;
+            caption = caption.Replace(",", ",\n");
+            stampItem.SetCaption(caption);
+
+            var texture = GetTexture(season.Season);
+            stampItem.SetImage(texture);
+            stampItem.Unlock(season.IsUnlocked);
+            targetRow.Add(stampItem);
+            index++;
+            if (index == 8)
+            {
+                _menuView.AddPage(page);
+                index = 0;
+            }
+
+        }
+        _menuView.ShowStampPage(0);
+    }
+
+    private Texture2D GetTexture(int season)
+    {
+        var texture = Resources.Load("BG/" + season) as Texture2D;
+        return texture;
+    }
+
+    private VisualElement GetPage()
+    {
+        var page = new VisualElement
+        {
+            name = "page"
+        };
+        page.style.flexGrow = 1;
+        page.style.flexDirection = FlexDirection.Column;
+        var row1 = GetRow("first-row");
+        var row2 = GetRow("second-row");
+        page.Add(row1);
+        page.Add(row2);
+        return page;
+    }
+
+    private VisualElement GetRow(string name)
+    {
+        var row = new VisualElement
+        {
+            name = name,
+            style = { flexDirection = FlexDirection.Row }
+        };
+        row.AddToClassList("collections-row");
+        return row;
+    }
+
+
 
     public int GetRandomPrize()
     {
@@ -130,4 +237,42 @@ public class MenuController : MonoBehaviour, IPrizeProvider
 internal interface IPrizeProvider
 {
     public int GetRandomPrize();
+}
+
+[Preserve]
+public class StampItem
+{
+    [Preserve]
+    public int Season { get; set; }
+    [Preserve]
+    public string Name { get; set; }
+    [Preserve]
+    public bool IsUnlocked { get; set; }
+
+    [Preserve]
+    public StampItem() { }
+
+    [Preserve]
+    public StampItem(int season, string name, bool isUnlocked = false)
+    {
+        Season = season;
+        Name = name;
+        IsUnlocked = isUnlocked;
+    }
+}
+
+[Preserve]
+public class StampsData
+{
+    [Preserve]
+    public List<StampItem> Seasons { get; set; }
+
+    [Preserve]
+    public StampsData(List<StampItem> seasons)
+    {
+        Seasons = seasons;
+    }
+
+    [Preserve]
+    public StampsData() { }
 }

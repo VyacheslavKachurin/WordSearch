@@ -15,6 +15,7 @@ public class LevelStateService
 
     public static void SaveState()
     {
+        if (!Session.IsClassicGame) return;
         if (State == null) return;
         Debug.Log($"Saving State; path: {_prePath + _fileName}");
         string json = JsonConvert.SerializeObject(State);
@@ -60,6 +61,7 @@ public class LevelStateService
 
     internal static void AddFoundWord(string tryWord, List<LetterUnit> foundLetters, LineState lineState)
     {
+        if (!Session.IsClassicGame) return;
         State.FoundWords.Add(tryWord);
 
         foreach (var letter in foundLetters)

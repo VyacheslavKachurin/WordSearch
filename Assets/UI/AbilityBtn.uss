@@ -49,3 +49,9 @@
     width: 103px;
     height: 111px;
 }
+
+.freeze-icon {
+    background-image: url("project://database/Assets/Sprites/FreezeIcon.png?fileID=2800000&guid=aacad3be40bd647af8ed18290fcf2a4b&type=3#FreezeIcon");
+    width: 90px;
+    height: 90px;
+}

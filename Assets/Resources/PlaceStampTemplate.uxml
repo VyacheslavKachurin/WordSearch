@@ -1,0 +1,13 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/PlaceStampStyle.uss?fileID=7433441132597879392&amp;guid=dd7cdd25ec95c40edb37c0789325483d&amp;type=3#PlaceStampStyle" />
+    <engine:VisualElement name="place" class="place" style="flex-direction: column; width: 231px;">
+        <engine:VisualElement name="place-pic" class="place-pic" style="overflow: hidden;">
+            <engine:VisualElement name="locked-div" style="flex-grow: 1; background-color: rgba(255, 255, 255, 0.8); align-items: center; justify-content: center;">
+                <engine:VisualElement name="question-pic" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/question.png?fileID=2800000&amp;guid=a28455542ce5e400e95aa134a60b5f23&amp;type=3#question&quot;); width: 101px; height: 108px;" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement name="caption-div" class="caption-div" style="flex-wrap: wrap; align-items: center;">
+            <engine:Label text="GREAT CHINA WALL,&#10;CHINA" name="caption-lbl" enable-rich-text="true" class="bold" style="font-size: 20px; -unity-paragraph-spacing: 50px; white-space: normal; text-overflow: ellipsis; -unity-text-align: upper-center;" />
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>

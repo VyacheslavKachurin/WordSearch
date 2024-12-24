@@ -11,7 +11,6 @@ public partial class ShopView : VisualElement, IShopItems
     private Button _removeAdsBtn;
     private VisualElement _itemsDiv;
     private VisualElement _noAdsDiv;
-    // private NavigationRow _navRow;
 
     public static event Action OnRemoveAdsClicked;
     public static event Action<int> OnPurchaseInit;
@@ -23,10 +22,12 @@ public partial class ShopView : VisualElement, IShopItems
     private VisualElement _removedAdsDiv;
 
     private VisualElement _adsOfferDiv;
-    private VisualElement _adsRemovedDiv;
+
 
     private VisualTreeAsset _purchaseBtnTemplate;
     private List<Button> _buyBtns = new();
+
+    public static event Action<bool> OnShopClicked;
     //public static event Action<int, Button> OnBtnClicked;
 
     public ShopView()
@@ -49,7 +50,6 @@ public partial class ShopView : VisualElement, IShopItems
         _itemsDiv = this.Q<VisualElement>("items-div");
 
         _adsOfferDiv = this.Q<VisualElement>("ads-offer-div");
-        _adsRemovedDiv = this.Q<VisualElement>("ads-removed-div");
 
         _removeAdsBtn.clicked += () =>
         {
@@ -131,8 +131,7 @@ public partial class ShopView : VisualElement, IShopItems
 
     private void Unsubscribe()
     {
-        NavigationRow.OnShopBtnClicked -= Show;
-        NavigationRow.OnShopHideClicked -= Show;
+
         Session.AdsRemoved -= HideAdsOffer;
     }
 
@@ -151,8 +150,7 @@ public partial class ShopView : VisualElement, IShopItems
     private void RequireNetwork()
     {
         Debug.Log($"Require Network");
-        throw new NotImplementedException();
-
+        return;
         var go = AudioManager.Instance;
         go.PlaySound(Sound.WrongWord);
         go.StartCoroutine(NetworkCoroutine());
@@ -174,11 +172,13 @@ public partial class ShopView : VisualElement, IShopItems
 
         AudioManager.Instance.PlaySound(Sound.WindOpen);
         this.Toggle(true);
+        OnShopClicked?.Invoke(true);
     }
 
     internal void Hide()
     {
         this.Toggle(false);
+        OnShopClicked?.Invoke(false);
     }
 }
 

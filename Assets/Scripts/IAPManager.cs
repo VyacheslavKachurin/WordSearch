@@ -14,6 +14,7 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
     public static event Action<int> OnPurchasedCoins;
 
     private IAppleExtensions _appleExtensions;
+    private IShopItems _shopItems;
 
     private async void Awake()
     {
@@ -53,6 +54,8 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
     {
         this._controller = controller;
         this._extensions = extensions;
+        if (_shopItems != null)
+            FillUpShopItems(_shopItems);
 
     }
 
@@ -169,7 +172,8 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
         }
     }
 
-    public void FillUpShopItems(IShopItems shopItems)
+
+    private void FillUpShopItems(IShopItems shopItems)
     {
         var items = _catalog.allValidProducts.Where(x => x.type == ProductType.Consumable).ToList();
         var itemsController = _controller.products.all.Where(x => x.definition.type == ProductType.Consumable).ToList();
@@ -184,6 +188,8 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
 
     }
 
-
-
+    internal void InjectShopItems(IShopItems shopItems)
+    {
+        _shopItems = shopItems;
+    }
 }

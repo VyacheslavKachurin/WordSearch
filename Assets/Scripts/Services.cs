@@ -142,6 +142,10 @@ public class Services : MonoBehaviour
         GameDataService.ClearProgress();
         GameDataService.DeleteGame();
         Session.IsGameWon = false;
+        Session.IsFirstTime = true;
+        GameDataService.DeleteStampData();
+
+        
     }
 
     [ContextMenu("Clear Gift Data")]

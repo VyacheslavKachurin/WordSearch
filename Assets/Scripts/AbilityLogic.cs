@@ -12,6 +12,7 @@ public class AbilityLogic : MonoBehaviour
     public static event Action OnCashRequested;
 
     public static event Action OnFakeLettersRemoved;
+    public static event Action OnFreezeRequested;
     private AudioManager _audioManager;
 
     private void Awake()
@@ -48,16 +49,22 @@ public class AbilityLogic : MonoBehaviour
             case Ability.Firework:
                 RevealSquare();
                 break;
-                /*
-            case Ability.Ads:
-                RequireAd();
+
+            case Ability.Freeze:
+                RequestPauseTimer();
                 break;
-                */
+
         }
         EventSender.SendAbilityEvent(ability);
         LevelStateService.SaveState();
 
 
+    }
+
+    private void RequestPauseTimer()
+    {
+        OnFreezeRequested?.Invoke();
+        AudioManager.Instance.PlaySound(Sound.Freeze);
     }
 
     public void SetData(LevelData levelData, GameBoard gameBoard, IAdsRequest adsRequest)

@@ -5,7 +5,7 @@
             <engine:Label text="250" name="coins-lbl" class="bold lbl-shadow" style="color: rgb(255, 255, 255); font-size: 56px;" />
         </engine:VisualElement>
         <engine:VisualElement name="price-div" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/PriceBg.png?fileID=2800000&amp;guid=693c4e70a3f8e4886a71d93f5b482499&amp;type=3#PriceBg&quot;); width: 250px; height: 110px; justify-content: center; align-items: center; color: rgb(53, 45, 77); font-size: 57px;">
-            <engine:Label text="Label" name="price-lbl" class="bold" />
+            <engine:Label text="Label" name="price-lbl" class="bold" style="color: rgb(53, 45, 77);" />
         </engine:VisualElement>
     </engine:Button>
 </engine:UXML>

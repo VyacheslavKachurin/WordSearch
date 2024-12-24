@@ -8,13 +8,53 @@ using Newtonsoft.Json;
 public static class GameDataService
 {
     private static string _prePath = Application.persistentDataPath;
+    const string _stampDataPath = "/StampData.json";
     private const string _fileName = "/GameData.json";
 
     public static GameData GameData { get; set; }
 
+    public static StampsData StampsData;
+
     private const string USERNAME_KEY = "Username";
 
 
+
+    public static void SaveStampData()
+    {
+        string json = JsonConvert.SerializeObject(StampsData);
+        System.IO.File.WriteAllText(_prePath + _stampDataPath, json);
+    }
+
+    public static StampsData LoadStampData()
+    {
+        StampsData = new StampsData();
+        if (System.IO.File.Exists(_prePath + _stampDataPath))
+        {
+            string json = System.IO.File.ReadAllText(_prePath + _stampDataPath);
+            StampsData = JsonConvert.DeserializeObject<StampsData>(json);
+        }
+        else
+        {
+            var inData = Resources.Load("StampData") as TextAsset;
+            var parsedData = JsonConvert.DeserializeObject<StampsData>(inData.text);
+            parsedData.Seasons[0].IsUnlocked = true;
+            StampsData = parsedData;
+            SaveStampData();
+        }
+        return StampsData;
+    }
+
+    public static void DeleteStampData()
+    {
+        if (System.IO.File.Exists(_prePath + _stampDataPath))
+            System.IO.File.Delete(_prePath + _stampDataPath);
+    }
+
+    public static void UnlockStamp(int season)
+    {
+        StampsData.Seasons[season].IsUnlocked = true;
+        SaveStampData();
+    }
 
 
     public static GameData CreateGame()
@@ -105,10 +145,11 @@ public static class GameDataService
                 SaveGame();
                 return false;
             }
-
+            UnlockStamp(GameData.Season);
             GameData.Episode = 1;
             GameData.Season++;
             GameData.TotalEpisodes = CountEpisodes(GameData.Season);
+
         }
         GameData.Level++;
         SaveGame();
@@ -120,5 +161,8 @@ public static class GameDataService
     {
         if (System.IO.File.Exists(_prePath + _fileName))
             System.IO.File.Delete(_prePath + _fileName);
+
+        if (System.IO.File.Exists(_prePath + _stampDataPath))
+            System.IO.File.Delete(_prePath + _stampDataPath);
     }
 }

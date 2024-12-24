@@ -95,7 +95,8 @@ public class LineProvider : MonoBehaviour
         }
         else
         {
-            LastColor = _line.startColor;
+            if (_line != null)
+                LastColor = _line.startColor;
         }
         if (keepLine && correctLastPos) CorrectLastPosition(letters);
         _line = null;

@@ -50,6 +50,18 @@
     margin-left: 20px;
 }
 
+.panel-anim-in {
+    scale: 1 1;
+}
+
 .balance-lbl {
     font-size: 62px;
+}
+
+.collections-row {
+    flex-grow: 0;
+    align-items: flex-start;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 57px;
 }

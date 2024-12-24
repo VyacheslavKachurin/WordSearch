@@ -23,6 +23,8 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip _windOpenSound;
     [SerializeField] private AudioClip _windCloseSound;
     [SerializeField] private AudioClip _stageCompleted;
+    [SerializeField] private AudioClip _tickSound;
+    [SerializeField] private AudioClip _freezeSound;
 
 
     private Dictionary<Sound, AudioClip> _audioClips;
@@ -63,7 +65,9 @@ public class AudioManager : MonoBehaviour
         {Sound.Coins, _coinsSound},
         {Sound.WindOpen, _windOpenSound},
         {Sound.WindClose, _windCloseSound},
-        {Sound.StageCompleted, _stageCompleted}
+        {Sound.StageCompleted, _stageCompleted},
+        {Sound.TimerContinue, _tickSound},
+        {Sound.Freeze, _freezeSound}
     };
         PlayTheme();
 
@@ -107,7 +111,7 @@ public class AudioManager : MonoBehaviour
         }
 
         var source = _audioSources.Where(x => !x.isPlaying).FirstOrDefault();
- 
+
         var clip = _letters[pitch];
 
         if (source == null)
@@ -125,7 +129,11 @@ public class AudioManager : MonoBehaviour
     public void PlaySound(Sound sound)
     {
         if (!Session.IsSoundOn) return;
-        _soundsSource.PlayOneShot(_audioClips[sound], 10);
+        try
+        {
+            _soundsSource.PlayOneShot(_audioClips[sound], 10);
+        }
+        catch (Exception e) { Debug.LogError(e); }
     }
 }
 
@@ -140,5 +148,7 @@ public enum Sound
     Coins,
     WindOpen,
     WindClose,
-    StageCompleted
+    StageCompleted,
+    Freeze,
+    TimerContinue
 }

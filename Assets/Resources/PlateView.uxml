@@ -34,7 +34,13 @@
                 <engine:VisualElement name="coin" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/coin-big.png?fileID=2800000&amp;guid=35d1d1e52133544ccbac3d76c6cca714&amp;type=3#coin-big&quot;); flex-shrink: 0; width: 87px; height: 92px; margin-left: 16px;" />
             </engine:VisualElement>
             <engine:VisualElement style="flex-grow: 1; padding-top: 42px; padding-bottom: 0;">
-                <engine:Button name="watch-ad-btn" text="WATCH VIDEO" icon-image="project://database/Assets/Sprites/AdsIcon.png?fileID=1126171706896849119&amp;guid=ff1510aa8de514a029c0a809eb4b7e39&amp;type=3#AdsIcon_0" style="background-image: url(&quot;project://database/Assets/Sprites/AdsBtn.png?fileID=2800000&amp;guid=c7a95e5433fc342a78a926d8afa8b95b&amp;type=3#AdsBtn&quot;); width: 747px; height: 200px; font-size: 58px; color: rgb(54, 45, 77); justify-content: space-evenly;" />
+                <engine:Button name="watch-ad-btn" text="WATCH VIDEO" icon-image="project://database/Assets/Sprites/AdsIcon.png?fileID=1126171706896849119&amp;guid=ff1510aa8de514a029c0a809eb4b7e39&amp;type=3#AdsIcon_0" class="bold" style="background-image: url(&quot;project://database/Assets/Sprites/AdsBtn.png?fileID=2800000&amp;guid=c7a95e5433fc342a78a926d8afa8b95b&amp;type=3#AdsBtn&quot;); width: 747px; height: 200px; font-size: 58px; color: rgb(54, 45, 77); justify-content: space-evenly;" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement name="timeout-div" style="flex-grow: 1; align-items: center; justify-content: center; display: none; flex-shrink: 0; padding-bottom: 60px; padding-top: 71px;">
+            <engine:Label text="OUT OF TIME" name="title-lbl" style="font-size: 50px;" />
+            <engine:VisualElement style="flex-grow: 1; padding-top: 42px; padding-bottom: 0;">
+                <engine:Button name="replay-btn" text="TRY AGAIN" class="bold" style="background-image: url(&quot;project://database/Assets/Sprites/AdsBtn.png?fileID=2800000&amp;guid=c7a95e5433fc342a78a926d8afa8b95b&amp;type=3#AdsBtn&quot;); width: 747px; height: 200px; font-size: 58px; color: rgb(54, 45, 77); justify-content: space-evenly;" />
             </engine:VisualElement>
         </engine:VisualElement>
         <engine:Button name="close-btn" class="close-btn" style="top: 51px; left: 41px;" />

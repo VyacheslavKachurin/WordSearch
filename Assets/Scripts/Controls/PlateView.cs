@@ -12,12 +12,13 @@ public partial class PlateView : VisualElement
 
     private VisualElement _settingsDiv;
     private VisualElement _adsDiv;
-
+    private VisualElement _timeoutDiv;
     private const string SWITCH_OFF = "switch-off";
     private VisualElement _currentDiv;
 
     private Button _closeBtn;
     private Button _adBtn;
+    private Button _replayBtn;
 
     private Button _musicBtn;
     private Button _soundBtn;
@@ -34,7 +35,11 @@ public partial class PlateView : VisualElement
         }
 
     }
+
+    public static event Action OnCloseClicked;
+    public static event Action OnReplayRequested;
     const string PLATE_SHOW = "plate-show";
+
 
     public PlateView()
     {
@@ -52,6 +57,7 @@ public partial class PlateView : VisualElement
 
         _settingsDiv = this.Q<VisualElement>("settings-div");
         _adsDiv = this.Q<VisualElement>("ads-div");
+        _timeoutDiv = this.Q<VisualElement>("timeout-div");
 
         _closeBtn = this.Q<Button>("close-btn");
         _closeBtn.clicked += ClosePlate;
@@ -68,8 +74,10 @@ public partial class PlateView : VisualElement
         _soundBtn = this.Q<Button>("sound-btn");
         _soundBtn.clicked += HandleSoundBtn;
 
-        SetBtns();
+        _replayBtn = this.Q<Button>("replay-btn");
+        _replayBtn.clicked += HandleReplayBtn;
 
+        SetBtns();
 
         AdsController.RewardedAdWatched += HandleReward;
 
@@ -78,6 +86,12 @@ public partial class PlateView : VisualElement
             Unsubscribe();
         });
 
+    }
+
+    private void HandleReplayBtn()
+    {
+        OnReplayRequested?.Invoke();
+        ClosePlate();
     }
 
     private void Unsubscribe()
@@ -149,21 +163,43 @@ public partial class PlateView : VisualElement
         Session.IsSelecting = true;
         AudioManager.Instance.PlaySound(Sound.WindClose);
         _plate.RemoveFromClassList(PLATE_SHOW);
-
+        _closeBtn.Toggle(true);
+        OnCloseClicked?.Invoke();
     }
 
     public void ShowPlate(Plate plate)
     {
+
         this.Toggle(true);
         //  await Task.Delay(100);
         BlurPnl.Toggle(true);
         BlurPnl.PlaceBehind(this);
 
         this.pickingMode = PickingMode.Position;
-        _currentDiv = plate == Plate.Ads ? _adsDiv : _settingsDiv;
+
+        _currentDiv = GetDiv(plate);
+
+        if (plate == Plate.Timeout)
+            _closeBtn.Toggle(false);
+
         _currentDiv.Toggle(true);
         _plate.AddToClassList(PLATE_SHOW);
         AudioManager.Instance.PlaySound(Sound.WindOpen);
+    }
+
+    private VisualElement GetDiv(Plate plate)
+    {
+        switch (plate)
+        {
+            case Plate.Ads:
+                return _adsDiv;
+            case Plate.Settings:
+                return _settingsDiv;
+            case Plate.Timeout:
+                return _timeoutDiv;
+            default:
+                return _adsDiv;
+        }
     }
 
     internal void SetBlur(VisualElement blurPnl)
@@ -173,4 +209,8 @@ public partial class PlateView : VisualElement
 }
 
 
-public enum Plate { Settings, Ads }
+public enum Plate
+{
+    Settings, Ads,
+    Timeout
+}

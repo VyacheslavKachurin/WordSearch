@@ -1136,6 +1136,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1148785180}
     - target: {fileID: 7508644550789951793, guid: d21a5ff31f2c647b68d33541c6086c2c, type: 3}
+      propertyPath: _msForWord
+      value: 6000
+      objectReference: {fileID: 0}
+    - target: {fileID: 7508644550789951793, guid: d21a5ff31f2c647b68d33541c6086c2c, type: 3}
       propertyPath: _canContinue
       value: 1
       objectReference: {fileID: 0}
@@ -1155,6 +1159,10 @@ PrefabInstance:
       propertyPath: _adsController
       value: 
       objectReference: {fileID: 659600968}
+    - target: {fileID: 7508644550789951793, guid: d21a5ff31f2c647b68d33541c6086c2c, type: 3}
+      propertyPath: _pauseTimerDelay
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1499,6 +1507,18 @@ PrefabInstance:
       propertyPath: _wordFoundFX
       value: 
       objectReference: {fileID: 9150111728784239381, guid: a4a7c73c8327a4db780e53cc273c5de3, type: 3}
+    - target: {fileID: 7295536969090361296, guid: 1b0b483e238b44b25b28c6fced1dac6a, type: 3}
+      propertyPath: _blinkColor.b
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7295536969090361296, guid: 1b0b483e238b44b25b28c6fced1dac6a, type: 3}
+      propertyPath: _blinkColor.g
+      value: 0.33
+      objectReference: {fileID: 0}
+    - target: {fileID: 7295536969090361296, guid: 1b0b483e238b44b25b28c6fced1dac6a, type: 3}
+      propertyPath: _blinkColor.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7295536969090361296, guid: 1b0b483e238b44b25b28c6fced1dac6a, type: 3}
       propertyPath: _renderTexture
       value: 

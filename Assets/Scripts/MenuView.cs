@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -59,7 +60,18 @@ public class MenuView : MonoBehaviour
     private VisualElement _backDiv;
     private Button _backBtn;
     private VisualElement _menuDiv;
+    private VisualElement _collectionsView;
+    private Button _collectionsNextBtn;
+    private Button _collectionsBackBtn;
+    public static event Action OnBackClicked;
+
+    public static event Action OnCollectionsClicked;
     public static event Action<bool> PlayClicked;
+
+    public VisualElement _currentView;
+    private VisualElement _content;
+    private List<VisualElement> _stampPages = new();
+    private int _currentStampPage;
 
     private void Awake()
     {
@@ -72,6 +84,7 @@ public class MenuView : MonoBehaviour
         InitShopBtn();
         InitShopView();
         InitBackBtn();
+        InitCollectionsView();
 
         _blurPnl = _root.Q<VisualElement>("blur-panel");
 
@@ -86,6 +99,39 @@ public class MenuView : MonoBehaviour
 
     }
 
+    private void InitCollectionsView()
+    {
+        _collectionsView = _root.Q("collections-view");
+        // _collectionsView.RemoveFromClassList(PANEL_ANIM_IN);
+        _collectionsView.RemoveFromClassList("PANEL_ANIM");
+        _collectionsNextBtn = _root.Q<Button>("next-btn");
+        _collectionsBackBtn = _collectionsView.Q<Button>("back-btn");
+
+        _collectionsNextBtn.clicked += OnCollectionNextClick;
+        _collectionsBackBtn.clicked += OnCollectionBackClick;
+
+        _collectionsBtn = _root.Q<Button>("collections-btn");
+        _collectionsBtn.clicked += OnCollectionsClick;
+        _content = _collectionsView.Q<VisualElement>("content");
+    }
+
+    private void OnCollectionsClick()
+    {
+        OnCollectionsClicked?.Invoke();
+    }
+
+    private void OnCollectionBackClick()
+    {
+        ShowPreviousStampPage();
+        AudioManager.Instance.PlaySound(Sound.Click);
+    }
+
+    private void OnCollectionNextClick()
+    {
+        ShowNextStampPage();
+        AudioManager.Instance.PlaySound(Sound.Click);
+    }
+
     private void InitBackBtn()
     {
         _backDiv = _root.Q<VisualElement>("back-div");
@@ -94,14 +140,62 @@ public class MenuView : MonoBehaviour
 
     }
 
+    public void ShowBackBtn(bool show = true) => _backDiv.Toggle(show);
+
+
+
     private void HandleBackClick()
     {
+        OnBackClicked?.Invoke();
+    }
+
+    public async void HideCollectionsView()
+    {
+        _collectionsView.RemoveFromClassList(PANEL_ANIM_IN);
+        await Task.Delay(600);
+        _collectionsView.Toggle(false);
+
+        while (_collectionsView.resolvedStyle.width > 0)
+            await Task.Yield();
+
+        ShowBackBtn(false);
+        ShowMenuView(true);
+
+    }
+
+    public void HideShopView()
+    {
         _shopView.Hide();
-        _backDiv.Toggle(false);
-        _menuDiv.Toggle(true);
+        ShowBackBtn(false);
+        ShowMenuView(true);
         _blurPnl.Toggle(false);
         AudioManager.Instance.PlaySound(Sound.WindClose);
     }
+
+    public void ShowStampPage(int index)
+    {
+        _currentStampPage = index;
+        if (index == 0) _collectionsBackBtn.Toggle(false);
+        else _collectionsBackBtn.Toggle(true);
+
+        if (index == _stampPages.Count - 1) _collectionsNextBtn.Toggle(false);
+        else _collectionsNextBtn.Toggle(true);
+
+        foreach (var stampPage in _stampPages)
+            stampPage.Toggle(false);
+        _stampPages[index].Toggle(true);
+    }
+    public void ShowNextStampPage()
+    {
+        ShowStampPage(_currentStampPage + 1);
+    }
+
+    public void ShowPreviousStampPage()
+    {
+        ShowStampPage(_currentStampPage - 1);
+    }
+
+    public void ShowMenuView(bool show) => _menuDiv.Toggle(show);
 
     private void InitShopView()
     {
@@ -120,9 +214,10 @@ public class MenuView : MonoBehaviour
 
     private void ShowShopView()
     {
-        _menuDiv.Toggle(false);
+        _currentView = _shopView;
+        ShowMenuView(false);
         _shopView.Show();
-        _backDiv.Toggle(true);
+        ShowBackBtn(true);
 
     }
 
@@ -169,17 +264,12 @@ public class MenuView : MonoBehaviour
         _timeBtn = _root.Q<Button>("time-btn");
         _timeBtn.clicked += HandleTimeBtn;
 
-        _collectionsBtn = _root.Q<Button>("collections-btn");
-        _collectionsBtn.clicked += HandleCollectionsClick;
+
 
     }
 
 
 
-    private void HandleCollectionsClick()
-    {
-        throw new NotImplementedException();
-    }
 
     private void HandleTimeBtn()
     {
@@ -316,14 +406,15 @@ public class MenuView : MonoBehaviour
         _coinsView.HideAsync();
     }
 
-    /*
-        private int GetRandomPrize()
-        {
-            return _prizeProvider.GetRandomPrize();
-        }
-        */
+    public void ShowCollectionsView()
+    {
+        _currentView = _collectionsView;
+        _collectionsView.Toggle(true);
+        _collectionsView.AddToClassList(PANEL_ANIM_IN);
 
-    // [ContextMenu("Show gift view")]
+
+    }
+
     public void ShowGiftView()
     {
         _blurPnl.Toggle(true);
@@ -389,4 +480,18 @@ public class MenuView : MonoBehaviour
         _sliderFill.style.width = new StyleLength(new Length(percentWidth, LengthUnit.Percent));
     }
 
+    public ViewOpen GetCurrentView()
+    {
+        if (_currentView == _collectionsView)
+            return ViewOpen.Collections;
+        return ViewOpen.Shop;
+    }
+
+    internal void AddPage(VisualElement page)
+    {
+        _content.Add(page);
+        _stampPages.Add(page);
+    }
 }
+
+public enum ViewOpen { Shop, Collections }

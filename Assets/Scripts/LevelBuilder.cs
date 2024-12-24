@@ -32,8 +32,9 @@ public class LevelBuilder : MonoBehaviour
 
     void Awake()
     {
-        Debug.Log($" is classic game: {Session.IsClassicGame}");
+
         _adsController.Init();
+        PlateView.OnReplayRequested += CreateLevel;
     }
 
     private void Start()
@@ -43,7 +44,7 @@ public class LevelBuilder : MonoBehaviour
         LevelView.NextLevelClicked += GoNextLevel;
 
         IShopItems shopItems = _levelView.ShopItems;
-        _iapManager.FillUpShopItems(shopItems);
+        _iapManager.InjectShopItems(shopItems);
 
     }
 
@@ -102,6 +103,7 @@ public class LevelBuilder : MonoBehaviour
     private void OnDestroy()
     {
         LevelView.NextLevelClicked -= GoNextLevel;
+        PlateView.OnReplayRequested -= CreateLevel;
     }
 
     private void GoNextLevel()
@@ -122,6 +124,9 @@ public class LevelBuilder : MonoBehaviour
     [ContextMenu("Create Level")]
     public void CreateLevel()
     {
+        var IsClassicGame = Session.IsClassicGame;
+        if (!IsClassicGame)
+            LevelStateService.DeleteState();
 
         _lineProvider.ResetState();
         Session.IsSelecting = true;
@@ -135,7 +140,6 @@ public class LevelBuilder : MonoBehaviour
             // GameDataService.CreateGame();
             var episodes = GameDataService.CountEpisodes(_season);
             GameDataService.GameData = new GameData(_season, 1, episodes, _episode);
-
         }
 #endif
 
@@ -155,10 +159,16 @@ public class LevelBuilder : MonoBehaviour
         _levelLogic.SetData(_levelData);
         _abilityLogic.SetData(_levelData, _gameBoard, _levelView);
         StartCoroutine(SetLineSize());
-        LoadState();
-        _levelView.SetProgressBar(GameDataService.GameData.Episode, GameDataService.GameData.TotalEpisodes);
+
+        if (IsClassicGame)
+            LoadState();
+        else
+            _levelLogic.SetTimeMode();
+
+        _levelView.InitProgressBar(GameDataService.GameData.Episode, GameDataService.GameData.TotalEpisodes);
 
         SetBg();
+
         var gameData = GameDataService.GameData;
 
         if (Session.IsGameWon)

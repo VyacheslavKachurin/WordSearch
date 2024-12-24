@@ -776,6 +776,8 @@ MonoBehaviour:
   _windOpenSound: {fileID: 8300000, guid: 1479605602a7c4ec7b9d63e08cf70513, type: 3}
   _windCloseSound: {fileID: 8300000, guid: d1cfcb6d817cb486ab4189855bb6dfa9, type: 3}
   _stageCompleted: {fileID: 8300000, guid: ff43420a7cc7343dc8591a3330b56db2, type: 3}
+  _tickSound: {fileID: 8300000, guid: 51d9a5302ff3048ec8eeb276f8437508, type: 3}
+  _freezeSound: {fileID: 8300000, guid: 35c0ae8e074b2452d802b40d0284080c, type: 3}
   _letters:
   - {fileID: 8300000, guid: b76ed076767b84a8f92f3fb34fe4d9b5, type: 3}
   - {fileID: 8300000, guid: e942ecc0533114c329d01adf8fb61643, type: 3}

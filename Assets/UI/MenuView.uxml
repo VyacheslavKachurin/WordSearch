@@ -1,6 +1,7 @@
 <engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/GameStyle.uss?fileID=7433441132597879392&amp;guid=52f028e2a9bbb43c6985398e87d12d27&amp;type=3#GameStyle" />
     <Style src="project://database/Assets/UI/MenuStyle.uss?fileID=7433441132597879392&amp;guid=9d73d88b2ea5d4de08746f3f52fbf9a3&amp;type=3#MenuStyle" />
+    <Style src="project://database/Assets/UI/PlaceStampStyle.uss?fileID=7433441132597879392&amp;guid=dd7cdd25ec95c40edb37c0789325483d&amp;type=3#PlaceStampStyle" />
     <engine:VisualElement name="bg" class="view" style="flex-grow: 1; display: flex; background-image: resource(&apos;BG/1&apos;);" />
     <engine:VisualElement name="top-row" style="flex-grow: 0; margin-top: 118px; padding-left: 57px; padding-right: 66px; flex-direction: row;">
         <engine:VisualElement name="back-div" style="flex-grow: 0; align-items: center; justify-content: center; padding-right: 51px; display: none;">
@@ -77,6 +78,18 @@
             </engine:VisualElement>
         </engine:VisualElement>
     </engine:VisualElement>
+    <engine:VisualElement name="collections-view" class="panel-anim panel-anim-in" style="flex-grow: 1; padding-top: 116px; padding-bottom: 387px; display: none; opacity: 1;">
+        <engine:VisualElement name="collections-div" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Sprites/CollectionsBg.png?fileID=2800000&amp;guid=bf451d6cd27ae446c8e3157150a98b27&amp;type=3#CollectionsBg&quot;); padding-top: 60px; padding-bottom: 60px; padding-left: 40px; padding-right: 40px;">
+            <engine:VisualElement name="navigation" style="flex-grow: 0; flex-direction: row; margin-top: 114px; margin-left: 135px; margin-right: 135px;">
+                <engine:Button name="back-btn" style="background-image: url(&quot;project://database/Assets/Sprites/collectionsBtn.png?fileID=2800000&amp;guid=d63854d18bf254291a4b75cf8e2d40e5&amp;type=3#collectionsBtn&quot;); width: 78px; height: 93px;" />
+                <engine:VisualElement name="title-div" style="flex-grow: 1; justify-content: center; align-items: center;">
+                    <engine:Label text="MY COLLECTION" class="bold" style="font-size: 50px;" />
+                </engine:VisualElement>
+                <engine:Button name="next-btn" style="background-image: url(&quot;project://database/Assets/Sprites/collectionsBtn.png?fileID=2800000&amp;guid=d63854d18bf254291a4b75cf8e2d40e5&amp;type=3#collectionsBtn&quot;); width: 78px; height: 93px; scale: -1 1;" />
+            </engine:VisualElement>
+            <engine:VisualElement name="content" style="flex-grow: 1; margin-top: 95px; padding-bottom: 0; margin-bottom: 50px; margin-left: 56px; margin-right: 56px; overflow: hidden;" />
+        </engine:VisualElement>
+    </engine:VisualElement>
     <ShopView enabled="true" usage-hints="None" tabindex="0" focusable="false" language-direction="Inherit" style="display: none;" />
     <engine:VisualElement name="blur-panel" class="view" style="flex-grow: 1; color: rgba(0, 0, 0, 0.54); background-color: rgb(0, 0, 0); opacity: 0.5; display: none;" />
     <engine:VisualElement name="gift-view" class="view" style="flex-grow: 1; position: absolute; align-items: center; justify-content: flex-start; display: none;">
@@ -107,7 +120,7 @@
             <engine:VisualElement name="bottom-leaf" style="flex-grow: 0; position: absolute; background-image: url(&quot;project://database/Assets/Sprites/CircleLeaf.png?fileID=2800000&amp;guid=206810ec128294088b3eab86bf6c14af&amp;type=3#CircleLeaf&quot;); width: 167px; height: 146px; bottom: 47px; left: -1px;" />
         </engine:VisualElement>
     </engine:VisualElement>
-    <engine:VisualElement name="ref" class="view" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/References/newMenu.png?fileID=2800000&amp;guid=ff23653d281324ac49b60473013731dc&amp;type=3#newMenu&quot;); opacity: 0.7; display: none;" />
+    <engine:VisualElement name="ref" picking-mode="Ignore" class="view" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/References/ref_Collections.png?fileID=2800000&amp;guid=6558cc329d8ed41e8acc8d29f183a673&amp;type=3#ref_Collections&quot;); opacity: 0.29; display: none;" />
     <PlateView picking-mode="Ignore" class="view" style="display: none;" />
     <CoinsView picking-mode="Ignore" style="position: absolute; width: 100%; height: 100%; display: none;" />
     <engine:Image name="overlay-fx" picking-mode="Ignore" class="view" style="flex-grow: 1; top: 0; left: 0; display: none;" />
