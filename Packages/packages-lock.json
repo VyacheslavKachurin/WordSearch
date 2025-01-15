@@ -1,11 +1,11 @@
 {
   "dependencies": {
     "com.google.external-dependency-manager": {
-      "version": "https://github.com/google-unity/external-dependency-manager.git#1.2.177",
+      "version": "1.2.183",
       "depth": 0,
-      "source": "git",
+      "source": "registry",
       "dependencies": {},
-      "hash": "64445bb59f6d9d4d7f24be5eea45e7fdf2146546"
+      "url": "https://package.openupm.com"
     },
     "com.singularitygroup.hotreload": {
       "version": "file:com.singularitygroup.hotreload",
@@ -110,7 +110,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ads": {
-      "version": "4.4.2",
+      "version": "4.12.0",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -199,6 +199,15 @@
       "depth": 2,
       "source": "registry",
       "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.mobile.notifications": {
+      "version": "2.3.2",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.modules.androidjni": "1.0.0"
+      },
       "url": "https://packages.unity.com"
     },
     "com.unity.multiplayer.center": {

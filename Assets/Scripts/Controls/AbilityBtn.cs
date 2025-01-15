@@ -18,7 +18,8 @@ public partial class AbilityBtn : Button
         {Ability.Hint, "hint-icon"},
         {Ability.Magnet, "magnet-icon"},
         {Ability.Firework, "firework-icon"},
-        {Ability.Ads, "ads-icon"}
+        {Ability.Ads, "ads-icon"},
+        {Ability.Freeze, "freeze-icon"}
     };
 
     private int _priceInt;
@@ -86,5 +87,6 @@ public enum Ability
     Hint,
     Magnet,
     Firework,
+    Freeze,
     Ads
 }

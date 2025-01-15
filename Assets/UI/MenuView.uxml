@@ -1,82 +1,127 @@
 <engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/GameStyle.uss?fileID=7433441132597879392&amp;guid=52f028e2a9bbb43c6985398e87d12d27&amp;type=3#GameStyle" />
     <Style src="project://database/Assets/UI/MenuStyle.uss?fileID=7433441132597879392&amp;guid=9d73d88b2ea5d4de08746f3f52fbf9a3&amp;type=3#MenuStyle" />
-    <engine:VisualElement name="bg" class="view" style="flex-grow: 1; display: flex;" />
-    <engine:VisualElement name="main" style="flex-grow: 1;">
-        <engine:VisualElement name="top" style="flex-grow: 1; justify-content: space-between; flex-direction: column; align-items: stretch; margin-top: 341px; padding-bottom: 284px;">
-            <engine:VisualElement name="red-div" style="flex-grow: 0; align-items: flex-start; margin-left: 66px;">
-                <engine:VisualElement style="flex-grow: 1;">
-                    <engine:Button name="ads-btn" class="left-btn" style="display: flex; visibility: visible;" />
-                    <engine:Button name="gift-btn" class="left-btn" style="background-image: url(&quot;project://database/Assets/Sprites/gift-btn.png?fileID=2800000&amp;guid=76c4cb3790fbd4400b22962375e1bdfb&amp;type=3#gift-btn&quot;);" />
-                </engine:VisualElement>
-            </engine:VisualElement>
-            <engine:VisualElement name="player-div" style="flex-grow: 0; align-items: center; justify-content: center;">
-                <engine:VisualElement name="greeting-div" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/greeting-bg.png?fileID=2800000&amp;guid=3bab088c8fb614af9a28a5913c25b6c6&amp;type=3#greeting-bg&quot;); width: 963px; height: 251px; align-items: center; justify-content: center;">
-                    <engine:Label text="Welcome, &lt;color=&quot;red&quot;&gt;Guest_123&lt;/color&gt;" name="greeting-lbl" emoji-fallback-support="false" style="font-size: 54px; -unity-font-style: bold;" />
-                    <engine:VisualElement name="icon-div" style="flex-grow: 1; position: absolute; background-image: url(&quot;project://database/Assets/Sprites/player-icon.png?fileID=2800000&amp;guid=f2b05b16e2901424cbfb9373c7c7927c&amp;type=3#player-icon&quot;); width: 246px; height: 249px; bottom: 159px;" />
-                </engine:VisualElement>
-            </engine:VisualElement>
-            <engine:VisualElement name="game-modes" style="flex-grow: 0; align-items: center; justify-content: center;">
-                <engine:VisualElement name="title-bg" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/mode-bg.png?fileID=2800000&amp;guid=28800cf4911c64aa5a6ab1636eca58fb&amp;type=3#mode-bg&quot;); width: 451px; height: 67px; margin-bottom: 30px;">
-                    <engine:Label text="GAME MODE:" name="title-lbl" selectable="true" style="font-size: 40px; color: rgb(255, 255, 255); margin-top: 18px; margin-bottom: 18px;" />
-                </engine:VisualElement>
-                <engine:VisualElement name="btns" style="flex-grow: 0;">
-                    <engine:Button name="classic-btn" text="CLASSIC" class="mode-btn lbl-shadow" style="background-image: url(&quot;project://database/Assets/Sprites/classic-mode.png?fileID=2800000&amp;guid=7f38683c5d84c46cbb83ca676710caed&amp;type=3#classic-mode&quot;);" />
-                    <engine:Button name="time-btn" text="TIME TRIAL" class="mode-btn lbl-shadow" style="display: none;" />
-                </engine:VisualElement>
-            </engine:VisualElement>
+    <Style src="project://database/Assets/UI/PlaceStampStyle.uss?fileID=7433441132597879392&amp;guid=dd7cdd25ec95c40edb37c0789325483d&amp;type=3#PlaceStampStyle" />
+    <engine:VisualElement name="bg" class="view" style="flex-grow: 1; display: flex; background-image: resource(&apos;BG/1&apos;);" />
+    <engine:VisualElement name="top-row" style="flex-grow: 0; margin-top: 118px; padding-left: 57px; padding-right: 66px; flex-direction: row;">
+        <engine:VisualElement name="back-div" style="flex-grow: 0; align-items: center; justify-content: center; padding-right: 51px; display: none;">
+            <engine:Button name="back-btn" style="background-image: url(&quot;project://database/Assets/Sprites/BackBtn.png?fileID=2800000&amp;guid=8ea480486dcfc4824a5b9bf4ff7fdbc3&amp;type=3#BackBtn&quot;); margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; width: 82px; height: 98px;" />
         </engine:VisualElement>
-        <engine:VisualElement name="bottom" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/menu_bottom.png?fileID=2800000&amp;guid=95208a6ea25a741f39d0729090822450&amp;type=3#menu_bottom&quot;); width: 100%; height: 207px; align-items: center; justify-content: space-evenly; flex-direction: row; flex-shrink: 0;">
-            <engine:VisualElement style="flex-grow: 1; align-items: center;">
-                <engine:Button name="left-btn" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; background-image: url(&quot;project://database/Assets/Sprites/brn-left.png?fileID=2800000&amp;guid=bde19571a27ff4cf7a8dd83588a0b6a5&amp;type=3#brn-left&quot;); width: 126px; height: 126px;" />
-            </engine:VisualElement>
-            <engine:Button name="home-btn" picking-mode="Ignore" style="background-image: url(&quot;project://database/Assets/Sprites/home-btn.png?fileID=2800000&amp;guid=88d49fd2495f7442e891eb4787ab9898&amp;type=3#home-btn&quot;); width: 246px; height: 249px; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; bottom: 47px;" />
-            <engine:VisualElement style="flex-grow: 1; align-items: center;">
-                <engine:Button name="right-btn" style="background-image: url(&quot;project://database/Assets/Sprites/btn-right.png?fileID=2800000&amp;guid=91877cab3d314452eb0ee13342cfc511&amp;type=3#btn-right&quot;); width: 125px; height: 129px;" />
-            </engine:VisualElement>
+        <engine:VisualElement name="red-div" style="flex-grow: 0; align-items: flex-start; display: flex; flex-direction: row;">
+            <engine:Button name="ads-btn" class="red-btn" style="display: flex; visibility: visible;" />
+            <engine:Button name="gift-btn" class="red-btn" style="background-image: url(&quot;project://database/Assets/Sprites/gift-btn.png?fileID=2800000&amp;guid=76c4cb3790fbd4400b22962375e1bdfb&amp;type=3#gift-btn&quot;); margin-left: 28px;" />
         </engine:VisualElement>
-        <engine:VisualElement name="shop-bg" style="flex-grow: 1; width: 100%; display: none; position: absolute; height: 100%;" />
-        <NavigationRow is-level-visible="false" is-shop-visible="false" is-settings-visible="true" picking-mode="Ignore" is-back-active="false" style="flex-grow: 1; display: flex; position: absolute; width: 100%; height: 100%;" />
+        <engine:VisualElement name="settings-div" style="flex-grow: 1; align-items: flex-end;">
+            <engine:Button name="settings-btn" class="red-btn" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; background-image: url(&quot;project://database/Assets/Sprites/SettingsIconNew.png?fileID=2800000&amp;guid=32625874717c24fa8b92089592b0b296&amp;type=3#SettingsIconNew&quot;);" />
+        </engine:VisualElement>
     </engine:VisualElement>
-    <engine:VisualElement name="ref" class="view" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/References/2%20-%20menu.png?fileID=2800000&amp;guid=cc284c370053a49ac930fa6b082d0e88&amp;type=3#2 - menu&quot;); opacity: 0.65; display: none;" />
-    <PlateView picking-mode="Ignore" class="view" />
-    <engine:VisualElement name="gift-view" class="view" style="flex-grow: 1; position: absolute; align-items: center; justify-content: center; display: none;">
-        <engine:VisualElement name="gift-div" class="gift-anim gift-anim-in" style="display: flex; height: 30%;">
-            <engine:VisualElement name="header" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/WordsHeader.png?fileID=2800000&amp;guid=7554701caebd34311854e6b9a8a1fa51&amp;type=3#WordsHeader&quot;); align-items: center; justify-content: center; border-top-left-radius: 20px; border-top-right-radius: 20px;">
-                <engine:Label text="Daily Reward" class="lbl-shadow" style="font-size: 54px; color: rgb(255, 255, 255); -unity-font-style: bold; margin-top: 20px; margin-bottom: 20px;" />
+    <engine:VisualElement name="menu-div" style="flex-grow: 1; height: 100%; display: flex;">
+        <engine:VisualElement name="logo-div" style="flex-grow: 0; margin-top: 0; padding-top: 165px; padding-bottom: 138px;">
+            <engine:VisualElement name="logo-bg" style="flex-grow: 0; width: 100%; height: 354px; background-color: rgb(191, 245, 30); align-items: center; justify-content: center;">
+                <engine:VisualElement name="text-img" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/MainLogo.png?fileID=2800000&amp;guid=5dc7034e2eb084940aa992b4c91b7f76&amp;type=3#MainLogo&quot;); width: 1118px; height: 196px; flex-shrink: 1;">
+                    <engine:VisualElement name="magnifier" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/Enlarger.png?fileID=2800000&amp;guid=cb3b04f8552d04f99a6b2829c458df40&amp;type=3#Enlarger&quot;); width: 102px; height: 102px; position: absolute; bottom: -27px; right: 369px;">
+                        <engine:VisualElement name="map" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/World.png?fileID=2800000&amp;guid=a28e01846a568488a8e977ef830235b2&amp;type=3#World&quot;); width: 72px; height: 81px; position: absolute; top: -13px; left: -5px;" />
+                    </engine:VisualElement>
+                </engine:VisualElement>
             </engine:VisualElement>
-            <engine:Button name="gift-close-btn" style="position: absolute; right: -51px; top: -40px; background-image: url(&quot;project://database/Assets/Sprites/close-btn.png?fileID=2800000&amp;guid=d7cc4c5187a904a2dbbc136253398c6b&amp;type=3#close-btn&quot;); width: 100px; height: 100px;" />
-            <engine:VisualElement name="body" style="flex-grow: 1; background-color: rgb(255, 255, 255); border-bottom-right-radius: 20px; border-bottom-left-radius: 20px; display: flex;">
-                <engine:VisualElement name="interaction-div" style="flex-grow: 1; margin-top: 50px; margin-bottom: 50px; display: flex;">
+        </engine:VisualElement>
+        <engine:VisualElement name="level-div" style="flex-grow: 0; align-items: center; justify-content: center;">
+            <engine:VisualElement name="circle" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Sprites/LevelCircle.png?fileID=2800000&amp;guid=f80a856d5c1664d78b464cc038b15562&amp;type=3#LevelCircle&quot;); width: 352px; height: 356px; align-items: center; justify-content: center;">
+                <engine:VisualElement name="top" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/CIrcleTop.png?fileID=2800000&amp;guid=09e38aa5b74744084920ce0ff9e2c1c1&amp;type=3#CIrcleTop&quot;); width: 223px; height: 191px; right: -12px; position: absolute; top: -13px;" />
+                <engine:VisualElement name="leaf" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/CircleLeaf.png?fileID=2800000&amp;guid=206810ec128294088b3eab86bf6c14af&amp;type=3#CircleLeaf&quot;); width: 152px; height: 134px; position: absolute; bottom: 32px; left: -38px;" />
+                <engine:VisualElement name="labels" class="bold" style="flex-grow: 0; color: rgb(53, 45, 77);">
+                    <engine:Label text="1" name="level-number-lbl" style="font-size: 146px;" />
+                    <engine:Label text="level" name="level-lbl" style="font-size: 41px;" />
+                </engine:VisualElement>
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement name="slider-div" style="flex-grow: 0; align-items: center; justify-content: center; padding-top: 110px; padding-bottom: 150px;">
+            <engine:VisualElement name="slider" style="flex-grow: 1; justify-content: center;">
+                <engine:VisualElement name="slider-bg" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Sprites/SliderBgNew.png?fileID=2800000&amp;guid=6bfd56d4e9d1e4c52a09aaee5da514f0&amp;type=3#SliderBgNew&quot;); width: 745px; height: 92px; padding-top: 20px; padding-right: 22px; padding-bottom: 20px; padding-left: 22px;">
+                    <engine:VisualElement name="slider-back" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Sprites/SliderFillNew.png?fileID=2800000&amp;guid=5547fa3fbea574956a3cff32cfe3c3bf&amp;type=3#SliderFillNew&quot;); align-items: flex-start; display: flex;">
+                        <engine:VisualElement name="slider-fill" style="flex-grow: 1; width: 25%; border-top-left-radius: 25px; border-top-right-radius: 25px; border-bottom-right-radius: 25px; border-bottom-left-radius: 25px; background-color: rgb(191, 245, 30); margin-bottom: 7px;" />
+                    </engine:VisualElement>
+                </engine:VisualElement>
+                <engine:VisualElement name="present-div" style="flex-grow: 0; position: absolute; right: -88px;">
+                    <engine:VisualElement name="slider-gift" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Sprites/GiftNew.png?fileID=2800000&amp;guid=565ef9cc502904eabb854be54cb49b1c&amp;type=3#GiftNew&quot;); width: 195px; height: 169px; justify-content: center; align-items: center;" />
+                </engine:VisualElement>
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement name="game-modes" style="flex-grow: 0; align-items: center; justify-content: center;">
+            <engine:VisualElement name="title-bg" style="flex-grow: 0; margin-bottom: 39px;">
+                <engine:Label text="GAME MODE:" name="title-lbl" selectable="true" style="font-size: 58px; color: rgb(255, 255, 255); margin-top: 18px; margin-bottom: 18px; -unity-font-style: normal;" />
+            </engine:VisualElement>
+            <engine:VisualElement name="btns" style="flex-grow: 0; align-items: center;">
+                <engine:Button name="classic-btn" text="CLASSIC" class="mode-btn lbl-shadow" />
+                <engine:VisualElement name="time-btn-div" style="flex-grow: 1; padding-top: 28px; justify-content: center;">
+                    <engine:Button name="time-btn" text="TIME TRIAL" class="mode-btn lbl-shadow" style="display: flex;" />
+                    <engine:VisualElement name="leaf" style="flex-grow: 0; position: absolute; background-image: url(&quot;project://database/Assets/Sprites/LeafPic.png?fileID=2800000&amp;guid=5bb87dc37650448d9bad85df23872fa9&amp;type=3#LeafPic&quot;); width: 147px; height: 86px; right: 7px; top: 20px;" />
+                </engine:VisualElement>
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement name="bottom-row-div" style="flex-grow: 1; justify-content: flex-end; padding-bottom: 59px; padding-left: 51px; flex-direction: column; align-items: stretch; padding-right: 48px;">
+            <engine:VisualElement name="bottom-row" style="flex-grow: 0; flex-direction: row;">
+                <engine:VisualElement name="daily-div" style="flex-grow: 0; padding-right: 37px;">
+                    <engine:Button name="daily-tasks-btn" style="background-image: url(&quot;project://database/Assets/Sprites/DailyTasks.png?fileID=2800000&amp;guid=7e401d1e2d2dc48d8959e249c5b9dba2&amp;type=3#DailyTasks&quot;); width: 213px; height: 213px; justify-content: flex-end;">
+                        <engine:Label text="Daily tasks" name="Label" class="bold" style="color: rgb(53, 45, 77); font-size: 22px; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; bottom: 40px;" />
+                    </engine:Button>
+                    <engine:VisualElement name="lock-bg" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/LockBg.png?fileID=2800000&amp;guid=eef680ab8f67c40af8c6473a493f0ebc&amp;type=3#LockBg&quot;); width: 74px; height: 74px; position: absolute; right: 20px; top: -16px; align-items: center; justify-content: center;">
+                        <engine:VisualElement name="lock" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/Lock.png?fileID=2800000&amp;guid=f7beaefd87ab144fd93f6fcb8803a0b3&amp;type=3#Lock&quot;); width: 42px; height: 42px;" />
+                    </engine:VisualElement>
+                </engine:VisualElement>
+                <engine:Button name="collections-btn" style="background-image: url(&quot;project://database/Assets/Sprites/Collections.png?fileID=2800000&amp;guid=1a468bdcf7c6740db9e9ad363402f554&amp;type=3#Collections&quot;); width: 213px; height: 213px; justify-content: flex-end;">
+                    <engine:Label text="Collections" name="Label" class="bold" style="color: rgb(53, 45, 77); font-size: 22px; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; bottom: 40px;" />
+                </engine:Button>
+                <engine:VisualElement name="shop-btn-div" style="flex-grow: 1; flex-shrink: 0; align-items: flex-end; justify-content: center;">
+                    <ShopBtn />
+                </engine:VisualElement>
+            </engine:VisualElement>
+        </engine:VisualElement>
+    </engine:VisualElement>
+    <engine:VisualElement name="collections-view" class="panel-anim panel-anim-in" style="flex-grow: 1; padding-top: 116px; padding-bottom: 387px; display: none; opacity: 1;">
+        <engine:VisualElement name="collections-div" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Sprites/CollectionsBg.png?fileID=2800000&amp;guid=bf451d6cd27ae446c8e3157150a98b27&amp;type=3#CollectionsBg&quot;); padding-top: 60px; padding-bottom: 60px; padding-left: 40px; padding-right: 40px;">
+            <engine:VisualElement name="navigation" style="flex-grow: 0; flex-direction: row; margin-top: 114px; margin-left: 135px; margin-right: 135px;">
+                <engine:Button name="back-btn" style="background-image: url(&quot;project://database/Assets/Sprites/collectionsBtn.png?fileID=2800000&amp;guid=d63854d18bf254291a4b75cf8e2d40e5&amp;type=3#collectionsBtn&quot;); width: 78px; height: 93px;" />
+                <engine:VisualElement name="title-div" style="flex-grow: 1; justify-content: center; align-items: center;">
+                    <engine:Label text="MY COLLECTION" class="bold" style="font-size: 50px;" />
+                </engine:VisualElement>
+                <engine:Button name="next-btn" style="background-image: url(&quot;project://database/Assets/Sprites/collectionsBtn.png?fileID=2800000&amp;guid=d63854d18bf254291a4b75cf8e2d40e5&amp;type=3#collectionsBtn&quot;); width: 78px; height: 93px; scale: -1 1;" />
+            </engine:VisualElement>
+            <engine:VisualElement name="content" style="flex-grow: 1; margin-top: 95px; padding-bottom: 0; margin-bottom: 50px; margin-left: 56px; margin-right: 56px; overflow: hidden;" />
+        </engine:VisualElement>
+    </engine:VisualElement>
+    <ShopView enabled="true" usage-hints="None" tabindex="0" focusable="false" language-direction="Inherit" style="display: none;" />
+    <engine:VisualElement name="blur-panel" class="view" style="flex-grow: 1; color: rgba(0, 0, 0, 0.54); background-color: rgb(0, 0, 0); opacity: 0.5; display: none;" />
+    <engine:VisualElement name="gift-view" class="view" style="flex-grow: 1; position: absolute; align-items: center; justify-content: flex-start; display: none;">
+        <engine:VisualElement name="gift-div" class="panel-anim panel-anim-in" style="display: flex; height: 735px; background-image: url(&quot;project://database/Assets/Sprites/giftBg.png?fileID=2800000&amp;guid=89902daa521654e02a0ce1f75eb49f2f&amp;type=3#giftBg&quot;); width: 1080px; top: 32%; position: absolute; padding-top: 56px; padding-bottom: 59px; padding-right: 55px; padding-left: 60px;">
+            <engine:VisualElement name="body" style="flex-grow: 1; border-bottom-right-radius: 20px; border-bottom-left-radius: 20px; display: flex; padding-top: 50px; padding-bottom: 50px;">
+                <engine:VisualElement name="interaction-div" style="flex-grow: 1; display: flex; padding-top: 61px;">
                     <engine:VisualElement name="lbl-div" style="flex-grow: 0;">
-                        <engine:Label text="Choose your gift!" style="font-size: 35px;" />
+                        <engine:Label text="DAILY REWARD" name="daily-lbl" class="bold" style="font-size: 50px; color: rgb(255, 249, 7);" />
+                        <engine:Label text="Choose your gift" name="choose-gift-lbl" class="bold" style="font-size: 40px; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; margin-top: 28px; margin-right: 0; margin-bottom: 0; margin-left: 0;" />
                     </engine:VisualElement>
                     <engine:VisualElement name="gifts" style="flex-grow: 1; padding-left: 100px; padding-right: 100px; flex-direction: column; justify-content: space-around; margin-top: 100px; padding-bottom: 100px;">
                         <engine:VisualElement name="row" style="flex-grow: 1; flex-direction: row; justify-content: center; align-items: center;">
-                            <engine:Button name="gift1" class="box" style="display: flex; transition-duration: 0.5s; background-image: url(&quot;project://database/Assets/Sprites/GiftBlue.png?fileID=2800000&amp;guid=1de8b4652f9924c3dbdea4698482f217&amp;type=3#GiftBlue&quot;);" />
-                            <engine:Button name="gift3" class="box" style="background-image: url(&quot;project://database/Assets/Sprites/GiftRed.png?fileID=2800000&amp;guid=43631bb8a67b2446cb1b72873fca21c4&amp;type=3#GiftRed&quot;);" />
-                        </engine:VisualElement>
-                        <engine:VisualElement name="row" style="flex-grow: 1; flex-direction: row; justify-content: center; align-items: center;">
-                            <engine:Button name="gift2" class="box" style="background-image: url(&quot;project://database/Assets/Sprites/GiftGreen.png?fileID=2800000&amp;guid=c0381c45299394066ab9522b7c46745e&amp;type=3#GiftGreen&quot;);" />
+                            <engine:Button name="gift1" class="gift-pick" style="display: flex; transition-duration: 0.5s; background-image: url(&quot;project://database/Assets/Sprites/GiftGreen.png?fileID=2800000&amp;guid=c0381c45299394066ab9522b7c46745e&amp;type=3#GiftGreen&quot;);" />
+                            <engine:Button name="gift2" class="gift-pick" style="background-image: url(&quot;project://database/Assets/Sprites/GiftGold.png?fileID=2800000&amp;guid=544cc6cf0f67a479a9f9672f38bcc2e5&amp;type=3#GiftGold&quot;); display: flex; visibility: visible;" />
+                            <engine:Button name="gift3" class="gift-pick" style="background-image: url(&quot;project://database/Assets/Sprites/GiftRed.png?fileID=2800000&amp;guid=43631bb8a67b2446cb1b72873fca21c4&amp;type=3#GiftRed&quot;);" />
                         </engine:VisualElement>
                     </engine:VisualElement>
                 </engine:VisualElement>
                 <engine:VisualElement name="granted-div" style="flex-grow: 1; margin-top: 50px; margin-bottom: 50px; flex-direction: column; display: none;">
-                    <engine:VisualElement name="top" style="flex-grow: 0; justify-content: center; align-items: center;">
-                        <engine:VisualElement name="gift-pic" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/gift.png?fileID=2800000&amp;guid=bed651ce5066c4f9fa2acde842a42a63&amp;type=3#gift&quot;); width: 300px; height: 300px;" />
-                    </engine:VisualElement>
                     <engine:VisualElement name="bottom" style="flex-grow: 1; align-items: center; justify-content: space-evenly; flex-wrap: wrap;">
-                        <engine:Label text="The bonus has already been received" class="lbl" style="white-space: normal; color: rgb(0, 0, 0); -unity-font-style: normal;" />
-                        <engine:Label text="come back in 12:12:12" name="new-gift-lbl" class="lbl" style="white-space: normal; color: rgb(0, 0, 0); -unity-font-style: normal; font-size: 50px;" />
+                        <engine:Label text="The bonus has already been received" class="bold" style="white-space: normal; color: rgb(255, 249, 7); -unity-font-style: normal; font-size: 50px;" />
+                        <engine:Label text="come back in 12:12:12" name="new-gift-timer-lbl" class="lbl" style="white-space: normal; color: rgb(255, 255, 255); -unity-font-style: normal; font-size: 50px;" />
                     </engine:VisualElement>
                 </engine:VisualElement>
             </engine:VisualElement>
+            <engine:Button name="gift-close-btn" style="position: absolute; background-image: url(&quot;project://database/Assets/Sprites/close-btn.png?fileID=2800000&amp;guid=d7cc4c5187a904a2dbbc136253398c6b&amp;type=3#close-btn&quot;); width: 100px; height: 100px; left: 40px; top: 38px;" />
+            <engine:VisualElement name="top-leaf" style="flex-grow: 0; position: absolute; right: 40px; background-image: url(&quot;project://database/Assets/Sprites/CIrcleTop.png?fileID=2800000&amp;guid=09e38aa5b74744084920ce0ff9e2c1c1&amp;type=3#CIrcleTop&quot;); width: 291px; height: 276px; top: 32px;" />
+            <engine:VisualElement name="bottom-leaf" style="flex-grow: 0; position: absolute; background-image: url(&quot;project://database/Assets/Sprites/CircleLeaf.png?fileID=2800000&amp;guid=206810ec128294088b3eab86bf6c14af&amp;type=3#CircleLeaf&quot;); width: 167px; height: 146px; bottom: 47px; left: -1px;" />
         </engine:VisualElement>
     </engine:VisualElement>
-    <engine:VisualElement name="gift-ref" style="flex-grow: 1; position: absolute; width: 100%; height: 100%; align-items: center; justify-content: center; opacity: 0.12; display: none;">
-        <engine:VisualElement name="pic" style="flex-grow: 1; position: absolute; background-image: url(&quot;project://database/Assets/References/gift-ref.jpeg?fileID=2800000&amp;guid=f2e2a897ce17747a98c12442f5ec5929&amp;type=3#gift-ref&quot;); width: 1179px; height: 1965px; align-self: center;" />
-    </engine:VisualElement>
-    <engine:Image name="overlay-fx" picking-mode="Ignore" class="view" style="flex-grow: 1;" />
-    <ShopView picking-mode="Ignore" style="display: none;" />
-    <CoinsView picking-mode="Ignore" style="position: absolute; width: 100%; height: 100%;" />
+    <engine:VisualElement name="ref" picking-mode="Ignore" class="view" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/References/ref_Collections.png?fileID=2800000&amp;guid=6558cc329d8ed41e8acc8d29f183a673&amp;type=3#ref_Collections&quot;); opacity: 0.29; display: none;" />
+    <PlateView picking-mode="Ignore" class="view" style="display: none;" />
+    <CoinsView picking-mode="Ignore" style="position: absolute; width: 100%; height: 100%; display: none;" />
+    <engine:Image name="overlay-fx" picking-mode="Ignore" class="view" style="flex-grow: 1; top: 0; left: 0; display: none;" />
 </engine:UXML>

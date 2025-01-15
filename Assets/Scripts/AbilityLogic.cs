@@ -7,9 +7,12 @@ public class AbilityLogic : MonoBehaviour
     private LevelData _data;
     private GameBoard _gameBoard;
 
+    IAdsRequest _adsRequest;
+
     public static event Action OnCashRequested;
 
     public static event Action OnFakeLettersRemoved;
+    public static event Action OnFreezeRequested;
     private AudioManager _audioManager;
 
     private void Awake()
@@ -24,12 +27,11 @@ public class AbilityLogic : MonoBehaviour
         AbilityBtn.OnAbilityClicked -= HandleAbility;
     }
 
-
     private void HandleAbility(Ability ability, int price, AbilityBtn btn)
     {
         if (!Balance.UseAbility(price))
         {
-            OnCashRequested?.Invoke();
+            _adsRequest.RequestAds();
             return;
         }
 
@@ -47,19 +49,29 @@ public class AbilityLogic : MonoBehaviour
             case Ability.Firework:
                 RevealSquare();
                 break;
-            case Ability.Ads:
-                RequireAd();
+
+            case Ability.Freeze:
+                RequestPauseTimer();
                 break;
+
         }
+        EventSender.SendAbilityEvent(ability);
         LevelStateService.SaveState();
 
 
     }
 
-    public void SetData(LevelData levelData, GameBoard gameBoard)
+    private void RequestPauseTimer()
+    {
+        OnFreezeRequested?.Invoke();
+        AudioManager.Instance.PlaySound(Sound.Freeze);
+    }
+
+    public void SetData(LevelData levelData, GameBoard gameBoard, IAdsRequest adsRequest)
     {
         _data = levelData;
         _gameBoard = gameBoard;
+        _adsRequest = adsRequest;
 
     }
 
@@ -84,7 +96,7 @@ public class AbilityLogic : MonoBehaviour
             var color = _gameBoard.Letters[point.Y, point.X].GetColor();
             var position = _gameBoard.Letters[point.Y, point.X].transform.position;
             _lineProvider.CreateLine(position, color);
-            
+
         }
 
     }
@@ -92,7 +104,7 @@ public class AbilityLogic : MonoBehaviour
     public void HideFakeLetters()
     {
         _audioManager.PlaySound(Sound.Magnet);
-        foreach (var point in _data.FakeLetters)
+        foreach (var point in LevelStateService.GetSomeFakeLetters(_data))
         {
             _gameBoard.Letters[point.Y, point.X].Hide();
 

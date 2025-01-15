@@ -8,11 +8,9 @@ using UnityEngine.UIElements;
 [UxmlElement]
 public partial class CoinsView : VisualElement
 {
-    private const string COINS_HIDE = "coins-hide";
     private const string COINS_UP = "coins-up";
     private VisualElement _coinsAnimDiv;
     private Label _coinsAnimLbl;
-
     public static event Action<Vector2, int> CoinsShown;
 
     public CoinsView()
@@ -29,11 +27,23 @@ public partial class CoinsView : VisualElement
 
     }
 
-    public void ShowCoinsLbl(Vector2 startPos, int amount, Action callback = null)
+    private void SetCoinsDivPosition(Vector2 startPos)
     {
-        _coinsAnimDiv.style.left = startPos.x;
-        _coinsAnimDiv.style.top = startPos.y;
+        var viewWidth = this.worldBound.width;
+        var viewHeight = startPos.y; //this.worldBound.height;
 
+        var toRemoveX = _coinsAnimDiv.worldBound.width / 2;
+        var toAddY = _coinsAnimDiv.worldBound.height / 2;
+        _coinsAnimDiv.style.left = viewWidth / 2 - toRemoveX;
+        _coinsAnimDiv.style.top = viewHeight + toAddY;
+    }
+
+    public async void ShowCoinsLbl(Vector2 startPos, int amount, Action callback = null)
+    {
+        this.Toggle(true);
+        //   _coinsAnimDiv.style.opacity = 0;
+        await Task.Delay(100);
+        SetCoinsDivPosition(startPos);
         _coinsAnimLbl.text = $"+{amount}";
 
         _coinsAnimDiv.RegisterCallbackOnce<TransitionEndEvent>(e =>
@@ -41,20 +51,24 @@ public partial class CoinsView : VisualElement
             Vector2 worldPos = Camera.main.ScreenToWorldPoint(_coinsAnimDiv.worldTransform.GetPosition() + new Vector3(_coinsAnimDiv.worldBound.width / 2, _coinsAnimDiv.worldBound.height / 2));
 
             CoinsShown?.Invoke(worldPos, amount);
-            HideLbl();
-            callback?.Invoke();
 
+            callback?.Invoke();
         });
 
         _coinsAnimDiv.AddToClassList(COINS_UP);
+        //   _coinsAnimDiv.style.opacity = 1;
     }
 
-    private async void HideLbl()
+
+    public async void HideAsync()
     {
-        _coinsAnimDiv.AddToClassList(COINS_HIDE);
-        await Task.Delay(1500);
+        _coinsAnimDiv.RegisterCallbackOnce<TransitionEndEvent>(async e =>
+        {
+            await Task.Delay(600);
+            this.Toggle(false);
+        });
+        await Task.Delay(1000);
         _coinsAnimDiv.RemoveFromClassList(COINS_UP);
-        _coinsAnimDiv.RemoveFromClassList(COINS_HIDE);
     }
 
 }

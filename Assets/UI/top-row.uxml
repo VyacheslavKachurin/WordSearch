@@ -1,0 +1,14 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <engine:VisualElement name="top-row" style="flex-grow: 0; margin-top: 118px; padding-left: 57px; padding-right: 66px; flex-direction: row;">
+        <engine:VisualElement name="back-div" style="flex-grow: 0; align-items: center; justify-content: center; padding-right: 51px; display: none;">
+            <engine:Button name="back-btn" style="background-image: url(&quot;project://database/Assets/Sprites/BackBtn.png?fileID=2800000&amp;guid=8ea480486dcfc4824a5b9bf4ff7fdbc3&amp;type=3#BackBtn&quot;); margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; width: 82px; height: 98px;" />
+        </engine:VisualElement>
+        <engine:VisualElement name="red-div" style="flex-grow: 0; align-items: flex-start; display: flex; flex-direction: row;">
+            <engine:Button name="ads-btn" class="red-btn" style="display: flex; visibility: visible;" />
+            <engine:Button name="gift-btn" class="red-btn" style="background-image: url(&quot;project://database/Assets/Sprites/gift-btn.png?fileID=2800000&amp;guid=76c4cb3790fbd4400b22962375e1bdfb&amp;type=3#gift-btn&quot;); margin-left: 28px;" />
+        </engine:VisualElement>
+        <engine:VisualElement name="settings-div" style="flex-grow: 1; align-items: flex-end;">
+            <engine:Button name="settings-btn" class="red-btn" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; background-image: url(&quot;project://database/Assets/Sprites/SettingsIconNew.png?fileID=2800000&amp;guid=32625874717c24fa8b92089592b0b296&amp;type=3#SettingsIconNew&quot;);" />
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>

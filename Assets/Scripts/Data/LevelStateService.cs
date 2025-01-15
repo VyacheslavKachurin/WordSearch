@@ -15,13 +15,13 @@ public class LevelStateService
 
     public static void SaveState()
     {
+        if (!Session.IsClassicGame) return;
         if (State == null) return;
         Debug.Log($"Saving State; path: {_prePath + _fileName}");
         string json = JsonConvert.SerializeObject(State);
         if (State == null) return;
 
         System.IO.File.WriteAllText(_prePath + _fileName, json);
-
     }
 
     public static bool LoadState(out LevelState levelState)
@@ -38,6 +38,14 @@ public class LevelStateService
         return false;
     }
 
+
+    public static List<Point> GetSomeFakeLetters(LevelData data)
+    {
+        int amountToTake = Convert.ToInt32(data.FakeLetters.Count * 0.7f);
+        State.RevealedFakeLetters ??= data.FakeLetters.OrderBy(x => UnityEngine.Random.Range(0f, 1f)).Take(amountToTake).ToList();
+        return State.RevealedFakeLetters;
+    }
+
     public static void DeleteState()
     {
         if (!System.IO.File.Exists(_prePath + _fileName)) return;
@@ -47,11 +55,13 @@ public class LevelStateService
 
     internal static void CreateState(LevelData levelData)
     {
-        State = new(false, levelData.FirstLetters, new List<string>(), new List<Point>(), new List<LineState>(), new List<Point>());
+        var level = GameDataService.GameData.Level;
+        State = new(false, levelData.FirstLetters, new List<string>(), new List<Point>(), new List<LineState>(), new List<Point>(), level);
     }
 
     internal static void AddFoundWord(string tryWord, List<LetterUnit> foundLetters, LineState lineState)
     {
+        if (!Session.IsClassicGame) return;
         State.FoundWords.Add(tryWord);
 
         foreach (var letter in foundLetters)

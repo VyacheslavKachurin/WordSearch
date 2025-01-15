@@ -8,16 +8,14 @@ public class BgController : MonoBehaviour
 
     public Texture2D GetBackView()
     {
-   
-        var texture = Resources.Load("BG/" + Session.LastStage) as Texture2D;
+        var texture = Resources.Load("BG/" + GameDataService.GameData.Season) as Texture2D;
         return texture;
     }
-
 
     public void CreateBackView()
     {
         var mainCamera = Camera.main;
-        var texture = Resources.Load("BG/" + Session.LastStage) as Texture2D;
+        var texture = Resources.Load("BG/" + GameDataService.GameData.Season) as Texture2D;
         var screenWidth = Screen.width;
 
         RectTransform canvasRect = _canvas.GetComponent<RectTransform>();

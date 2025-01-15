@@ -11,9 +11,3 @@
     translate: 0 -50px;
     opacity: 1;
 }
-
-.coins-hide {
-    opacity: 0;
-    transition-delay: 1s;
-    translate: 0 50px;
-}

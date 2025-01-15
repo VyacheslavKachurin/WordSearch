@@ -2,143 +2,266 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using SingularityGroup.HotReload;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class LevelLogic : MonoBehaviour
 {
-    public static event Action<List<Point>> OnWordFound;
-    public static event Action<int> WordListUpdated;
-
     [SerializeField] LevelView _levelView;
     [SerializeField] LineProvider _lineProvider;
-
-    [SerializeField] InputHandler _inputHandler;
+    [SerializeField] private int _prizeAmount = 25;
+    [SerializeField] private ParticleSystem _winFX;
 
     private AudioManager _audio;
     private bool _isFirstLetter = true;
     private string _tryWord = string.Empty;
     private List<LetterUnit> _tryWordLetterUnits = new();
 
-
     private List<string> _words;
 
-    [SerializeField] private LayerMask _ignoreRaycastLayer;
-    [SerializeField] private string _menuScene = "MenuScene";
 
 #if UNITY_EDITOR
-    [SerializeField] private bool _canContinue = false;
+    [SerializeField] private bool _useTestData = false;
 #endif
 
-    public static int Stage;
+    // public static int Stage;
     public static int Step;
     public static int TotalSteps;
-
-
     private bool _shouldCheckForFinish = true;
+
+    [SerializeField] Canvas _canvas;
+
+#if UNITY_EDITOR
+    [SerializeField] private int _editorEpisode;
+    [SerializeField] private int _editorTotalEpisodes;
+#endif
+
+    [SerializeField] private float _msForWord = 4000f;
+    private bool _isTimerRunning;
+    private Coroutine _timerCoroutine;
+    [SerializeField] private float _timerStep = 0.1f;
+    private string _targetWord;
+    [SerializeField] private float _pauseTimerDelay = 5;
+    private float _timeLeft;
 
     private void Start()
     {
         InputHandler.OnInputStop += CheckWord;
         InputTrigger.OnLetterEnter += HandleLetterEnter;
-        InputHandler.OnInputDrag += HandleDrag;
+        InputHandler.OnTriggerMove += HandleTriggerMove;
         InputHandler.OnLetterDeselect += HandleLetterDeselect;
-        // WordFX.OnAnimDone += CheckIfLevelDone;
+
 
 
         _audio = AudioManager.Instance;
-        _inputHandler.SetLetterUnits(_tryWordLetterUnits);
-        NavigationRow.OnBackBtnClicked += HandleBackBtn;
+        // _inputHandler.SetLetterUnits(_tryWordLetterUnits);
         _shouldCheckForFinish = true;
 
+        LevelView.OnGameViewToggle += HideGameObjects;
+        LevelView.OnBackClicked += HandleBackClick;
+        AbilityLogic.OnFreezeRequested += FreezeTimer;
+        LevelView.OnSettingsClicked += HandleSettingsClick;
+        PlateView.OnCloseClicked += HandleCloseClicked;
+        ShopView.OnShopClicked += HandleShopClick;
+        LevelView.OnPauseNeeded += HandlePauseNeeded;
+
+    }
+
+    private void HandlePauseNeeded(bool obj)
+    {
+        if (obj) PauseTimer();
+        else ContinueTimer();
+    }
+
+    private void HandleShopClick(bool obj)
+    {
+        if (obj) PauseTimer();
+        else ContinueTimer();
+    }
+
+    private void HandleCloseClicked()
+    {
+        ContinueTimer();
+    }
+
+    private void HandleSettingsClick()
+    {
+        Session.IsSelecting = false;
+        PauseTimer();
+        _levelView.ShowSettings();
+    }
+
+    private void FreezeTimer()
+    {
+        StartCoroutine(FreezingTimer());
+    }
+
+    private IEnumerator FreezingTimer()
+    {
+        PauseTimer();
+        yield return new WaitForSeconds(_pauseTimerDelay);
+        AudioManager.Instance.PlaySound(Sound.TimerContinue);
+        _levelView.BlinkTimer();
+        yield return new WaitUntil(() => !_levelView.IsBlinking);
+
+        ContinueTimer();
+    }
+    private void PauseTimer()
+    {
+        _isTimerRunning = false;
+    }
+
+    private void ContinueTimer()
+    {
+        _isTimerRunning = true;
+    }
+
+    public void HideGameObjects(bool isVisible)
+    {
+        _canvas.sortingOrder = isVisible ? 0 : 999;
     }
 
     private void OnDestroy()
     {
         InputHandler.OnInputStop -= CheckWord;
         InputTrigger.OnLetterEnter -= HandleLetterEnter;
-        InputHandler.OnInputDrag -= HandleDrag;
+        InputHandler.OnTriggerMove -= HandleTriggerMove;
         InputHandler.OnLetterDeselect -= HandleLetterDeselect;
-        //  WordFX.OnAnimDone -= CheckIfLevelDone;
-        NavigationRow.OnBackBtnClicked -= HandleBackBtn;
+        LevelView.OnGameViewToggle -= HideGameObjects;
+        AbilityLogic.OnFreezeRequested -= FreezeTimer;
+        LevelView.OnSettingsClicked -= HandleSettingsClick;
+        ShopView.OnShopClicked -= HandleShopClick;
+        LevelView.OnPauseNeeded -= HandlePauseNeeded;
+
     }
 
 
     [ContextMenu("Check if level done")]
-    private void IsLevelDone()
+    private void CheckFinishCondition()
     {
-#if UNITY_EDITOR
-        if (!_canContinue) return;
-#endif
         if (!_shouldCheckForFinish) return;
         if (_words.Count == 0)
+            FinishLevel();
+        else if (!Session.IsClassicGame)
         {
-            Debug.Log($"No words");
-
-            StartCoroutine(LevelDoneCoroutine());
+            SetTimeWord();
+            ResetTimer();
+            if (!_isTimerRunning)
+                return;
+            StopTimer();
+            StartTimer();
         }
     }
 
-    [ContextMenu("Log words left")]
-    private void LogWordsLeft()
+
+    private async void FinishLevel()
     {
-        Debug.Log($"words left: {_words.Count}");
+        Session.IsSelecting = false;
+        var episode = GameDataService.GameData.Episode;
+        var totalEpisodes = GameDataService.GameData.TotalEpisodes;
+
+#if UNITY_EDITOR
+        if (_useTestData)
+        {
+            episode = _editorEpisode;
+            totalEpisodes = _editorTotalEpisodes;
+        }
+#endif
+        var isStageCompleted = episode == totalEpisodes;
+        HideGameObjects(false);
+        await _levelView.ShowFinishView(episode, totalEpisodes);
+
+        if (isStageCompleted)
+        {
+            var stampPic = MenuController.GetTexture(episode + 1);
+           await _levelView.ShowStageFinish(_prizeAmount, stampPic);
+            AudioManager.Instance.PlaySound(Sound.StageCompleted);
+            Balance.AddBalance(_prizeAmount);
+            _winFX.Play();
+
+        }
+
+        _levelView.ShowNextLvlBtn();
+
+        _shouldCheckForFinish = false;
+
+
+        if (!Session.IsClassicGame)
+            StopTimer();
+
     }
 
-    private IEnumerator LevelDoneCoroutine()
+    [ContextMenu("Finish Level")]
+    private void FinishLevelImmediate()
     {
-        Debug.Log($"waiting until all particles are done, active particles: {ParticleProvider.IsAnimating}");
-        //yield return new WaitUntil(() => !ParticleProvider.IsAnimating);
-        yield return new WaitForSeconds(1);
-        _levelView.ShowFinishView();
-        _shouldCheckForFinish = false;
+        FinishLevel();
     }
+
 
     private void OnApplicationPause(bool pause)
     {
-
         SaveState();
     }
 
-    private void HandleBackBtn()
+    private void HandleBackClick()
     {
-        SaveState();
-        SceneManager.LoadScene(_menuScene, LoadSceneMode.Single);
+        AudioManager.Instance.PlaySound(Sound.Click);
+
+        var isShopOpen = _levelView.HideShopView();
+        if (isShopOpen)
+        {
+            Session.IsSelecting = true;
+            HideGameObjects(true);
+        }
+        else
+        {
+            var adsController = AdsController.Instance;
+            adsController.RemoveBanner();
+            LevelStateService.SaveState();
+            SceneManager.LoadScene(0);
+        }
     }
 
-    [ContextMenu("Save State")]
+
+
+
     private void SaveState()
     {
-        LevelStateService.SaveState();
+        if (Session.IsClassicGame)
+            LevelStateService.SaveState();
     }
 
-    private void HandleLetterDeselect(LetterUnit letter)
+    private void HandleLetterDeselect(LetterUnit letter, Vector2 triggerPos)
     {
-        Debug.Log($"letter is null : {letter == null}");
-        Debug.Log($"Level Logic handle letter deselecte");
-        Debug.Log($"letter deselect: {letter.Letter}");
+        //        Debug.Log($"Handle letter deselect: {letter.Letter}");
+        //Debug.Log($"letter is null : {letter == null}");
+        // Debug.Log($"Level Logic handle letter deselecte");
+        //  Debug.Log($"letter deselect: {letter.Letter}");
         _tryWordLetterUnits.Remove(letter);
         _tryWord = _tryWord.Substring(0, _tryWord.Length - 1);
         // Debug.Log($"tryWord deselect letter: {_tryWord}");
-        Debug.Log($"Letter deselect: {letter.Letter}");
+        //Debug.Log($"Letter deselect: {letter.Letter}");
         _levelView.RemoveLetter(letter.Letter);
         _audio.PlayLetter(_tryWordLetterUnits.Count);
-        _lineProvider.RemovePoint();
+        _lineProvider.RemovePoint(_tryWordLetterUnits.Count, triggerPos);
         letter.AnimateSelection(false);
     }
 
 
-    private void HandleDrag(Vector2 point)
+    private void HandleTriggerMove(Vector2 touchPos, Direction direction)
     {
-        _lineProvider.Draw(point);
+        if (_tryWordLetterUnits.Count == 0) return;
+        var lastLetter = _tryWordLetterUnits[^1];
+        _lineProvider.Draw(touchPos, direction, lastLetter.transform.position, _tryWordLetterUnits.Count);
     }
 
     private void CheckWord()
     {
         if (_tryWord.Length == 0) return;
 
-        var isWord = _words.Contains(_tryWord);
+        var isWord = Session.IsClassicGame ? _words.Contains(_tryWord) : _tryWord == _targetWord;
+
         _lineProvider.FinishDraw(isWord, _tryWordLetterUnits);
         var sound = isWord ? Sound.WordFound : Sound.WrongWord;
 
@@ -147,9 +270,12 @@ public class LevelLogic : MonoBehaviour
         _isFirstLetter = true;
         if (isWord)
         {
-            LevelStateService.State.OpenLetters.Add(_tryWordLetterUnits[0].Point);
             RemoveWord();
-            LevelStateService.State.FirstLetters.Remove(_tryWordLetterUnits[0].Point);
+            if (Session.IsClassicGame)
+            {
+                LevelStateService.State.OpenLetters.Add(_tryWordLetterUnits[0].Point);
+                LevelStateService.State.FirstLetters.Remove(_tryWordLetterUnits[0].Point);
+            }
         }
         else
             foreach (var letter in _tryWordLetterUnits)
@@ -179,22 +305,30 @@ public class LevelLogic : MonoBehaviour
     {
         _levelView.HideWord(_tryWord);
         _words.Remove(_tryWord);
-        WordListUpdated?.Invoke(_words.Count);
-
+        UpdateLightingAbility();
 
         foreach (var letter in _tryWordLetterUnits)
             letter.Disable();
 
-        OnWordFound?.Invoke(_tryWordLetterUnits.Select(x => x.Point).ToList());
         var linePositions = new List<Vector2>() { _tryWordLetterUnits[0].transform.position, _tryWordLetterUnits[^1].transform.position };
 
         var lineState = new LineState(linePositions, _tryWordLetterUnits[0].GetColor());
         LevelStateService.AddFoundWord(_tryWord, _tryWordLetterUnits, lineState);
 
-        _levelView.AnimateWord(_tryWordLetterUnits);
-        ParticleProvider.IsAnimating = true;
-        IsLevelDone();
+        if (Session.IsClassicGame)
+        {
+            _levelView.AnimateWord(_tryWordLetterUnits);
+            ParticleProvider.IsAnimating = true;
+        }
 
+        CheckFinishCondition();
+
+    }
+
+    private void UpdateLightingAbility()
+    {
+        if (_words.Count < 3)
+            _levelView.DisableLighting();
     }
 
     [ContextMenu("Log First Active letters")]
@@ -240,28 +374,15 @@ public class LevelLogic : MonoBehaviour
         }
     }
 
-    [ContextMenu("Complete Level")]
-    private void CompleteLevel()
-    {
-        _words.Clear();
-        IsLevelDone();
-    }
-
-    [ContextMenu("set stage to 1")]
-    private void SetStageTo1()
-    {
-        Session.LastStage = 1;
-    }
-
     internal void SetData(LevelData levelData)
     {
+        HideGameObjects(true);
+        var gameData = GameDataService.GameData;
         _words = levelData.Words.ToList();
-        Stage = levelData.Stage;
-        Step = levelData.Step;
-        TotalSteps = levelData.TotalSteps;
+        // Stage = levelData.Stage;
+        //   Step = levelData.Step;
+        TotalSteps = gameData.TotalEpisodes;
         _shouldCheckForFinish = true;
-
-
 
     }
 
@@ -273,10 +394,77 @@ public class LevelLogic : MonoBehaviour
             _words.Remove(word);
         }
     }
-}
-public enum Direction
-{
-    Up, Down, Left, Right,
-    None,
-    Diagonal
+
+    public void SetTimeMode()
+    {
+        _levelView.SetTimeMode();
+        Session.IsSelecting = true;
+        SetTimeWord();
+        StartTimer();
+    }
+
+    private void SetTimeWord()
+    {
+        _targetWord = GetRandomWord();
+        _levelView.SetTimeWord(_targetWord);
+    }
+
+    private string GetRandomWord()
+    {
+        var rIndex = UnityEngine.Random.Range(0, _words.Count);
+        return _words[rIndex];
+    }
+
+    private void StartTimer()
+    {
+        ContinueTimer();
+        _timerCoroutine = StartCoroutine(TimerCoroutine());
+    }
+
+    private void StopTimer()
+    {
+        PauseTimer();
+        StopCoroutine(_timerCoroutine);
+        _timerCoroutine = null;
+    }
+
+    private IEnumerator TimerCoroutine()
+    {
+        _levelView.UpdateTimer(100);
+        _timeLeft = _msForWord;
+
+        while (true)
+        {
+            while (!_isTimerRunning)
+            {
+                yield return new WaitForEndOfFrame();
+            }
+
+            yield return new WaitForSeconds(_timerStep);
+            _timeLeft -= 1000 * _timerStep;
+            var percent = (_timeLeft / _msForWord) * 100;
+            _levelView.UpdateTimer(percent);
+            CheckTimeCondition(_timeLeft);
+
+        }
+    }
+
+    private void ResetTimer()
+    {
+        _timeLeft = _msForWord;
+        _levelView.UpdateTimer(100);
+    }
+
+    private void CheckTimeCondition(float timeLeft)
+    {
+        if (timeLeft <= 0)
+        {
+            _isTimerRunning = false;
+            _levelView.UpdateTimer(0);
+            StopTimer();
+            _levelView.ShowTimeOver();
+            Session.IsSelecting = false;
+            _lineProvider.FinishDraw(false);
+        }
+    }
 }

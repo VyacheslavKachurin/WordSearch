@@ -10,7 +10,7 @@ public static class Balance
     public static event Action<decimal> OnBalanceChanged;
 
     private const string BALANCE_KEY = "balance";
-    private const int STARTING_BALANCE = 10000;
+    private const int STARTING_BALANCE = 300;
     private static int _balance;
 
     private static readonly string PATH = Application.persistentDataPath + "/Balance.json";
@@ -51,7 +51,7 @@ public static class Balance
         }
     }
 
-    public static void AddBalance(double amount, int delay = 0)
+    public static void AddBalance(double amount)
     {
         Debug.Log($"Adding {amount}");
         // AnimateBalance((int)amount, delay);

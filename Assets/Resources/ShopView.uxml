@@ -1,60 +1,27 @@
 <engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/UI/ShopStyle.uss?fileID=7433441132597879392&amp;guid=191b440384a414d0a82cba9206ecf0b4&amp;type=3#ShopStyle" />
-    <engine:VisualElement name="shop-view" picking-mode="Ignore" class="view" style="flex-grow: 1; align-items: stretch; justify-content: center; background-image: none; display: flex;">
-        <engine:VisualElement name="shop-div" style="flex-grow: 0; align-items: center;">
-            <engine:VisualElement name="ads-div" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Sprites/ads-bg.png?fileID=2800000&amp;guid=7d9032c377a74428dbf7f28daa533318&amp;type=3#ads-bg&quot;); width: 964px; height: 417px; justify-content: space-evenly; margin-bottom: 72px;">
-                <engine:Label text="Enjoy the game &#10;without ads!" class="lbl-shadow" style="font-size: 54px;" />
-                <engine:VisualElement style="flex-grow: 0; align-items: center; justify-content: center; padding-bottom: 56px;">
-                    <engine:Button text="REMOVE ADS $5.99" name="no-ads-btn" style="background-image: url(&quot;project://database/Assets/Sprites/ad-btn.png?fileID=2800000&amp;guid=b4aa0edaf6dc245c7876a03656ce14e4&amp;type=3#ad-btn&quot;); width: 567px; height: 124px; color: rgb(255, 255, 255); font-size: 40px; -unity-font-style: bold;" />
+    <engine:VisualElement name="ShopView" style="flex-grow: 1; padding-top: 107px; display: flex;">
+        <engine:VisualElement name="noads-div" style="flex-grow: 0; align-items: center; justify-content: flex-start;">
+            <engine:VisualElement name="ads-bg" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/AdsBg.png?fileID=2800000&amp;guid=5e53ddac2fe5940d18afbffd430c3053&amp;type=3#AdsBg&quot;); width: 1082px; height: 655px; padding-top: 56px; padding-bottom: 57px;">
+                <engine:VisualElement name="leafs" style="flex-grow: 1; position: absolute; left: -2px; top: 3px; right: 3px; bottom: -2px;">
+                    <engine:VisualElement name="top-leaf" style="flex-grow: 1; position: absolute; background-image: url(&quot;project://database/Assets/Sprites/CIrcleTop.png?fileID=2800000&amp;guid=09e38aa5b74744084920ce0ff9e2c1c1&amp;type=3#CIrcleTop&quot;); width: 223px; height: 191px; right: 49px; top: 44px;" />
+                    <engine:VisualElement name="bottom-leaf" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Sprites/CircleLeaf.png?fileID=2800000&amp;guid=206810ec128294088b3eab86bf6c14af&amp;type=3#CircleLeaf&quot;); width: 153px; height: 134px; position: absolute; bottom: 42px; left: 19px;" />
+                </engine:VisualElement>
+                <engine:VisualElement name="ads-offer-div" style="flex-grow: 1; padding-top: 106px; height: 100%; margin-top: 0; margin-bottom: 0; margin-right: 53px; margin-left: 58px; display: flex; padding-bottom: 85px; align-items: center;">
+                    <engine:Label text="Enjoy the game" name="first-lbl" class="bold" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 50px;" />
+                    <engine:Label text="WITHOUT ADS" name="second-lbl" class="bold" style="margin-top: 12px; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 50px; color: rgb(255, 249, 7);" />
+                    <engine:VisualElement style="flex-grow: 1; align-items: center; justify-content: flex-end;">
+                        <engine:Button text="Remove ads $5.99" name="remove-ads-btn" class="bold" style="background-image: url(&quot;project://database/Assets/Sprites/removeAdsBtn.png?fileID=2800000&amp;guid=cdcb1a0e125bd497e9ccae9ac4f45aff&amp;type=3#removeAdsBtn&quot;); width: 811px; height: 192px; color: rgb(53, 45, 77); font-size: 58px;" />
+                    </engine:VisualElement>
+                </engine:VisualElement>
+                <engine:VisualElement name="ads-removed-div" class="bold" style="flex-grow: 1; justify-content: space-evenly; display: none;">
+                    <engine:Label text="HOORAY!" name="hooray-lbl" style="color: rgb(255, 249, 7); font-size: 50px;" />
+                    <engine:Label text="Ads are already disabled!" name="ads-already-lbl" style="font-size: 50px;" />
                 </engine:VisualElement>
             </engine:VisualElement>
-            <engine:VisualElement name="list" style="flex-grow: 1;">
-                <engine:Button name="shop-item" class="shop-item">
-                    <engine:VisualElement style="flex-grow: 1; justify-content: center; flex-direction: row;">
-                        <engine:Label text="250" name="coins-amount-lbl" class="lbl-shadow" />
-                        <engine:VisualElement name="coin" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/coin-big.png?fileID=2800000&amp;guid=35d1d1e52133544ccbac3d76c6cca714&amp;type=3#coin-big&quot;); width: 51px; height: 54px;" />
-                    </engine:VisualElement>
-                    <engine:VisualElement style="flex-grow: 1; justify-content: center;">
-                        <engine:Label text="$0.99" name="coins-price-lbl" class="lbl-shadow" />
-                    </engine:VisualElement>
-                </engine:Button>
-                <engine:Button name="shop-item" class="shop-item">
-                    <engine:VisualElement style="flex-grow: 1; justify-content: center; flex-direction: row;">
-                        <engine:Label text="750" name="coins-amount-lbl" class="lbl-shadow" />
-                        <engine:VisualElement name="coin" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/coin-big.png?fileID=2800000&amp;guid=35d1d1e52133544ccbac3d76c6cca714&amp;type=3#coin-big&quot;); width: 51px; height: 54px;" />
-                    </engine:VisualElement>
-                    <engine:VisualElement style="flex-grow: 1; justify-content: center;">
-                        <engine:Label text="$2.99" name="coins-price-lbl" class="lbl-shadow" />
-                    </engine:VisualElement>
-                </engine:Button>
-                <engine:Button name="shop-item" class="shop-item">
-                    <engine:VisualElement style="flex-grow: 1; justify-content: center; flex-direction: row;">
-                        <engine:Label text="1600" name="coins-amount-lbl" class="lbl-shadow" />
-                        <engine:VisualElement name="coin" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/coin-big.png?fileID=2800000&amp;guid=35d1d1e52133544ccbac3d76c6cca714&amp;type=3#coin-big&quot;); width: 51px; height: 54px;" />
-                    </engine:VisualElement>
-                    <engine:VisualElement style="flex-grow: 1; justify-content: center;">
-                        <engine:Label text="$4.99" name="coins-price-lbl" class="lbl-shadow" />
-                    </engine:VisualElement>
-                </engine:Button>
-                <engine:Button name="shop-item" class="shop-item">
-                    <engine:VisualElement style="flex-grow: 1; justify-content: center; flex-direction: row;">
-                        <engine:Label text="3600" name="coins-amount-lbl" class="lbl-shadow" />
-                        <engine:VisualElement name="coin" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/coin-big.png?fileID=2800000&amp;guid=35d1d1e52133544ccbac3d76c6cca714&amp;type=3#coin-big&quot;); width: 51px; height: 54px;" />
-                    </engine:VisualElement>
-                    <engine:VisualElement style="flex-grow: 1; justify-content: center;">
-                        <engine:Label text="$9.99" name="coins-price-lbl" class="lbl-shadow" />
-                    </engine:VisualElement>
-                </engine:Button>
-                <engine:Button name="shop-item" class="shop-item">
-                    <engine:VisualElement style="flex-grow: 1; justify-content: center; flex-direction: row;">
-                        <engine:Label text="8000" name="coins-amount-lbl" class="lbl-shadow" />
-                        <engine:VisualElement name="coin" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/coin-big.png?fileID=2800000&amp;guid=35d1d1e52133544ccbac3d76c6cca714&amp;type=3#coin-big&quot;); width: 51px; height: 54px;" />
-                    </engine:VisualElement>
-                    <engine:VisualElement style="flex-grow: 1; justify-content: center;">
-                        <engine:Label text="$19.99" name="coins-price-lbl" class="lbl-shadow" />
-                    </engine:VisualElement>
-                </engine:Button>
-            </engine:VisualElement>
         </engine:VisualElement>
+        <engine:VisualElement style="flex-grow: 0; align-items: center; justify-content: center; padding-bottom: 0;">
+            <engine:Button text="Restore purchases" name="restore-purchase-btn" class="bold" style="background-image: url(&quot;project://database/Assets/Sprites/removeAdsBtn.png?fileID=2800000&amp;guid=cdcb1a0e125bd497e9ccae9ac4f45aff&amp;type=3#removeAdsBtn&quot;); width: 811px; height: 192px; color: rgb(53, 45, 77); font-size: 58px;" />
+        </engine:VisualElement>
+        <engine:VisualElement name="items-div" style="flex-grow: 1; padding-top: 50px; align-items: center;" />
     </engine:VisualElement>
 </engine:UXML>

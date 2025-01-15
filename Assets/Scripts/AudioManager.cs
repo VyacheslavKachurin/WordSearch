@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
@@ -21,10 +23,15 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip _windOpenSound;
     [SerializeField] private AudioClip _windCloseSound;
     [SerializeField] private AudioClip _stageCompleted;
+    [SerializeField] private AudioClip _tickSound;
+    [SerializeField] private AudioClip _freezeSound;
 
 
     private Dictionary<Sound, AudioClip> _audioClips;
     [SerializeField] private List<AudioClip> _letters;
+    [SerializeField] private Transform _sourceParent;
+
+    private List<AudioSource> _audioSources;
 
 
     private void Awake()
@@ -35,12 +42,20 @@ public class AudioManager : MonoBehaviour
         }
         else
         {
-            Instance = this;
+            Init();
+        }
 
-            // _audioSource = GetComponent<AudioSource>();
-            DontDestroyOnLoad(this);
+        Session.OnMusicChange += HandleMusicChange;
 
-            _audioClips = new Dictionary<Sound, AudioClip>(){
+    }
+
+    private void Init()
+    {
+        Instance = this;
+
+        DontDestroyOnLoad(this);
+
+        _audioClips = new Dictionary<Sound, AudioClip>(){
         {Sound.Click, _btnClick},
         {Sound.Lamp, _lampSound},
         {Sound.Light, _lightingSound},
@@ -50,14 +65,15 @@ public class AudioManager : MonoBehaviour
         {Sound.Coins, _coinsSound},
         {Sound.WindOpen, _windOpenSound},
         {Sound.WindClose, _windCloseSound},
-        {Sound.StageCompleted, _stageCompleted}
+        {Sound.StageCompleted, _stageCompleted},
+        {Sound.TimerContinue, _tickSound},
+        {Sound.Freeze, _freezeSound}
     };
-            PlayTheme();
-        }
+        PlayTheme();
 
-        Session.OnMusicChange += HandleMusicChange;
-
-
+        _audioSources = new List<AudioSource>(_sourceParent.GetComponents<AudioSource>());
+        foreach (var source in _audioSources)
+            source.volume = 0.1f;
     }
 
 
@@ -94,14 +110,30 @@ public class AudioManager : MonoBehaviour
             pitch = _letters.Count - 1;
         }
 
+        var source = _audioSources.Where(x => !x.isPlaying).FirstOrDefault();
+
         var clip = _letters[pitch];
-        _soundsSource.PlayOneShot(clip, 10);
+
+        if (source == null)
+        {
+
+            var newSource = _sourceParent.AddComponent<AudioSource>();
+            newSource.volume = 0.1f;
+            _audioSources.Add(newSource);
+            source = newSource;
+        }
+
+        source.PlayOneShot(clip, 10);
     }
 
     public void PlaySound(Sound sound)
     {
         if (!Session.IsSoundOn) return;
-        _soundsSource.PlayOneShot(_audioClips[sound], 10);
+        try
+        {
+            _soundsSource.PlayOneShot(_audioClips[sound], 10);
+        }
+        catch (Exception e) { Debug.LogError(e); }
     }
 }
 
@@ -116,5 +148,7 @@ public enum Sound
     Coins,
     WindOpen,
     WindClose,
-    StageCompleted
+    StageCompleted,
+    Freeze,
+    TimerContinue
 }

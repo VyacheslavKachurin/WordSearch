@@ -1,7 +1,9 @@
 <engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/CoinsAnim.uss?fileID=7433441132597879392&amp;guid=8ca0395acf16643cfaf2295e1f1a7b10&amp;type=3#CoinsAnim" />
     <engine:VisualElement name="coins-anim-div" picking-mode="Ignore" class="coins-anim" style="flex-grow: 1; position: absolute; flex-direction: row; justify-content: center; align-items: center;">
-        <engine:Label text="+20" name="coins-anim-lbl" picking-mode="Ignore" style="font-size: 90px; -unity-font-style: bold;" />
-        <engine:VisualElement style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Sprites/coin-big.png?fileID=2800000&amp;guid=35d1d1e52133544ccbac3d76c6cca714&amp;type=3#coin-big&quot;); width: 87px; height: 92px;" />
+        <engine:VisualElement style="flex-grow: 1; flex-direction: row; align-items: center; background-image: url(&quot;project://database/Assets/Sprites/CoinsGroupBg.png?fileID=2800000&amp;guid=aaa6fbb44f9f747a491c22ddc70e6d50&amp;type=3#CoinsGroupBg&quot;); height: 214px; flex-shrink: 0;">
+            <engine:VisualElement name="coins-group" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/CoinsGroup.png?fileID=2800000&amp;guid=35d38b26956984298bd731fa84294f4a&amp;type=3#CoinsGroup&quot;); width: 260px; height: 250px; margin-right: 37px; left: -76px; flex-shrink: 0;" />
+            <engine:Label text="+100" name="coins-anim-lbl" picking-mode="Ignore" class="bold" style="font-size: 98px; -unity-font-style: bold; color: rgb(53, 45, 77); right: 78px;" />
+        </engine:VisualElement>
     </engine:VisualElement>
 </engine:UXML>

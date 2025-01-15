@@ -1,7 +1,7 @@
 .control-btn {
     background-image: url("project://database/Assets/Sprites/BtnBg.png?fileID=2800000&guid=bff1437c7d2614ae68bd202d5aa43745&type=3#BtnBg");
-    width: 176px;
-    height: 178px;
+    width: 180px;
+    height: 180px;
 }
 
 .control-price {
@@ -15,37 +15,43 @@
     padding-bottom: 0;
     padding-left: 0;
     -unity-font-style: bold;
-    color: rgb(72, 98, 0);
+    color: rgb(40, 30, 62);
     -unity-font-definition: url("project://database/Assets/Fonts/helvetica-neue-5/HelveticaNeueRoman%20SDF.asset?fileID=11400000&guid=2a99dce4bc3f4406ba2276ce36b97de6&type=2#HelveticaNeueRoman SDF");
 }
 
 .lighting-icon {
     flex-grow: 0;
-    background-image: url("project://database/Assets/Sprites/AbilityIcons/LightingIcon.png?fileID=2800000&guid=5d57e9c66a2584f27855ddb65a8c33cc&type=3#LightingIcon");
+    background-image: url("project://database/Assets/Sprites/AbilityIconsNew/Lighting.png?fileID=2800000&guid=268fb3909b9404d069dad2c83a072a9a&type=3#Lighting");
     width: 80px;
     height: 88px;
 }
 
 .hint-icon {
-    background-image: url("project://database/Assets/Sprites/AbilityIcons/HintIcon.png?fileID=2800000&guid=b5294510466134b2ba769cd5d9f72729&type=3#HintIcon");
+    background-image: url("project://database/Assets/Sprites/AbilityIconsNew/Hint.png?fileID=2800000&guid=04858e7e02c2e4935923eac4b1f12b99&type=3#Hint");
     width: 93px;
     height: 93px;
 }
 
 .magnet-icon {
-    background-image: url("project://database/Assets/Sprites/AbilityIcons/MagnetIcon.png?fileID=2800000&guid=29a20c7e92f24476ca2f69f77ef97821&type=3#MagnetIcon");
+    background-image: url("project://database/Assets/Sprites/AbilityIconsNew/Magnet.png?fileID=2800000&guid=620b02b13085a4e989fdf5972f125f7f&type=3#Magnet");
     width: 97px;
     height: 97px;
 }
 
 .firework-icon {
-    background-image: url("project://database/Assets/Sprites/AbilityIcons/FireworkIcon.png?fileID=2800000&guid=9a8ea3648c80b4d67abfb33c6230a655&type=3#FireworkIcon");
+    background-image: url("project://database/Assets/Sprites/AbilityIconsNew/Firework.png?fileID=2800000&guid=773129a05d9104429aea7c3483f8f9d8&type=3#Firework");
     width: 102px;
     height: 100px;
 }
 
 .ads-icon {
-    background-image: url("project://database/Assets/Sprites/AbilityIcons/AdsIcon.png?fileID=2800000&guid=3d47fa2c383a34c5c8587dd037504a8b&type=3#AdsIcon");
+    background-image: none;
     width: 103px;
     height: 111px;
+}
+
+.freeze-icon {
+    background-image: url("project://database/Assets/Sprites/FreezeIcon.png?fileID=2800000&guid=aacad3be40bd647af8ed18290fcf2a4b&type=3#FreezeIcon");
+    width: 90px;
+    height: 90px;
 }

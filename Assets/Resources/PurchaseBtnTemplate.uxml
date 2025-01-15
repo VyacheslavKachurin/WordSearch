@@ -1,0 +1,11 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <engine:Button name="purchase-btn" style="background-image: url(&quot;project://database/Assets/Sprites/PurchaseBtnBg.png?fileID=2800000&amp;guid=ff8232122024b4ae4b271dc28f6b2ab4&amp;type=3#PurchaseBtnBg&quot;); width: 811px; height: 192px; flex-direction: row; margin-top: 0; margin-right: 0; margin-bottom: 18px; margin-left: 0; padding-left: 71px; align-items: center; padding-right: 55px; background-color: rgba(188, 188, 188, 0);">
+        <engine:VisualElement name="coin" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/coin-big.png?fileID=2800000&amp;guid=35d1d1e52133544ccbac3d76c6cca714&amp;type=3#coin-big&quot;); width: 73px; height: 76px;" />
+        <engine:VisualElement name="lbl-div" style="flex-grow: 1; padding-left: 23px; align-items: flex-start;">
+            <engine:Label text="250" name="coins-lbl" class="bold lbl-shadow" style="color: rgb(255, 255, 255); font-size: 56px;" />
+        </engine:VisualElement>
+        <engine:VisualElement name="price-div" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/PriceBg.png?fileID=2800000&amp;guid=693c4e70a3f8e4886a71d93f5b482499&amp;type=3#PriceBg&quot;); width: 300px; height: 110px; justify-content: center; align-items: center; color: rgb(53, 45, 77); font-size: 57px; flex-shrink: 0;">
+            <engine:Label text="1" name="price-lbl" enable-rich-text="true" class="bold" style="color: rgb(53, 45, 77); flex-shrink: 1;" />
+        </engine:VisualElement>
+    </engine:Button>
+</engine:UXML>

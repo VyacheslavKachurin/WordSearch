@@ -1,16 +1,53 @@
 using System;
+using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Networking;
+
+
+
 
 public class Services : MonoBehaviour
 {
-    
-    private IAPManager _iAPManager;
+
+    // private IAPManager _iAPManager;
+    public static Services Instance;
 
     private void Awake()
     {
-        InitPurchases();
+        Instance = this;
+        // InitPurchases();
+    }
 
+
+    public static void IsNetworkAvailable(Action<bool> syncResult)
+    {
+        var result = false;
+        Instance.StartCoroutine(CheckInternetConnection((r) =>
+        {
+            result = r;
+            syncResult(result);
+        }
+        ));
+
+
+    }
+
+
+    public static IEnumerator CheckInternetConnection(Action<bool> syncResult)
+    {
+        const string echoServer = "https://google.com";
+
+        bool result;
+        using (var request = UnityWebRequest.Get(echoServer))
+        {
+
+            request.timeout = 3;
+            yield return request.SendWebRequest();
+            //  result = !request.isNetworkError && !request.isHttpError && request.responseCode == 200;
+            result = request.result == UnityWebRequest.Result.Success;
+        }
+        syncResult(result);
     }
 
     [ContextMenu("Delete State")]
@@ -19,47 +56,60 @@ public class Services : MonoBehaviour
         LevelStateService.DeleteState();
     }
 
-    [ContextMenu("Init Purchases")]
-    public async void InitPurchases()
-    {
-        await InitUGS();
-        InitIAPManager();
-        LogStoreItems();
+    //[ContextMenu("Init Purchases")]
+    // public async void InitPurchases()
+    //   {
+    //  await InitUGS();
+    //    InitIAPManager();
+    //  LogStoreItems();
+    /*
+            ShopView.OnPurchaseInit += BuyCoins;
+            ShopView.OnRemoveAdsClicked += RemoveAds;
+            ShopView.OnRestoreClicked += RestorePurchases;
+            */
+    //  }
 
+    /*
+        [ContextMenu("Log Store Items")]
+        private void LogStoreItems()
+        {
+            _iAPManager.LogStoreItems();
+        }
+        */
 
-        ShopView.OnPurchaseInit += BuyCoins;
-        ShopView.OnRemoveAdsClicked += RemoveAds;
-    }
-
-    [ContextMenu("Log Store Items")]
-    private void LogStoreItems()
-    {
-        //_iAPManager.LogStoreItems();
-    }
-
-    [ContextMenu("Buy Coins")]
-    private void BuyCoins(int i)
-    {
-        _iAPManager.BuyCoins(i);
-    }
+    /*
+        [ContextMenu("Buy Coins")]
+        private void BuyCoins(int i)
+        {
+            _iAPManager.BuyCoins(i);
+        }
+        */
 
     private void OnDestroy()
     {
+        /*
         ShopView.OnPurchaseInit -= BuyCoins;
         ShopView.OnRemoveAdsClicked -= RemoveAds;
+        ShopView.OnRestoreClicked -= RestorePurchases;
+        */
+        Instance = null;
 
     }
 
-    private void RemoveAds()
-    {
-        Debug.Log($"Remove Ads");
-        _iAPManager.RemoveAds();
-    }
+    /*
+        private void RemoveAds()
+        {
+            Debug.Log($"Remove Ads");
+            _iAPManager.RemoveAds();
+        }
+        */
 
-    private void InitIAPManager()
-    {
-        _iAPManager = new IAPManager();
-    }
+    /*
+        private void InitIAPManager()
+        {
+            _iAPManager = new IAPManager();
+        }
+        */
 
     [ContextMenu("Remove ads purchase")]
     public void RemoveAdsPurchase()
@@ -70,7 +120,7 @@ public class Services : MonoBehaviour
     [ContextMenu("Clear Level Progress")]
     public void ClearLevelProgress()
     {
-        Session.SetLastLevel(1);
+        // Session.SetLastLevel(1);
     }
 
     [ContextMenu("Clear coins data")]
@@ -86,9 +136,16 @@ public class Services : MonoBehaviour
         ClearCoinsData();
         RemoveAdsPurchase();
         ClearGiftData();
-        Session.LastStage = 1;
-        Session.SetLastLevel(1);
+        // Session.LastStage = 1;
+        // Session.SetLastLevel(1);
         DeleteState();
+        GameDataService.ClearProgress();
+        GameDataService.DeleteGame();
+        Session.IsGameWon = false;
+        Session.IsFirstTime = true;
+        GameDataService.DeleteStampData();
+
+        
     }
 
     [ContextMenu("Clear Gift Data")]
@@ -98,8 +155,5 @@ public class Services : MonoBehaviour
     }
 
 
-    private async Task InitUGS()
-    {
-        await UGS.Init();
-    }
+
 }

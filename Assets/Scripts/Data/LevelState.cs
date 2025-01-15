@@ -1,4 +1,5 @@
 
+using System;
 using System.Collections.Generic;
 using UnityEngine.Scripting;
 
@@ -20,8 +21,10 @@ public class LevelState
     [Preserve]
     public List<Point> OpenLetters;
     [Preserve]
+    public List<Point> RevealedFakeLetters;
+    [Preserve]
 
-    public LevelState(bool fakeLettersRemoved, List<Point> firstLetters, List<string> foundWords, List<Point> foundLetters, List<LineState> lines, List<Point> openLetters)
+    public LevelState(bool fakeLettersRemoved, List<Point> firstLetters, List<string> foundWords, List<Point> foundLetters, List<LineState> lines, List<Point> openLetters, int level)
     {
         FakeLettersRemoved = fakeLettersRemoved;
         FirstLetters = firstLetters;
@@ -29,5 +32,7 @@ public class LevelState
         FoundLetters = foundLetters;
         Lines = lines;
         OpenLetters = openLetters;
+        Level = level;
     }
+
 }

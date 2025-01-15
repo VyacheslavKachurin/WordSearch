@@ -1,37 +1,48 @@
 <engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/PlateStyle.uss?fileID=7433441132597879392&amp;guid=87df5c771a2554c3ba91fb1139b75ab1&amp;type=3#PlateStyle" />
     <Style src="project://database/Assets/UI/GameStyle.uss?fileID=7433441132597879392&amp;guid=52f028e2a9bbb43c6985398e87d12d27&amp;type=3#GameStyle" />
-    <FadePanel picking-mode="Ignore" class="view" style="justify-content: center;" />
-    <engine:VisualElement name="main" picking-mode="Ignore" style="flex-grow: 1; align-items: center; justify-content: center;">
-        <engine:VisualElement name="ads-plate" class="plate plate-show-off" style="flex-grow: 0; align-items: center; justify-content: center; display: none;">
-            <engine:Label text="GET COINS FOR FREE" name="title" style="font-size: 50px; -unity-font-style: bold;" />
-            <engine:VisualElement style="flex-grow: 0; flex-direction: row; justify-content: center; align-items: center;">
-                <engine:Label text="+25" name="coins-offer-lbl" style="font-size: 50px; -unity-font-style: bold;" />
-                <engine:VisualElement name="coin" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/coin-big.png?fileID=2800000&amp;guid=35d1d1e52133544ccbac3d76c6cca714&amp;type=3#coin-big&quot;); flex-shrink: 0; width: 87px; height: 92px; margin-left: 16px;" />
-            </engine:VisualElement>
-            <engine:Button name="watch-ad-btn" text="WATCH VIDEO" icon-image="project://database/Assets/Sprites/ad-icon.png?fileID=2800000&amp;guid=611019146661f4351a59a304d99b0a23&amp;type=3#ad-icon" style="background-image: url(&quot;project://database/Assets/Sprites/ad-btn.png?fileID=2800000&amp;guid=b4aa0edaf6dc245c7876a03656ce14e4&amp;type=3#ad-btn&quot;); width: 567px; height: 125px; font-size: 44px; -unity-font-style: bold; color: rgb(255, 255, 255); justify-content: space-evenly; margin-top: 20px;" />
-            <engine:Button name="close-btn" class="close-btn" />
+    <engine:VisualElement name="plate" class="plate plate-show" style="flex-grow: 0; align-items: center; justify-content: space-evenly; display: flex; background-image: url(&quot;project://database/Assets/Sprites/SettingsPlate.png?fileID=2800000&amp;guid=685f6a4f2c51e4888bbcdd59ea136496&amp;type=3#SettingsPlate&quot;); width: 1079px; padding-left: 62px; padding-right: 62px; padding-top: 80px; padding-bottom: 80px; font-size: 60px; -unity-font-style: normal; flex-shrink: 0;">
+        <engine:VisualElement name="controls-div" style="flex-grow: 1; position: absolute; flex-shrink: 0; top: 0; left: 0; right: 0; bottom: 0; display: flex;">
+            <engine:VisualElement name="leaf" style="flex-grow: 1; position: absolute; background-image: url(&quot;project://database/Assets/Sprites/CircleLeaf.png?fileID=2800000&amp;guid=206810ec128294088b3eab86bf6c14af&amp;type=3#CircleLeaf&quot;); width: 153px; height: 134px; left: 37px; bottom: 48px;" />
+            <engine:VisualElement name="top-leaf" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/CIrcleTop.png?fileID=2800000&amp;guid=09e38aa5b74744084920ce0ff9e2c1c1&amp;type=3#CIrcleTop&quot;); position: absolute; width: 291px; height: 276px; right: 44px; top: 36px;" />
         </engine:VisualElement>
-        <engine:VisualElement name="settings-plate" class="plate" style="flex-grow: 0; align-items: stretch; justify-content: center; display: none;">
-            <engine:VisualElement name="row" style="flex-grow: 0; flex-direction: row; padding-left: 103px; padding-right: 187px; align-items: center; justify-content: space-between; margin-bottom: 30px;">
-                <engine:VisualElement name="icon" class="icon" style="flex-grow: 0;" />
+        <engine:VisualElement name="settings-div" style="flex-grow: 1; justify-content: space-evenly; display: none; flex-shrink: 0; padding-top: 100px; padding-bottom: 100px;">
+            <engine:VisualElement name="row" style="flex-grow: 0; flex-direction: row; padding-left: 103px; padding-right: 187px; align-items: center; justify-content: space-between; margin-bottom: 111px;">
+                <engine:VisualElement name="icon" class="icon" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/MusicIcon.png?fileID=2800000&amp;guid=3e88b35700c0a439496da25e6b2d34b5&amp;type=3#MusicIcon&quot;); width: 71px; height: 80px;" />
                 <engine:VisualElement name="lbl-div" class="lbl-div" style="flex-grow: 1;">
-                    <engine:Label text="Music" class="lbl" style="color: rgb(0, 0, 0); -unity-font-style: normal;" />
+                    <engine:Label text="Music" emoji-fallback-support="false" />
                 </engine:VisualElement>
                 <engine:VisualElement name="toggle-div" style="flex-grow: 0;">
                     <engine:Button name="music-btn" class="switch switch-on" />
                 </engine:VisualElement>
             </engine:VisualElement>
             <engine:VisualElement name="row" style="flex-grow: 0; flex-direction: row; padding-left: 103px; padding-right: 187px; align-items: center; justify-content: space-between;">
-                <engine:VisualElement name="icon" class="icon" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/Sounds-icon.png?fileID=2800000&amp;guid=9cb5fa3d17d8d4944bf62a61f8591036&amp;type=3#Sounds-icon&quot;);" />
+                <engine:VisualElement name="icon" class="icon" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/SoundIcon.png?fileID=2800000&amp;guid=799f4345f1e3144debf3020b415449b0&amp;type=3#SoundIcon&quot;); width: 81px; height: 65px;" />
                 <engine:VisualElement name="lbl-div" class="lbl-div" style="flex-grow: 1;">
-                    <engine:Label text="Sounds" class="lbl" style="color: rgb(0, 0, 0); -unity-font-style: normal;" />
+                    <engine:Label text="Sounds" style="color: rgb(255, 255, 255); -unity-font-style: normal;" />
                 </engine:VisualElement>
                 <engine:VisualElement name="toggle-div" style="flex-grow: 0;">
                     <engine:Button name="sound-btn" class="switch switch-on" />
                 </engine:VisualElement>
             </engine:VisualElement>
-            <engine:Button name="close-btn" class="close-btn" />
         </engine:VisualElement>
+        <engine:VisualElement name="ads-div" style="flex-grow: 1; align-items: center; justify-content: center; display: none; flex-shrink: 0; padding-bottom: 60px; padding-top: 71px;">
+            <engine:Label text="GET COINS" name="title-lbl" style="font-size: 50px;" />
+            <engine:Label text="FOR FREE" name="yellow-lbl" style="font-size: 50px; color: rgb(255, 249, 7);" />
+            <engine:VisualElement style="flex-grow: 0; flex-direction: row; justify-content: center; align-items: center;">
+                <engine:Label text="+25" name="coins-offer-lbl" style="font-size: 50px; -unity-font-style: bold;" />
+                <engine:VisualElement name="coin" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/coin-big.png?fileID=2800000&amp;guid=35d1d1e52133544ccbac3d76c6cca714&amp;type=3#coin-big&quot;); flex-shrink: 0; width: 87px; height: 92px; margin-left: 16px;" />
+            </engine:VisualElement>
+            <engine:VisualElement style="flex-grow: 1; padding-top: 42px; padding-bottom: 0;">
+                <engine:Button name="watch-ad-btn" text="WATCH VIDEO" icon-image="project://database/Assets/Sprites/AdsIcon.png?fileID=1126171706896849119&amp;guid=ff1510aa8de514a029c0a809eb4b7e39&amp;type=3#AdsIcon_0" class="bold" style="background-image: url(&quot;project://database/Assets/Sprites/AdsBtn.png?fileID=2800000&amp;guid=c7a95e5433fc342a78a926d8afa8b95b&amp;type=3#AdsBtn&quot;); width: 747px; height: 200px; font-size: 58px; color: rgb(54, 45, 77); justify-content: space-evenly;" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement name="timeout-div" style="flex-grow: 1; align-items: center; justify-content: center; display: none; flex-shrink: 0; padding-bottom: 60px; padding-top: 71px;">
+            <engine:Label text="OUT OF TIME" name="title-lbl" style="font-size: 50px;" />
+            <engine:VisualElement style="flex-grow: 1; padding-top: 42px; padding-bottom: 0;">
+                <engine:Button name="replay-btn" text="TRY AGAIN" class="bold" style="background-image: url(&quot;project://database/Assets/Sprites/AdsBtn.png?fileID=2800000&amp;guid=c7a95e5433fc342a78a926d8afa8b95b&amp;type=3#AdsBtn&quot;); width: 747px; height: 200px; font-size: 58px; color: rgb(54, 45, 77); justify-content: space-evenly;" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:Button name="close-btn" class="close-btn" style="top: 51px; left: 41px;" />
     </engine:VisualElement>
 </engine:UXML>

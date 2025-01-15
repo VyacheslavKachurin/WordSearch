@@ -1,0 +1,29 @@
+.caption-div {
+    flex-grow: 0;
+    padding-top: 38px;
+}
+
+.place-pic {
+    flex-grow: 0;
+    flex-shrink: 0;
+    width: 231px;
+    height: 501px;
+    background-image: resource('BG/1');
+    border-top-width: 6px;
+    border-right-width: 6px;
+    border-bottom-width: 6px;
+    border-left-width: 6px;
+    border-left-color: rgb(255, 255, 255);
+    border-right-color: rgb(255, 255, 255);
+    border-top-color: rgb(255, 255, 255);
+    border-bottom-color: rgb(255, 255, 255);
+    border-top-left-radius: 38px;
+    border-top-right-radius: 38px;
+    border-bottom-right-radius: 38px;
+    border-bottom-left-radius: 38px;
+}
+
+.place {
+    flex-grow: 0;
+    flex-shrink: 0;
+}
