@@ -2,7 +2,7 @@
     <Style src="project://database/Assets/UI/LevelStyle.uss?fileID=7433441132597879392&amp;guid=c74988ca9fc784d5c88d28cc551a0444&amp;type=3#LevelStyle" />
     <Style src="project://database/Assets/UI/GameStyle.uss?fileID=7433441132597879392&amp;guid=52f028e2a9bbb43c6985398e87d12d27&amp;type=3#GameStyle" />
     <Style src="project://database/Assets/UI/WordAnimation.uss?fileID=7433441132597879392&amp;guid=7bc8b23aea04943ef914a49fdff2d4d3&amp;type=3#WordAnimation" />
-    <engine:VisualElement name="top-row" style="flex-grow: 0; padding-top: 166px; flex-direction: row; justify-content: space-between; width: 100%; padding-left: 63px; padding-right: 66px; align-items: center; position: relative; flex-shrink: 0;">
+    <engine:VisualElement name="top-row" style="flex-grow: 0; padding-top: 166px; flex-direction: row; justify-content: space-between; width: 100%; padding-left: 63px; padding-right: 66px; align-items: center; position: relative; flex-shrink: 0; display: flex;">
         <engine:Button name="back-btn" style="background-image: url(&quot;project://database/Assets/Sprites/BackBtn.png?fileID=2800000&amp;guid=8ea480486dcfc4824a5b9bf4ff7fdbc3&amp;type=3#BackBtn&quot;); width: 81px; height: 97px;" />
         <engine:VisualElement name="level-div" style="flex-grow: 1; flex-shrink: 0; align-items: center;">
             <engine:VisualElement name="level-bg" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Sprites/LevelDivBg.png?fileID=2800000&amp;guid=d0505a9f353674b8999d319a881181a4&amp;type=3#LevelDivBg&quot;); width: 416px; height: 119px; align-items: center; justify-content: center;">
@@ -59,29 +59,46 @@
     <engine:VisualElement name="ref" picking-mode="Ignore" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/References/newGame.png?fileID=2800000&amp;guid=f6bb5852fe7c84ffea6605b3f08ee17e&amp;type=3#newGame&quot;); display: none; opacity: 0.21;" />
     <PlateView picking-mode="Ignore" name="PlateView" class="view" style="display: none;" />
     <engine:VisualElement name="finish-view" class="view finish-view" style="flex-grow: 1; align-items: center; justify-content: flex-start; display: none; position: relative; padding-top: 213px;">
-        <engine:VisualElement name="header-div" style="flex-grow: 0;">
-            <engine:VisualElement name="header" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/amazingBg.png?fileID=2800000&amp;guid=93f3db373fb824774bda0673f4829053&amp;type=3#amazingBg&quot;); width: 782px; border-top-left-radius: 25px; border-top-right-radius: 25px; border-bottom-right-radius: 25px; border-bottom-left-radius: 25px; align-items: center; justify-content: center; padding-top: 0; padding-bottom: 32px; height: 240px;">
-                <engine:Label text="Amazing!" class="lbl lbl-shadow" style="font-size: 64px; color: rgb(53, 35, 65);" />
-                <engine:VisualElement name="top-leaf" style="flex-grow: 1; position: absolute; right: -13px; top: -15px; background-image: url(&quot;project://database/Assets/Sprites/TopLeaf.png?fileID=2800000&amp;guid=586916e10ae814633b852bfff684425a&amp;type=3#TopLeaf&quot;); width: 291px; height: 174px;" />
-                <engine:VisualElement name="bottom-leaf" style="flex-grow: 0; position: absolute; background-image: url(&quot;project://database/Assets/Sprites/CircleLeaf.png?fileID=2800000&amp;guid=206810ec128294088b3eab86bf6c14af&amp;type=3#CircleLeaf&quot;); width: 152px; height: 134px; bottom: -30px; left: -45px;" />
+        <engine:VisualElement name="progress-div" class="div" style="flex-grow: 0; align-items: center; display: flex;">
+            <engine:VisualElement name="header-div" style="flex-grow: 0;">
+                <engine:VisualElement name="header" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/amazingBg.png?fileID=2800000&amp;guid=93f3db373fb824774bda0673f4829053&amp;type=3#amazingBg&quot;); width: 782px; border-top-left-radius: 25px; border-top-right-radius: 25px; border-bottom-right-radius: 25px; border-bottom-left-radius: 25px; align-items: center; justify-content: center; padding-top: 0; padding-bottom: 32px; height: 240px;">
+                    <engine:Label text="Amazing!" class="lbl lbl-shadow" style="font-size: 64px; color: rgb(53, 35, 65);" />
+                    <engine:VisualElement name="top-leaf" style="flex-grow: 1; position: absolute; right: -13px; top: -15px; background-image: url(&quot;project://database/Assets/Sprites/TopLeaf.png?fileID=2800000&amp;guid=586916e10ae814633b852bfff684425a&amp;type=3#TopLeaf&quot;); width: 291px; height: 174px;" />
+                    <engine:VisualElement name="bottom-leaf" style="flex-grow: 0; position: absolute; background-image: url(&quot;project://database/Assets/Sprites/CircleLeaf.png?fileID=2800000&amp;guid=206810ec128294088b3eab86bf6c14af&amp;type=3#CircleLeaf&quot;); width: 152px; height: 134px; bottom: -30px; left: -45px;" />
+                </engine:VisualElement>
             </engine:VisualElement>
-        </engine:VisualElement>
-        <engine:VisualElement name="cup-div" style="flex-grow: 0; width: 341px; align-items: center; justify-content: flex-start; overflow: visible; margin-top: 325px; margin-bottom: 248px;">
-            <engine:VisualElement name="circle" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Sprites/FinalCircle.png?fileID=2800000&amp;guid=54415502e4829491396fb084066727c2&amp;type=3#FinalCircle&quot;); width: 340px; height: 347px;">
-                <engine:VisualElement name="leaf" style="flex-grow: 1; position: absolute; background-image: url(&quot;project://database/Assets/Sprites/CircleLeaf.png?fileID=2800000&amp;guid=206810ec128294088b3eab86bf6c14af&amp;type=3#CircleLeaf&quot;); width: 152px; height: 134px; left: -35px; bottom: 28px;" />
+            <engine:VisualElement name="cup-div" style="flex-grow: 0; width: 341px; align-items: center; justify-content: flex-start; overflow: visible; margin-top: 325px; margin-bottom: 248px;">
+                <engine:VisualElement name="circle" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Sprites/FinalCircle.png?fileID=2800000&amp;guid=54415502e4829491396fb084066727c2&amp;type=3#FinalCircle&quot;); width: 340px; height: 347px;">
+                    <engine:VisualElement name="leaf" style="flex-grow: 1; position: absolute; background-image: url(&quot;project://database/Assets/Sprites/CircleLeaf.png?fileID=2800000&amp;guid=206810ec128294088b3eab86bf6c14af&amp;type=3#CircleLeaf&quot;); width: 152px; height: 134px; left: -35px; bottom: 28px;" />
+                </engine:VisualElement>
+                <engine:VisualElement name="cup" style="flex-grow: 1; width: 474px; height: 477px; background-image: url(&quot;project://database/Assets/Sprites/CupShadow.png?fileID=2800000&amp;guid=d97501ce95f6a4619aa90828392ff35c&amp;type=3#CupShadow&quot;); position: absolute; top: -36px;" />
             </engine:VisualElement>
-            <engine:VisualElement name="cup" style="flex-grow: 1; width: 474px; height: 477px; background-image: url(&quot;project://database/Assets/Sprites/CupShadow.png?fileID=2800000&amp;guid=d97501ce95f6a4619aa90828392ff35c&amp;type=3#CupShadow&quot;); position: absolute; top: -36px;" />
-        </engine:VisualElement>
-        <engine:VisualElement name="slider-div" style="flex-grow: 0; overflow: visible; margin-bottom: 197px;">
-            <engine:VisualElement name="progressHolder" style="flex-grow: 0; width: 700px; overflow: visible;">
-                <engine:VisualElement name="borderBg" style="flex-grow: 1; justify-content: center; display: flex;">
-                    <engine:VisualElement name="progress-bg" style="flex-grow: 1; position: relative; width: 745px; height: 136px; border-top-left-radius: 32px; border-top-right-radius: 32px; border-bottom-right-radius: 32px; border-bottom-left-radius: 32px; background-image: url(&quot;project://database/Assets/Sprites/SliderBgNew.png?fileID=2800000&amp;guid=6bfd56d4e9d1e4c52a09aaee5da514f0&amp;type=3#SliderBgNew&quot;); padding-top: 17px; padding-bottom: 28px; padding-left: 22px; padding-right: 22px; align-items: flex-start; justify-content: center;">
-                        <engine:VisualElement name="progress-back" style="flex-grow: 0; background-color: rgb(255, 255, 255); padding-top: 0; padding-bottom: 0; position: relative; flex-shrink: 0; width: 100%; border-top-left-radius: 50px; border-top-right-radius: 50px; border-bottom-right-radius: 50px; border-bottom-left-radius: 50px; height: 100%;">
-                            <engine:VisualElement name="progress-fill" style="flex-grow: 1; width: 0; border-top-left-radius: 50px; border-top-right-radius: 50px; border-bottom-right-radius: 50px; border-bottom-left-radius: 50px; background-color: rgb(191, 245, 30); display: flex;" />
+            <engine:VisualElement name="slider-div" style="flex-grow: 0; overflow: visible; margin-bottom: 197px;">
+                <engine:VisualElement name="progressHolder" style="flex-grow: 0; width: 700px; overflow: visible;">
+                    <engine:VisualElement name="borderBg" style="flex-grow: 1; justify-content: center; display: flex;">
+                        <engine:VisualElement name="progress-bg" style="flex-grow: 1; position: relative; width: 745px; height: 136px; border-top-left-radius: 32px; border-top-right-radius: 32px; border-bottom-right-radius: 32px; border-bottom-left-radius: 32px; background-image: url(&quot;project://database/Assets/Sprites/SliderBgNew.png?fileID=2800000&amp;guid=6bfd56d4e9d1e4c52a09aaee5da514f0&amp;type=3#SliderBgNew&quot;); padding-top: 17px; padding-bottom: 28px; padding-left: 22px; padding-right: 22px; align-items: flex-start; justify-content: center;">
+                            <engine:VisualElement name="progress-back" style="flex-grow: 0; background-color: rgb(255, 255, 255); padding-top: 0; padding-bottom: 0; position: relative; flex-shrink: 0; width: 100%; border-top-left-radius: 50px; border-top-right-radius: 50px; border-bottom-right-radius: 50px; border-bottom-left-radius: 50px; height: 100%;">
+                                <engine:VisualElement name="progress-fill" style="flex-grow: 1; width: 0; border-top-left-radius: 50px; border-top-right-radius: 50px; border-bottom-right-radius: 50px; border-bottom-left-radius: 50px; background-color: rgb(191, 245, 30); display: flex;" />
+                            </engine:VisualElement>
                         </engine:VisualElement>
+                        <engine:VisualElement name="giftPic" style="flex-grow: 0; position: absolute; height: 202px; width: 207px; background-image: url(&quot;project://database/Assets/Sprites/GiftGreen.png?fileID=2800000&amp;guid=c0381c45299394066ab9522b7c46745e&amp;type=3#GiftGreen&quot;); right: -77px; top: -55px; bottom: auto;" />
+                        <engine:Label text="2/5" name="progress-lbl" class="lbl" style="position: absolute; align-self: center; -unity-font-style: normal; font-size: 50px; color: rgb(53, 35, 65);" />
                     </engine:VisualElement>
-                    <engine:VisualElement name="giftPic" style="flex-grow: 0; position: absolute; height: 202px; width: 207px; background-image: url(&quot;project://database/Assets/Sprites/GiftGreen.png?fileID=2800000&amp;guid=c0381c45299394066ab9522b7c46745e&amp;type=3#GiftGreen&quot;); right: -77px; top: -55px; bottom: auto;" />
-                    <engine:Label text="2/5" name="progress-lbl" class="lbl" style="position: absolute; align-self: center; -unity-font-style: normal; font-size: 50px; color: rgb(53, 35, 65);" />
+                </engine:VisualElement>
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement name="stamp-div" class="div" style="flex-grow: 0; align-items: center; display: none;">
+            <engine:VisualElement name="header-div" style="flex-grow: 0;">
+                <engine:VisualElement name="header" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/amazingBg.png?fileID=2800000&amp;guid=93f3db373fb824774bda0673f4829053&amp;type=3#amazingBg&quot;); border-top-left-radius: 25px; border-top-right-radius: 25px; border-bottom-right-radius: 25px; border-bottom-left-radius: 25px; align-items: center; justify-content: center; padding-top: 0; padding-bottom: 32px; height: 293px; padding-left: 100px; padding-right: 100px;">
+                    <engine:Label text="Hooray!&#10;LOCATION UNLOCKED" class="lbl lbl-shadow" style="font-size: 64px; color: rgb(53, 35, 65);" />
+                    <engine:VisualElement name="top-leaf" style="flex-grow: 1; position: absolute; right: -13px; top: -15px; background-image: url(&quot;project://database/Assets/Sprites/TopLeaf.png?fileID=2800000&amp;guid=586916e10ae814633b852bfff684425a&amp;type=3#TopLeaf&quot;); width: 291px; height: 174px;" />
+                    <engine:VisualElement name="bottom-leaf" style="flex-grow: 0; position: absolute; background-image: url(&quot;project://database/Assets/Sprites/CircleLeaf.png?fileID=2800000&amp;guid=206810ec128294088b3eab86bf6c14af&amp;type=3#CircleLeaf&quot;); width: 152px; height: 134px; bottom: -30px; left: -45px;" />
+                </engine:VisualElement>
+            </engine:VisualElement>
+            <engine:VisualElement name="stamp-pic-div" style="flex-grow: 0; align-items: center; justify-content: flex-start; overflow: visible; margin-top: 83px; margin-bottom: 248px;">
+                <engine:VisualElement name="stamp-pic" style="flex-grow: 1; width: 576px; height: 1249px; rotate: 3deg; background-image: resource(&apos;BG/1&apos;); border-top-width: 5px; border-right-width: 5px; border-bottom-width: 5px; border-left-width: 5px; border-left-color: rgb(255, 255, 255); border-right-color: rgb(255, 255, 255); border-top-color: rgb(255, 255, 255); border-bottom-color: rgb(255, 255, 255); border-top-left-radius: 50px; border-top-right-radius: 50px; border-bottom-right-radius: 50px; border-bottom-left-radius: 50px;" />
+                <engine:VisualElement name="stamp-lbl-div" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/stampUnlockBg.png?fileID=2800000&amp;guid=8af599cfd281f4786a1ac52e47ee434e&amp;type=3#stampUnlockBg&quot;); width: 756px; height: 195px; position: absolute; bottom: 133px; align-items: center; justify-content: center;">
+                    <engine:Label text="EIFEL TOWER,&#10;FRANCE" name="stamp-title-lbl" class="bold" style="font-size: 56px;" />
                 </engine:VisualElement>
             </engine:VisualElement>
         </engine:VisualElement>

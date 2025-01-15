@@ -289,8 +289,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b3fef269472e4ff7967664612f37add, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _levelScene: LevelScene
-  _fakeGiftPos: {x: 428, y: 1206}
   _hideGiftDelay: 1
   _fxCam: {fileID: 1590323358}
 --- !u!114 &1045563879 stripped
@@ -696,6 +694,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: IAPManager
       objectReference: {fileID: 0}
+    - target: {fileID: 4013865171064151974, guid: 8d6f5edaf0bfe419794c3216e8b9f0bf, type: 3}
+      propertyPath: _menuView
+      value: 
+      objectReference: {fileID: 710424701}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

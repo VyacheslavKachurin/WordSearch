@@ -10,6 +10,8 @@ public class LevelLogic : MonoBehaviour
 {
     [SerializeField] LevelView _levelView;
     [SerializeField] LineProvider _lineProvider;
+    [SerializeField] private int _prizeAmount = 25;
+    [SerializeField] private ParticleSystem _winFX;
 
     private AudioManager _audio;
     private bool _isFirstLetter = true;
@@ -35,7 +37,7 @@ public class LevelLogic : MonoBehaviour
     [SerializeField] private int _editorTotalEpisodes;
 #endif
 
-    [SerializeField] private float _msForWord = 2000f;
+    [SerializeField] private float _msForWord = 4000f;
     private bool _isTimerRunning;
     private Coroutine _timerCoroutine;
     [SerializeField] private float _timerStep = 0.1f;
@@ -153,10 +155,9 @@ public class LevelLogic : MonoBehaviour
     }
 
 
-    private void FinishLevel()
+    private async void FinishLevel()
     {
         Session.IsSelecting = false;
-
         var episode = GameDataService.GameData.Episode;
         var totalEpisodes = GameDataService.GameData.TotalEpisodes;
 
@@ -168,11 +169,23 @@ public class LevelLogic : MonoBehaviour
         }
 #endif
         var isStageCompleted = episode == totalEpisodes;
+        HideGameObjects(false);
+        await _levelView.ShowFinishView(episode, totalEpisodes);
 
-        _levelView.ShowFinishView(episode, totalEpisodes, isStageCompleted);
+        if (isStageCompleted)
+        {
+            var stampPic = MenuController.GetTexture(episode + 1);
+           await _levelView.ShowStageFinish(_prizeAmount, stampPic);
+            AudioManager.Instance.PlaySound(Sound.StageCompleted);
+            Balance.AddBalance(_prizeAmount);
+            _winFX.Play();
+
+        }
+
+        _levelView.ShowNextLvlBtn();
 
         _shouldCheckForFinish = false;
-        HideGameObjects(false);
+
 
         if (!Session.IsClassicGame)
             StopTimer();
@@ -380,7 +393,6 @@ public class LevelLogic : MonoBehaviour
             var word = levelState.FoundWords[i];
             _words.Remove(word);
         }
-
     }
 
     public void SetTimeMode()
@@ -395,8 +407,6 @@ public class LevelLogic : MonoBehaviour
     {
         _targetWord = GetRandomWord();
         _levelView.SetTimeWord(_targetWord);
-
-
     }
 
     private string GetRandomWord()

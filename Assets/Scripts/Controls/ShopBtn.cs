@@ -37,7 +37,6 @@ public partial class ShopBtn : Button
     }
 
 
-
     private void Unsubscribe()
     {
         Balance.OnBalanceChanged -= SetBalance;

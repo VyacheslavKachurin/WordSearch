@@ -979,6 +979,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c577e15c436445f7b0441270a75a14a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _menuView: {fileID: 0}
+  _levelView: {fileID: 1148785180}
 --- !u!4 &2066536711
 Transform:
   m_ObjectHideFlags: 0

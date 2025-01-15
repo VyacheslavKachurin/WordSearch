@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -15,6 +16,9 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
 
     private IAppleExtensions _appleExtensions;
     private IShopItems _shopItems;
+    [SerializeField] private MenuView _menuView;
+    [SerializeField] private LevelView _levelView;
+
 
     private async void Awake()
     {
@@ -56,6 +60,19 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
         this._extensions = extensions;
         if (_shopItems != null)
             FillUpShopItems(_shopItems);
+        else
+        {
+            StartCoroutine(FillingUpShopItems(_shopItems));
+        }
+    }
+
+    private IEnumerator FillingUpShopItems(IShopItems shopItems)
+    {
+        while (_shopItems == null)
+        {
+            yield return new WaitForSeconds(0.1f);
+        }
+        FillUpShopItems(shopItems);
 
     }
 
@@ -175,6 +192,7 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
 
     private void FillUpShopItems(IShopItems shopItems)
     {
+        shopItems ??= GetShopItems();
         var items = _catalog.allValidProducts.Where(x => x.type == ProductType.Consumable).ToList();
         var itemsController = _controller.products.all.Where(x => x.definition.type == ProductType.Consumable).ToList();
 
@@ -186,6 +204,26 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
             shopItems.AddItem(index, coinsAmount, price);
         }
 
+        var noAds = _controller.products.all.FirstOrDefault(x => x.definition.id == "no_ads");
+        if (noAds != null)
+        {
+            var price = noAds.metadata.localizedPriceString;
+            shopItems.SetNoAds(price);
+        }
+        else Debug.Log($"No Ads not found");
+    }
+
+    private IShopItems GetShopItems()
+    {
+        if (_menuView != null)
+            return _menuView.ShopItems;
+        else if (_levelView != null)
+            return _levelView.ShopItems;
+        else
+        {
+            Debug.Log($"ShopItems not found");
+            return null;
+        }
     }
 
     internal void InjectShopItems(IShopItems shopItems)

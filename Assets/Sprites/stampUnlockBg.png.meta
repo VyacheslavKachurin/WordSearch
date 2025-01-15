@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: f95f7a04a8d504f499b040ef0c94982a
+guid: 8af599cfd281f4786a1ac52e47ee434e
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5564184186060100344
-    second: BtnBgNew_0
+      213: -2323113932700363439
+    second: stampUnlockBg_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: BtnBgNew_0
+      name: stampUnlockBg_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1506
-        height: 396
+        width: 763
+        height: 202
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8f255f27904f73d40800000000000000
-      internalID: 5564184186060100344
+      spriteID: 15552a4cf24a2cfd0800000000000000
+      internalID: -2323113932700363439
       vertices: []
       indices: 
       edges: []
@@ -147,8 +147,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      BtnBgNew_0: 5564184186060100344
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

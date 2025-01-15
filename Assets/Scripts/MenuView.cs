@@ -357,7 +357,6 @@ public class MenuView : MonoBehaviour
 
     private void HandleGiftPickClick(ClickEvent evt)
     {
-
         _clickedBtn = evt.currentTarget as Button;
         HideOtherGiftPicks(_clickedBtn);
         AudioManager.Instance.PlaySound(Sound.Click);

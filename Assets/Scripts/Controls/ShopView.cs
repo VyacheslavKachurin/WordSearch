@@ -180,9 +180,16 @@ public partial class ShopView : VisualElement, IShopItems
         this.Toggle(false);
         OnShopClicked?.Invoke(false);
     }
+
+    public void SetNoAds(string price)
+    {
+        _removeAdsBtn.text = $"Remove Ads {price}";
+    }
 }
+
 
 public interface IShopItems
 {
     public void AddItem(int index, int coinsAmount, string price);
+    public void SetNoAds(string price);
 }

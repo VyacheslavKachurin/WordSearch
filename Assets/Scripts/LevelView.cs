@@ -46,6 +46,9 @@ public class LevelView : MonoBehaviour, IAdsRequest
     private VisualElement _progressFill;
     private Label _progressLbl;
     private VisualElement _cup;
+    private VisualElement _progressDiv;
+    private VisualElement _stampDiv;
+    private VisualElement _stampPic;
     private VisualElement _levelView;
     [SerializeField] private float _fillDelay = 0.1f;
     [SerializeField] private float _fillAdd = 0.1f;
@@ -58,13 +61,11 @@ public class LevelView : MonoBehaviour, IAdsRequest
     private const string TARGET_WORD_LEFT = "target-word-left";
     private const string TARGET_WORD_RIGHT = "target-word-right";
 
-    [SerializeField] private ParticleSystem _winFX;
     [SerializeField] private Vector2 _fakePos;
     [SerializeField] private float _fakeLblHeight = 38;
 
     [SerializeField] private Camera _fxCam;
 
-    [SerializeField] private int _prizeAmount = 25;
     CoinsView _coinsView;
     private VisualElement _gameOverView;
     [SerializeField] private CoinsFX_Handler _coinsFX_Handler;
@@ -90,7 +91,7 @@ public class LevelView : MonoBehaviour, IAdsRequest
     }
 
     const string FINISH_VIEW = "finish-view";
-    const string FINISH_VIEW_HIDE = "finish-view-hide";
+    const string HIDE_STYLE = "hide-style";
 
     private bool _isSliderDone;
     private VisualElement _classicDiv;
@@ -201,7 +202,7 @@ public class LevelView : MonoBehaviour, IAdsRequest
     private void InitFinishView()
     {
         _finishView = _root.Q<VisualElement>("finish-view");
-        _finishView.AddToClassList(FINISH_VIEW_HIDE);
+        _finishView.AddToClassList(HIDE_STYLE);
         _nextLvlBtn = _finishView.Q<Button>("next-lvl-btn");
         _nextLvlBtn.RemoveFromClassList(NEXT_LVL_BTN_ON);
         _nextLvlBtn.clicked += HandleNextLvlClick;
@@ -209,6 +210,10 @@ public class LevelView : MonoBehaviour, IAdsRequest
         _progressFill = _root.Q<VisualElement>("progress-fill");
         _progressLbl = _root.Q<Label>("progress-lbl");
         _cup = _root.Q<VisualElement>("cup");
+
+        _progressDiv = _root.Q<VisualElement>("progress-div");
+        _stampDiv = _root.Q<VisualElement>("stamp-div");
+        _stampPic = _root.Q<VisualElement>("stamp-pic");
     }
 
 
@@ -307,7 +312,7 @@ public class LevelView : MonoBehaviour, IAdsRequest
     }
 
 
-    private void PlayAward(int prizeAmount, VisualElement coinsLblRefPos, VisualElement fxStartPos, bool showLbl = true)
+    public void PlayAward(int prizeAmount, VisualElement coinsLblRefPos, VisualElement fxStartPos, bool showLbl = true)
     {
         Debug.Log($"Play Award: {prizeAmount}");
         var prize = prizeAmount;
@@ -347,8 +352,10 @@ public class LevelView : MonoBehaviour, IAdsRequest
         */
 
 
-    public async void ShowFinishView(int episode, int totalEpisodes, bool isStageCompleted = false)
+    public async Task ShowFinishView(int episode, int totalEpisodes)
     {
+        _progressDiv.Toggle(true);
+
         _isSliderDone = false;
         _levelView.Toggle(false);
 
@@ -358,7 +365,7 @@ public class LevelView : MonoBehaviour, IAdsRequest
         _finishView.Toggle(true);
         await Task.Delay(100);
 
-        _finishView.RemoveFromClassList(FINISH_VIEW_HIDE);
+        _finishView.RemoveFromClassList(HIDE_STYLE);
 
         while (_finishView.resolvedStyle.opacity < 0.9f)
             await Task.Yield();
@@ -366,14 +373,11 @@ public class LevelView : MonoBehaviour, IAdsRequest
 
         while (!_isSliderDone)
             await Task.Yield();
-
-        if (isStageCompleted)
-            ShowStageFinish();
-
-        ShowNextLvlBtn();
         _progressBarCoroutine = null;
 
     }
+
+
 
     private void AnimateProgressBar(int episode, int totalEpisodes)
     {
@@ -411,12 +415,18 @@ public class LevelView : MonoBehaviour, IAdsRequest
         _isSliderDone = true;
     }
 
-    private void ShowStageFinish()
+    public async Task ShowStageFinish(int prizeAmount, Texture2D stampPic)
     {
-        AudioManager.Instance.PlaySound(Sound.StageCompleted);
-        _winFX.Play();
-        PlayAward(_prizeAmount, _giftPic, _cup);
-        Balance.AddBalance(_prizeAmount);
+        PlayAward(prizeAmount, _giftPic, _cup);
+        _progressDiv.AddToClassList(HIDE_STYLE);
+        _stampDiv.AddToClassList(HIDE_STYLE);
+        while (_progressDiv.resolvedStyle.opacity > 0.1f)
+            await Task.Yield();
+        _progressDiv.Toggle(false);
+        _stampDiv.Toggle(true);
+        _stampDiv.RemoveFromClassList(HIDE_STYLE);
+        _stampPic.style.backgroundImage = new StyleBackground(stampPic);
+
     }
 
     public void ShowNextLvlBtn()
@@ -429,13 +439,15 @@ public class LevelView : MonoBehaviour, IAdsRequest
     {
         AudioManager.Instance.PlaySound(Sound.Click);
         NextLevelClicked?.Invoke();
+        _progressDiv.Toggle(true);
+        _stampDiv.Toggle(false);
 
     }
 
     public void HideFinishView()
     {
         _finishView.Toggle(false);
-        _finishView.AddToClassList(FINISH_VIEW_HIDE);
+        _finishView.AddToClassList(HIDE_STYLE);
         _progressBarCoroutine = null;
         _progressFill.style.width = new StyleLength(new Length(0, LengthUnit.Percent));
 
@@ -475,7 +487,7 @@ public class LevelView : MonoBehaviour, IAdsRequest
     {
         _levelTheme.text = data.Subject;
         _finishView.Toggle(false);
-        _finishView.AddToClassList(FINISH_VIEW_HIDE);
+        _finishView.AddToClassList(HIDE_STYLE);
         _levelView.Toggle(true);
         if (Session.IsClassicGame)
         {
