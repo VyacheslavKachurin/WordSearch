@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Backtrace.Unity;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -10,11 +11,13 @@ using UnityEngine.UIElements;
 
 public class MenuController : MonoBehaviour, IPrizeProvider
 {
+
     [SerializeField] MenuView _menuView;
     [SerializeField] private int _minPrize = 20;
     [SerializeField] private int _maxPrize = 50;
     [SerializeField] private CoinsFX_Handler _coinsFX_Handler;
     [SerializeField] IAPManager _iapManager;
+    [SerializeField] BacktraceClient _backtraceClient;
 
     private void Awake()
     {
@@ -73,17 +76,31 @@ public class MenuController : MonoBehaviour, IPrizeProvider
     {
         IShopItems shopItems = _menuView.ShopItems;
 
+        try
+        {
+            IAPManager.OnPurchasedCoins += HandleAward;
 
-        IAPManager.OnPurchasedCoins += HandleAward;
+            Session.AdsRemoved += _menuView.HideAdsBtn;
+            if (Session.NoAds) _menuView.HideAdsBtn();
 
-        Session.AdsRemoved += _menuView.HideAdsBtn;
-        if (Session.NoAds) _menuView.HideAdsBtn();
 
+        }
+        catch (Exception e)
+        {
+            _backtraceClient.Send(e);
+        }
         SetGameData();
         PopulateCollectionsView();
-        _iapManager.InjectShopItems(shopItems);
 
-        SendUserDataAsync();
+        try
+        {
+            _iapManager.InjectShopItems(shopItems);
+        }
+        catch (Exception e)
+        {
+            _backtraceClient.Send(e);
+        }
+        // SendUserDataAsync();
 
     }
 
@@ -96,12 +113,19 @@ public class MenuController : MonoBehaviour, IPrizeProvider
 
     private void SetGameData()
     {
-        GameDataService.LoadGame();
+        try
+        {
+            GameDataService.LoadGame();
 
-        int lastLevel = GameDataService.GameData.Level;
-        int lastEpisode = GameDataService.GameData.Episode;
-        int lastTotalEpisodes = GameDataService.GameData.TotalEpisodes;
-        _menuView.SetLevelData(lastLevel, lastEpisode, lastTotalEpisodes);
+            int lastLevel = GameDataService.GameData.Level;
+            int lastEpisode = GameDataService.GameData.Episode;
+            int lastTotalEpisodes = GameDataService.GameData.TotalEpisodes;
+            _menuView.SetLevelData(lastLevel, lastEpisode, lastTotalEpisodes);
+        }
+        catch (Exception e)
+        {
+            _backtraceClient.Send(e);
+        }
 
     }
 

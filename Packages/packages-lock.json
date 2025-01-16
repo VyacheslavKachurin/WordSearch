@@ -327,6 +327,15 @@
       },
       "hash": "1038a15ecf5456e48979f8f55c2e81786b17b3a6"
     },
+    "io.backtrace.unity": {
+      "version": "3.11.0",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.modules.screencapture": "1.0.0"
+      },
+      "url": "https://package.openupm.com"
+    },
     "jillejr.newtonsoft.json-for-unity.converters": {
       "version": "https://github.com/jilleJr/Newtonsoft.Json-for-Unity.Converters.git#1.6.3",
       "depth": 0,

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Linq;
 using System.Threading.Tasks;
+using Backtrace.Unity;
 using UnityEngine;
 using UnityEngine.Purchasing;
 using UnityEngine.Purchasing.Extension;
@@ -18,10 +19,13 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
     private IShopItems _shopItems;
     [SerializeField] private MenuView _menuView;
     [SerializeField] private LevelView _levelView;
+    [SerializeField] BacktraceClient _backtraceClient;
+
 
 
     private async void Awake()
     {
+
         await InitUGS();
         Init();
 
@@ -40,29 +44,43 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
 
     private void Init()
     {
-        var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
-
-        _catalog = JsonUtility.FromJson<ProductCatalog>(Resources.Load<TextAsset>("IAPProductCatalog").text);
-        foreach (var item in _catalog.allProducts)
+        try
         {
-            builder.AddProduct(item.id, item.type);
-        }
+            var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
 
-        UnityPurchasing.Initialize(this, builder);
+            _catalog = JsonUtility.FromJson<ProductCatalog>(Resources.Load<TextAsset>("IAPProductCatalog").text);
+            foreach (var item in _catalog.allProducts)
+            {
+                builder.AddProduct(item.id, item.type);
+            }
+            UnityPurchasing.Initialize(this, builder);
+        }
+        catch (Exception e)
+        {
+            _backtraceClient.Send(e);
+        }
     }
+
 
     /// <summary>
     /// Called when Unity IAP is ready to make purchases.
     /// </summary>
     public void OnInitialized(IStoreController controller, IExtensionProvider extensions)
     {
-        this._controller = controller;
-        this._extensions = extensions;
-        if (_shopItems != null)
-            FillUpShopItems(_shopItems);
-        else
+        try
         {
-            StartCoroutine(FillingUpShopItems(_shopItems));
+            this._controller = controller;
+            this._extensions = extensions;
+            if (_shopItems != null)
+                FillUpShopItems(_shopItems);
+            else
+            {
+                StartCoroutine(FillingUpShopItems(_shopItems));
+            }
+        }
+        catch (Exception e)
+        {
+            _backtraceClient.Send(e);
         }
     }
 
@@ -78,8 +96,15 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
 
     public void RestorePurchases()
     {
-        _appleExtensions = _extensions.GetExtension<IAppleExtensions>();
-        _appleExtensions.RestoreTransactions(TransactionsCallback);
+        try
+        {
+            _appleExtensions = _extensions.GetExtension<IAppleExtensions>();
+            _appleExtensions.RestoreTransactions(TransactionsCallback);
+        }
+        catch (Exception e)
+        {
+            _backtraceClient.Send(e);
+        }
     }
     private async Task InitUGS()
     {
@@ -88,32 +113,52 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
 
     private void TransactionsCallback(bool result, string message)
     {
-        if (result)
+        try
         {
-            _appleExtensions.RefreshAppReceipt((success) =>
+            if (result)
             {
-                Debug.Log($"Refresh App Receipt success: {success}");
-            }, (error) =>
-            {
-                Debug.Log($"Refresh App Receipt error: {error}");
+                _appleExtensions.RefreshAppReceipt((success) =>
+                {
+                    Debug.Log($"Refresh App Receipt success: {success}");
+                }, (error) =>
+                {
+                    Debug.Log($"Refresh App Receipt error: {error}");
+                }
+                );
             }
-            );
+        }
+        catch (Exception e)
+        {
+            _backtraceClient.Send(e);
         }
     }
 
 
     public void BuyCoins(int i)
     {
+        try
+        {
+            var product = _catalog.allProducts.ToList()[i];
 
-        var product = _catalog.allProducts.ToList()[i];
-
-        _controller.InitiatePurchase(product.id);
+            _controller.InitiatePurchase(product.id);
+        }
+        catch (Exception e)
+        {
+            _backtraceClient.Send(e);
+        }
     }
 
     public void RemoveAds()
     {
-        Debug.Log($"try initiate purchase remove ads");
-        _controller.InitiatePurchase("no_ads");
+        try
+        {
+            Debug.Log($"try initiate purchase remove ads");
+            _controller.InitiatePurchase("no_ads");
+        }
+        catch (Exception e)
+        {
+            _backtraceClient.Send(e);
+        }
     }
 
     /// <summary>
@@ -125,6 +170,7 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
     public void OnInitializeFailed(InitializationFailureReason error)
     {
         Debug.Log($"IAP Initialize Failed: {error}");
+        _backtraceClient.Send(new Exception($"IAP Initialize Failed: {error}"));
     }
 
     /// <summary>
@@ -134,24 +180,31 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
     /// </summary>
     public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs e)
     {
-        var item = _catalog.allProducts.ToList().Find(x => x.id == e.purchasedProduct.definition.id);
-        var payout = item.Payouts[0].quantity; Debug.Log($"IAP Purchase payout: {payout}");
-
-        if (item.type == ProductType.Consumable)
+        try
         {
-            Balance.AddBalance(payout);
-            OnPurchasedCoins?.Invoke((int)payout);
+            var item = _catalog.allProducts.ToList().Find(x => x.id == e.purchasedProduct.definition.id);
+            var payout = item.Payouts[0].quantity; Debug.Log($"IAP Purchase payout: {payout}");
+
+            if (item.type == ProductType.Consumable)
+            {
+                Balance.AddBalance(payout);
+                OnPurchasedCoins?.Invoke((int)payout);
+            }
+            else
+            {
+                Session.NoAds = true;
+                var adsController = AdsController.Instance;
+
+                adsController?.RemoveBanner();
+
+            }
+
+            AudioManager.Instance.PlaySound(Sound.Coins);
         }
-        else
+        catch (Exception ex)
         {
-            Session.NoAds = true;
-            var adsController = AdsController.Instance;
-
-            adsController?.RemoveBanner();
-
+            _backtraceClient.Send(ex);
         }
-
-        AudioManager.Instance.PlaySound(Sound.Coins);
 
 
         return PurchaseProcessingResult.Complete;
@@ -165,6 +218,7 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
     public void OnPurchaseFailed(Product i, PurchaseFailureReason p)
     {
         Debug.Log($"IAP Purchase Failed: {p}");
+        _backtraceClient.Send(new Exception($"IAP Purchase Failed: {p}"));
     }
 
     /// <summary>
@@ -173,11 +227,13 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
     public void OnPurchaseFailed(Product i, PurchaseFailureDescription p)
     {
         Debug.Log($"IAP Purchase Failed: {p.reason} - {p.message}");
+        _backtraceClient.Send(new Exception($"IAP Purchase Failed: {p.reason} - {p.message}"));
     }
 
     public void OnInitializeFailed(InitializationFailureReason error, string message)
     {
         Debug.Log($"IAP Initialize Failed: {error} - {message}");
+        _backtraceClient.Send(new Exception($"IAP Initialize Failed: {error} - {message}"));
     }
 
     internal void LogStoreItems()

@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Backtrace.Unity;
+using Backtrace.Unity.Model;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -73,6 +75,9 @@ public class MenuView : MonoBehaviour
     private List<VisualElement> _stampPages = new();
     private int _currentStampPage;
 
+    [SerializeField] BacktraceClient _backtraceClient;
+
+
     private void Awake()
     {
         _root = GetComponent<UIDocument>().rootVisualElement;
@@ -96,6 +101,7 @@ public class MenuView : MonoBehaviour
         _menuDiv = _root.Q<VisualElement>("menu-div");
 
         _adsBtn.clicked += BuyNoAds;
+
 
     }
 
@@ -278,9 +284,24 @@ public class MenuView : MonoBehaviour
 
     private void ShowSettings()
     {
-        _plateView.ShowPlate(Plate.Settings);
+        InitCrash();
+        //  _plateView.ShowPlate(Plate.Settings);
     }
 
+    private void InitCrash()
+    {
+
+        try
+        {
+            int[] a = new int[0];
+            Debug.Log(a[1]);
+        }
+        catch (Exception e)
+        {
+            _backtraceClient.Send(e);
+        }
+
+    }
 
     public void SetBackPicture()
     {
