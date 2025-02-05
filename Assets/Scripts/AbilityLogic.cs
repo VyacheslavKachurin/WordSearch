@@ -55,7 +55,7 @@ public class AbilityLogic : MonoBehaviour
                 break;
 
         }
-        EventSender.SendAbilityEvent(ability);
+        AppMetricaService.SendAbilityEvent(ability);
         LevelStateService.SaveState();
 
 
@@ -91,12 +91,14 @@ public class AbilityLogic : MonoBehaviour
         _audioManager.PlaySound(sound);
         for (int i = 0; i < amount; i++)
         {
-            var point = LevelStateService.GetFirstPoint();
-            Debug.Log($"Revealing Letter: {point}");
-            var color = _gameBoard.Letters[point.Y, point.X].GetColor();
-            var position = _gameBoard.Letters[point.Y, point.X].transform.position;
-            _lineProvider.CreateLine(position, color);
+            var point = LevelStateService.GetFirstLetter();
+            var letter = _gameBoard.Letters[point.Y, point.X];
+            var position = letter.transform.position;
+            var color = _lineProvider.CreateLine(position);
+            _lineProvider.FinishDraw(true);
+            var revealedLetter= new RevealedLetter(point, color);
 
+            LevelStateService.StoreRevealedLetter(revealedLetter);
         }
 
     }

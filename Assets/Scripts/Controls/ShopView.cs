@@ -26,6 +26,12 @@ public partial class ShopView : VisualElement, IShopItems
 
     private VisualTreeAsset _purchaseBtnTemplate;
     private List<Button> _buyBtns = new();
+    private VisualElement _processPanel;
+
+    private void HideProcessPanel()
+    {
+        ToggleProcessPanel(false);
+    }
 
     public static event Action<bool> OnShopClicked;
     //public static event Action<int, Button> OnBtnClicked;
@@ -35,7 +41,7 @@ public partial class ShopView : VisualElement, IShopItems
         var template = Resources.Load<VisualTreeAsset>("ShopView");
         var instance = template.Instantiate();
         instance.style.flexGrow = 1;
-        // instance.pickingMode = PickingMode.Ignore;
+        instance.pickingMode = PickingMode.Ignore;
         Add(instance);
 
         _purchaseBtnTemplate = Resources.Load<VisualTreeAsset>("PurchaseBtnTemplate");
@@ -57,7 +63,10 @@ public partial class ShopView : VisualElement, IShopItems
             Services.IsNetworkAvailable((result) =>
             {
                 if (result)
+                {
+                    ToggleProcessPanel(true);
                     OnRemoveAdsClicked?.Invoke();
+                }
                 else
                 {
                     RequireNetwork();
@@ -74,6 +83,14 @@ public partial class ShopView : VisualElement, IShopItems
         _networkDiv = this.Q<VisualElement>("network-div");
         _restoreBtn = this.Q<Button>("restore-purchase-btn");
         _restoreBtn.clicked += AskRestorePurchase;
+        _processPanel = this.Q<VisualElement>("process-panel");
+
+        IAPManager.FirePurchaseFailed += HideProcessPanel;
+    }
+
+    public void ToggleProcessPanel(bool state)
+    {
+        _processPanel.Toggle(state);
     }
 
     public void AddItem(int index, int coinsAmount, string price)
@@ -97,8 +114,8 @@ public partial class ShopView : VisualElement, IShopItems
             {
                 if (result)
                 {
+                    ToggleProcessPanel(true);
                     OnPurchaseInit?.Invoke(index);
-
                 }
                 else
                 {
@@ -127,12 +144,10 @@ public partial class ShopView : VisualElement, IShopItems
 
     }
 
-
-
     private void Unsubscribe()
     {
-
         Session.AdsRemoved -= HideAdsOffer;
+        IAPManager.FirePurchaseFailed -= HideProcessPanel;
     }
 
     public void InitRemoveAds()

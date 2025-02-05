@@ -22,7 +22,6 @@ public class InputHandler : MonoBehaviour
     private Direction _direction;
     private bool _isSelecting;
 
-    // private List<LetterUnit> _letterUnits;
     private Touch _touch;
     [SerializeField] private float _speed = 40;
     private Vector2 _upLeft;
@@ -100,25 +99,28 @@ public class InputHandler : MonoBehaviour
 
         if (!isOnDirection)
         {
-            //  Debug.Log($"we are not on direction;current dir: {_direction}");
             _letterUnits.Remove(unit);
             OnLetterDeselect?.Invoke(unit, _trigger.RbPosition);
             if (_letterUnits.Count == 1)
             {
                 _lastHitCollider = _letterUnits[0].GetComponent<Collider2D>();
-                //  _trigger.RbPosition = _letterUnits[0].transform.position;
+
 
                 var touchPos = Camera.main.ScreenToWorldPoint(_touch.position);
                 if (Vector2.Distance(_trigger.RbPosition, touchPos) > _horizontalDistance)
                 {
                     FinishSelecting();
                 }
-                //   _isMoving = false;
-                //  _nextPosition = _letterUnits[0].transform.position;
+
             }
 
         }
     }
+
+    public void ToggleInput(bool enable){
+        _isSelecting = enable;
+    }
+
 
 
     public void SetLetterDistances(List<float> distances)

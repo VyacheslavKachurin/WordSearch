@@ -32,6 +32,7 @@ public class LevelBuilder : MonoBehaviour
 
     void Awake()
     {
+        Session.IsClassicGame = true;
 
         _adsController.Init();
         PlateView.OnReplayRequested += CreateLevel;
@@ -41,7 +42,7 @@ public class LevelBuilder : MonoBehaviour
     {
         CreateLevel();
 
-        LevelView.NextLevelClicked += GoNextLevel;
+        LevelView.NextLevelClicked += LoadNextLevel;
 
         IShopItems shopItems = _levelView.ShopItems;
         _iapManager.InjectShopItems(shopItems);
@@ -51,22 +52,23 @@ public class LevelBuilder : MonoBehaviour
     [ContextMenu("Build Level")]
     private void StartBuildLevel()
     {
-        StartCoroutine(BuildLevel());
+        // StartCoroutine(BuildLevel());
     }
 
-    private IEnumerator BuildLevel()
-    {
-        do
+    /*
+        private IEnumerator BuildLevel()
         {
-            ClearLines();
-            CreateLevel();
-            DrawLines();
-            MakeScreenShot();
-            yield return new WaitForSeconds(0.1f);
+            do
+            {
+                ClearLines();
+                CreateLevel();
+                DrawLines();
+                MakeScreenShot();
+                yield return new WaitForSeconds(0.1f);
+            }
+            while (GameDataService.IncreaseLevel());
         }
-        while (GameDataService.IncreaseLevel());
-    }
-
+        */
     private void MakeScreenShot()
     {
         var season = GameDataService.GameData.Season;
@@ -91,9 +93,8 @@ public class LevelBuilder : MonoBehaviour
             var firstLetter = _levelData.FirstLetters[i];
             var lastLetter = _levelData.LastLetters[i];
             var firstUnit = _gameBoard.Letters[firstLetter.Y, firstLetter.X];
-            var color = firstUnit.GetColor();
             var lastUnit = _gameBoard.Letters[lastLetter.Y, lastLetter.X];
-            _lineProvider.CreateLine(firstUnit.transform.position, color);
+            _lineProvider.CreateLine(firstUnit.transform.position);
             _lineProvider.Append(lastUnit.transform.position);
             _lineProvider.FinishDraw(true, null, false);
 
@@ -102,15 +103,16 @@ public class LevelBuilder : MonoBehaviour
 
     private void OnDestroy()
     {
-        LevelView.NextLevelClicked -= GoNextLevel;
+        LevelView.NextLevelClicked -= LoadNextLevel;
         PlateView.OnReplayRequested -= CreateLevel;
     }
 
-    private void GoNextLevel()
+    private void LoadNextLevel()
     {
-        if (GameDataService.IncreaseLevel())
+        LevelStateService.DeleteState();
+
+        if (!Session.IsGameWon)
         {
-            LevelStateService.DeleteState();
             CreateLevel();
         }
         else
@@ -120,11 +122,11 @@ public class LevelBuilder : MonoBehaviour
 
     }
 
-
     [ContextMenu("Create Level")]
     public void CreateLevel()
     {
         var IsClassicGame = Session.IsClassicGame;
+
         if (!IsClassicGame)
             LevelStateService.DeleteState();
 
@@ -174,10 +176,11 @@ public class LevelBuilder : MonoBehaviour
         if (Session.IsGameWon)
         {
             _levelView.ShowGameOver();
+            _levelLogic.HideGameObjects(false);
         }
         else
         {
-            EventSender.SendLevelReached(gameData.Season, gameData.Episode, gameData.Level);
+            AppMetricaService.SendLevelReached(gameData.Season, gameData.Episode, gameData.Level);
         }
     }
 

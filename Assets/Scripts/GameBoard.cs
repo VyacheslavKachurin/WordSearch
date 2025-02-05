@@ -102,15 +102,15 @@ public class GameBoard : MonoBehaviour
 
     internal void SetState(LevelState levelState)
     {
-        foreach (var letter in levelState.FoundLetters)
+        for (int i = 0; i < levelState.FoundWords.Count; i++)
         {
-            _letters[letter.Y, letter.X].AnimateSelection(true);
-        }
-        for (int i = 0; i < levelState.FoundLetters.Count; i++)
-        {
+            var word = levelState.FoundWords[i];
+            foreach (var point in word.Points)
+            {
+                _letters[point.Y, point.X].Disable();
+                _letters[point.Y, point.X].AnimateSelection(true);
+            }
 
-            var point = levelState.FoundLetters[i];
-            _letters[point.Y, point.X].Disable();
         }
     }
 

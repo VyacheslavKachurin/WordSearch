@@ -25,6 +25,8 @@ public static class GameDataService
         System.IO.File.WriteAllText(_prePath + _stampDataPath, json);
     }
 
+
+
     public static StampsData LoadStampData()
     {
         StampsData = new StampsData();
@@ -42,6 +44,11 @@ public static class GameDataService
             SaveStampData();
         }
         return StampsData;
+    }
+
+    public static string GetStampTitle(int season)
+    {
+        return StampsData.Seasons[season].Name;
     }
 
     public static void DeleteStampData()
@@ -130,7 +137,7 @@ public static class GameDataService
         return path;
     }
 
-    internal static bool IncreaseLevel()
+    internal static void IncreaseLevel()
     {
         if (GameData.Episode < GameData.TotalEpisodes)
         {
@@ -143,7 +150,6 @@ public static class GameDataService
                 Debug.Log($"Game Over");
                 Session.IsGameWon = true;
                 SaveGame();
-                return false;
             }
             UnlockStamp(GameData.Season);
             GameData.Episode = 1;
@@ -153,8 +159,6 @@ public static class GameDataService
         }
         GameData.Level++;
         SaveGame();
-
-        return true;
     }
 
     internal static void ClearProgress()

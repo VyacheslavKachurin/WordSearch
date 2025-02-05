@@ -12,6 +12,7 @@ public class Services : MonoBehaviour
 
     // private IAPManager _iAPManager;
     public static Services Instance;
+    const string FULL_ACCESS_KEY = "FULL_ACCESS_KEY";
 
     private void Awake()
     {
@@ -117,11 +118,6 @@ public class Services : MonoBehaviour
         Session.NoAds = false;
     }
 
-    [ContextMenu("Clear Level Progress")]
-    public void ClearLevelProgress()
-    {
-        // Session.SetLastLevel(1);
-    }
 
     [ContextMenu("Clear coins data")]
     public void ClearCoinsData()
@@ -132,7 +128,6 @@ public class Services : MonoBehaviour
     [ContextMenu("Clear All Data")]
     public void ClearAllData()
     {
-        ClearLevelProgress();
         ClearCoinsData();
         RemoveAdsPurchase();
         ClearGiftData();
@@ -145,7 +140,17 @@ public class Services : MonoBehaviour
         Session.IsFirstTime = true;
         GameDataService.DeleteStampData();
 
-        
+    }
+
+    public static void ClearLevelData()
+    {
+        Session.IsGameWon = false;
+        Session.IsFirstTime = true;
+
+        GameDataService.ClearProgress();
+        GameDataService.DeleteGame();
+
+        LevelStateService.DeleteState();
     }
 
     [ContextMenu("Clear Gift Data")]
@@ -154,6 +159,18 @@ public class Services : MonoBehaviour
         Session.ClearGift();
     }
 
+    public static void ExtendAccess()
+    {
+        PlayerPrefs.SetInt(FULL_ACCESS_KEY, 1);
+    }
 
+    public static bool HasFullAccess()
+    {
+        return PlayerPrefs.GetInt(FULL_ACCESS_KEY, 0) == 1;
+    }
 
+    internal static void LowerAccess()
+    {
+        PlayerPrefs.SetInt(FULL_ACCESS_KEY, 0);
+    }
 }

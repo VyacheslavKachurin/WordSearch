@@ -38,11 +38,20 @@ public class LevelStateService
         return false;
     }
 
+    public static void StoreRevealedLetter(RevealedLetter letter)
+    {
+        State.RevealedFirstLetters.Add(letter);
+    }
+
 
     public static List<Point> GetSomeFakeLetters(LevelData data)
     {
         int amountToTake = Convert.ToInt32(data.FakeLetters.Count * 0.7f);
-        State.RevealedFakeLetters ??= data.FakeLetters.OrderBy(x => UnityEngine.Random.Range(0f, 1f)).Take(amountToTake).ToList();
+        var targetFakeLetters = data.FakeLetters
+    .OrderBy(_ => UnityEngine.Random.value)
+    .Take(amountToTake)
+    .ToList();
+        State.RevealedFakeLetters = targetFakeLetters;
         return State.RevealedFakeLetters;
     }
 
@@ -53,43 +62,37 @@ public class LevelStateService
         Debug.Log($"Level State deleted");
     }
 
-    internal static void CreateState(LevelData levelData)
+    public static void CreateState(LevelData levelData)
     {
         var level = GameDataService.GameData.Level;
-        State = new(false, levelData.FirstLetters, new List<string>(), new List<Point>(), new List<LineState>(), new List<Point>(), level);
+        State = new(false, levelData.FirstLetters);
     }
 
-    internal static void AddFoundWord(string tryWord, List<LetterUnit> foundLetters, LineState lineState)
+    internal static void AddFoundWord(string word, List<LetterUnit> foundLetters, Color color)
     {
         if (!Session.IsClassicGame) return;
-        State.FoundWords.Add(tryWord);
-
-        foreach (var letter in foundLetters)
-            State.FoundLetters.Add(letter.Point);
-
-        State.Lines.Add(lineState);
+        var points = foundLetters.Select(x => x.Point).ToList();
+        var foundWord = new FoundWord(word, points, color);
 
         var firstLetter = foundLetters[0].Point;
-        var letterToRemove = State.FirstLetters.FirstOrDefault(x => x.X == firstLetter.X && x.Y == firstLetter.Y);
-        var isItThere = letterToRemove != null;
-        if (isItThere)
-            State.FirstLetters.Remove(letterToRemove);
+        State.ActiveFirstLetters.Remove(firstLetter);
+        State.FoundWords.Add(foundWord);
+    }
+
+    public static void AddWord(string word)
+    {
+        var foundWord = new FoundWord(word, new List<Point>(), Color.white);
+        State.FoundWords.Add(foundWord);
 
     }
 
-    internal static Point GetFirstPoint()
+    internal static Point GetFirstLetter()
     {
-        var index = Random.Range(0, State.FirstLetters.Count);
-        var point = State.FirstLetters[index];
+        var index = Random.Range(0, State.ActiveFirstLetters.Count);
+        var point = State.ActiveFirstLetters[index];
 
-        if (State.OpenLetters.Contains(point))
-        {
-            Debug.Log($"This letter is already open");
-            return GetFirstPoint();
-        }
-        State.FirstLetters.Remove(point);
-        State.OpenLetters.Add(point);
-        OnActiveFirstLetterRemoved?.Invoke(State.FirstLetters.Count);
+        State.ActiveFirstLetters.Remove(point);
+        OnActiveFirstLetterRemoved?.Invoke(State.ActiveFirstLetters.Count);
         return point;
     }
 }

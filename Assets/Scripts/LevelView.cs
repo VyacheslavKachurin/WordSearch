@@ -16,6 +16,8 @@ public class LevelView : MonoBehaviour, IAdsRequest
     public static event Action<Vector2> OnWordFound;
     public static event Action OnBackClicked;
 
+    public static event Action FinishLevelClicked;
+
     private VisualElement _root;
     private Label _levelTheme;
     private VisualElement _wordsHolder;
@@ -44,19 +46,20 @@ public class LevelView : MonoBehaviour, IAdsRequest
     private VisualElement _finishView;
     private Button _nextLvlBtn;
     private VisualElement _progressFill;
+    private VisualElement _progressBack;
     private Label _progressLbl;
     private VisualElement _cup;
     private VisualElement _progressDiv;
     private VisualElement _stampDiv;
     private VisualElement _stampPic;
+    private Label _stampTitleLbl;
     private VisualElement _levelView;
     [SerializeField] private float _fillDelay = 0.1f;
-    [SerializeField] private float _fillAdd = 0.1f;
-    private Coroutine _progressBarCoroutine;
+    [SerializeField] private float _fillAdd = 1f;
+    private bool _progressBarCoroutine;
     private Button _removeAdsBtn;
 
     private const string NEXT_LVL_BTN_ON = "next-lvl-btn-on";
-
 
     private const string TARGET_WORD_LEFT = "target-word-left";
     private const string TARGET_WORD_RIGHT = "target-word-right";
@@ -101,6 +104,10 @@ public class LevelView : MonoBehaviour, IAdsRequest
     [SerializeField] private Color _blinkColor = new(255, 86, 79);
 
     private bool _isBlinking;
+    [SerializeField] private int _playAwardDelay = 2000;
+    [SerializeField] private int _sliderFillDelay = 1;
+    private Button _finishBtn;
+
     public bool IsBlinking
     {
         get { return _isBlinking; }
@@ -184,6 +191,23 @@ public class LevelView : MonoBehaviour, IAdsRequest
         InitShopBtn();
         InitFinishView();
         InitGameModes();
+
+    }
+
+    private void HandleFirstLettersRemoved(int amount)
+    {
+        if (amount < 3)
+            _abilityBtns[Ability.Lighting].SetEnabled(false);
+        if (amount == 0)
+            _abilityBtns[Ability.Hint].SetEnabled(false);
+
+    }
+
+    public void ShowControlBtns()
+    {
+        _finishBtn = _root.Q<Button>("finish-btn");
+        _finishBtn.Toggle(true);
+        _finishBtn.clicked += () => FinishLevelClicked?.Invoke();
     }
 
     private void InitGameModes()
@@ -208,12 +232,14 @@ public class LevelView : MonoBehaviour, IAdsRequest
         _nextLvlBtn.clicked += HandleNextLvlClick;
 
         _progressFill = _root.Q<VisualElement>("progress-fill");
+        _progressBack = _root.Q<VisualElement>("progress-back");
         _progressLbl = _root.Q<Label>("progress-lbl");
         _cup = _root.Q<VisualElement>("cup");
 
         _progressDiv = _root.Q<VisualElement>("progress-div");
         _stampDiv = _root.Q<VisualElement>("stamp-div");
         _stampPic = _root.Q<VisualElement>("stamp-pic");
+        _stampTitleLbl = _root.Q<Label>("stamp-title-lbl");
     }
 
 
@@ -259,20 +285,24 @@ public class LevelView : MonoBehaviour, IAdsRequest
 
     public void ShowGameOver()
     {
+
         _levelView.Toggle(false);
 
         _finishView.Toggle(false);
 
         _gameOverView.Toggle(true);
-        _checkUpdatesBtn.clicked += () => Application.OpenURL($"itms-apps://itunes.apple.com/app/id{Session.AppId}"); ;
+        _checkUpdatesBtn.clicked += () => Application.OpenURL($"itms-apps://itunes.apple.com/app/id{Session.AppId}");
+
     }
 
     private void AnimatePurchasedCoins(int payout)
     {
+        _shopView.ToggleProcessPanel(false);
         Debug.Log($"Animate Purchased Coins: {payout}");
         PlayAward(payout, _shopView.BuyBtn, _shopView.BuyBtn, true);
         _coinsView.HideAsync();
         _shopView.BuyBtn = null;
+
     }
 
     private void RewardForAds()
@@ -354,12 +384,16 @@ public class LevelView : MonoBehaviour, IAdsRequest
 
     public async Task ShowFinishView(int episode, int totalEpisodes)
     {
+        Debug.Log($"show finish view");
+        _backBtn.Toggle(false);
+        var adsController = AdsController.Instance;
+        adsController.RemoveBanner();
+
         _progressDiv.Toggle(true);
 
         _isSliderDone = false;
         _levelView.Toggle(false);
 
-        Debug.Log($"show finish view");
         _progressLbl.text = $"{episode}/{totalEpisodes}";
 
         _finishView.Toggle(true);
@@ -373,7 +407,7 @@ public class LevelView : MonoBehaviour, IAdsRequest
 
         while (!_isSliderDone)
             await Task.Yield();
-        _progressBarCoroutine = null;
+        _progressBarCoroutine = false;
 
     }
 
@@ -381,8 +415,10 @@ public class LevelView : MonoBehaviour, IAdsRequest
 
     private void AnimateProgressBar(int episode, int totalEpisodes)
     {
-        if (_progressBarCoroutine != null) return;
-        _progressBarCoroutine = StartCoroutine(FillProgressBar(episode, totalEpisodes));
+        if (_progressBarCoroutine) return;
+        //  _progressBarCoroutine = StartCoroutine(FillProgressBar(episode, totalEpisodes));
+        FillProgressBar(episode, totalEpisodes);
+        _progressBarCoroutine = true;
 
     }
 
@@ -393,39 +429,48 @@ public class LevelView : MonoBehaviour, IAdsRequest
         _nextLvlBtn.RemoveFromClassList(NEXT_LVL_BTN_ON);
     }
 
-    private IEnumerator FillProgressBar(int episode, int totalEpisodes)
+    private async void FillProgressBar(int episode, int totalEpisodes)
     {
-        Debug.Log($"Started filling progress bar");
+
+        _progressBarCoroutine = true;
 
         var targetFill = 100 * ((float)episode / (float)totalEpisodes);
         var currentFill = _progressFill.style.width.value.value;
 
         while (_finishView.resolvedStyle.opacity < 0.9f)
         {
-            yield return new WaitForEndOfFrame();
+            // yield return new WaitForEndOfFrame();
+            await Task.Yield();
             Debug.Log($"Opacity: {_finishView.resolvedStyle.opacity}");
         }
-
-        while (_progressFill.style.width.value.value < targetFill)
+        StyleLength newWidth = _progressFill.style.width;
+        while (newWidth.value.value < targetFill)
         {
             currentFill += _fillAdd;
-            _progressFill.style.width = new StyleLength(new Length(currentFill, LengthUnit.Percent));
-            yield return new WaitForSeconds(_fillDelay / 4);
+
+            newWidth = new StyleLength(new Length(currentFill, LengthUnit.Percent));
+            _progressFill.style.width = newWidth;
+            await Task.Delay(_sliderFillDelay);
         }
         _isSliderDone = true;
     }
 
-    public async Task ShowStageFinish(int prizeAmount, Texture2D stampPic)
+    public async Task ShowStageFinish(int prizeAmount, Texture2D stampPic, string stampTitle)
     {
         PlayAward(prizeAmount, _giftPic, _cup);
+
+        await Task.Delay(_playAwardDelay);
+
         _progressDiv.AddToClassList(HIDE_STYLE);
         _stampDiv.AddToClassList(HIDE_STYLE);
         while (_progressDiv.resolvedStyle.opacity > 0.1f)
             await Task.Yield();
         _progressDiv.Toggle(false);
+
         _stampDiv.Toggle(true);
         _stampDiv.RemoveFromClassList(HIDE_STYLE);
         _stampPic.style.backgroundImage = new StyleBackground(stampPic);
+        _stampTitleLbl.text = stampTitle;
 
     }
 
@@ -435,12 +480,16 @@ public class LevelView : MonoBehaviour, IAdsRequest
         _nextLvlBtn.SetEnabled(true);
     }
 
-    private void HandleNextLvlClick()
+    private async void HandleNextLvlClick()
     {
         AudioManager.Instance.PlaySound(Sound.Click);
+        _stampDiv.Toggle(false);
+        HideFinishView();
+        while (_finishView.resolvedStyle.display == DisplayStyle.Flex)
+            await Task.Yield();
         NextLevelClicked?.Invoke();
         _progressDiv.Toggle(true);
-        _stampDiv.Toggle(false);
+        _progressDiv.RemoveFromClassList(HIDE_STYLE);
 
     }
 
@@ -448,7 +497,7 @@ public class LevelView : MonoBehaviour, IAdsRequest
     {
         _finishView.Toggle(false);
         _finishView.AddToClassList(HIDE_STYLE);
-        _progressBarCoroutine = null;
+        _progressBarCoroutine = false;
         _progressFill.style.width = new StyleLength(new Length(0, LengthUnit.Percent));
 
     }
@@ -458,7 +507,7 @@ public class LevelView : MonoBehaviour, IAdsRequest
         _overlayFx.SetRenderTexture(_fxCam);
     }
 
-    private void HandleFirstLettersRemoved(int lettersLeft)
+    private void UpdateRevealButtons(int lettersLeft)
     {
         if (lettersLeft < 3 && _abilityBtns[Ability.Lighting].enabledInHierarchy)
             _abilityBtns[Ability.Lighting].SetEnabled(false);
@@ -485,6 +534,7 @@ public class LevelView : MonoBehaviour, IAdsRequest
 
     public void SetLevelData(LevelData data)
     {
+
         _levelTheme.text = data.Subject;
         _finishView.Toggle(false);
         _finishView.AddToClassList(HIDE_STYLE);
@@ -498,11 +548,15 @@ public class LevelView : MonoBehaviour, IAdsRequest
 
         _levelLbl.text = $"Level: {GameDataService.GameData.Level}";
         ResetBtns();
+        _backBtn.Toggle(true);
         //SetBackPicture();
 
         // country
         // level
         // words
+
+        var adsController = AdsController.Instance;
+        adsController.LoadBanner();
     }
 
     public void AnimateWord(List<LetterUnit> letterUnits)
@@ -541,8 +595,6 @@ public class LevelView : MonoBehaviour, IAdsRequest
             });
 
         }
-
-
     }
 
     private void MoveLetter(Label letterLbl, Vector2 targetPos)
@@ -665,7 +717,7 @@ public class LevelView : MonoBehaviour, IAdsRequest
         var totalWords = _words.Count;
         var foundWords = levelState.FoundWords.Count;
         var leftWords = totalWords - foundWords;
-        var activeFirstLetters = levelState.FirstLetters.Count;
+        var activeFirstLetters = levelState.ActiveFirstLetters.Count;
 
         if (leftWords >= 3 && activeFirstLetters >= 3)
             _abilityBtns[Ability.Lighting].SetEnabled(true);
@@ -679,7 +731,7 @@ public class LevelView : MonoBehaviour, IAdsRequest
 
         if (levelState.FoundWords.Count > 0)
             foreach (var word in levelState.FoundWords)
-                HideWord(word);
+                HideWord(word.Word);
 
     }
 

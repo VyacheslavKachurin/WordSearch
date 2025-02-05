@@ -211,6 +211,8 @@ MonoBehaviour:
   _coinsFX_Handler: {fileID: 1045563879}
   _iapManager: {fileID: 1076963705}
   _backtraceClient: {fileID: 1319504819}
+  _requiredClicks: 5
+  timeoutBetweenClicks: 0.5
 --- !u!4 &669993845
 Transform:
   m_ObjectHideFlags: 0

@@ -19,6 +19,13 @@ public class MenuController : MonoBehaviour, IPrizeProvider
     [SerializeField] IAPManager _iapManager;
     [SerializeField] BacktraceClient _backtraceClient;
 
+    [SerializeField] int _requiredClicks = 5;
+    [SerializeField] float timeoutBetweenClicks = 0.5f;
+
+    private int _currentClickCount = 0;
+    private float _lastClickTime = 0;
+
+
     private void Awake()
     {
         // _menuView.SetPrizeProvider(this);
@@ -28,8 +35,44 @@ public class MenuController : MonoBehaviour, IPrizeProvider
         MenuView.PlayClicked += HandlePlayClick;
         MenuView.OnCollectionsClicked += HandleCollectionsClick;
         MenuView.OnBackClicked += HandleBackClick;
+        MenuView.CircleClicked += HandleCircleClick;
+
     }
 
+    private void OnDestroy()
+    {
+        ShopBtn.ShopCoinGeometryChanged -= SetForceFieldPos;
+        MenuView.AwardRequested -= HandleAwardRequest;
+        IAPManager.OnPurchasedCoins -= HandleAward;
+        MenuView.OnCollectionsClicked -= HandleCollectionsClick;
+        MenuView.OnBackClicked -= HandleBackClick;
+        MenuView.PlayClicked -= HandlePlayClick;
+        MenuView.CircleClicked -= HandleCircleClick;
+
+    }
+
+    private void HandleCircleClick()
+    {
+        // Check time since the last click
+        if (Time.time - _lastClickTime > timeoutBetweenClicks)
+        {
+            _currentClickCount = 0;
+        }
+
+        // Increment the click count
+        _currentClickCount++;
+        _lastClickTime = Time.time;
+
+        // Check if the required number of clicks has been reached
+        if (_currentClickCount >= _requiredClicks)
+        {
+            if (!Services.HasFullAccess())
+                Services.ExtendAccess();
+            else Services.LowerAccess();
+            AudioManager.Instance.PlaySound(Sound.Click);
+            _currentClickCount = 0; // Reset the counter
+        }
+    }
 
     private void SendUserDataAsync()
     {
@@ -100,15 +143,19 @@ public class MenuController : MonoBehaviour, IPrizeProvider
         {
             _backtraceClient.Send(e);
         }
-        // SendUserDataAsync();
+
+        var adsController = AdsController.Instance;
+        if (adsController != null) adsController.RemoveBanner();
 
     }
 
     private void HandleAward(int payout)
     {
+        _menuView.ToggleProcessPanel(false);
         var fxWorldPos = _menuView.ShowCoinsPopup(payout);
         PlayCoinsFx(fxWorldPos);
         HideCoinsPopup();
+
     }
 
     private void SetGameData()
@@ -176,15 +223,7 @@ public class MenuController : MonoBehaviour, IPrizeProvider
         Session.WasGiftReceived = true;
     }
 
-    private void OnDestroy()
-    {
-        ShopBtn.ShopCoinGeometryChanged -= SetForceFieldPos;
-        MenuView.AwardRequested -= HandleAwardRequest;
-        IAPManager.OnPurchasedCoins -= HandleAward;
-        MenuView.OnCollectionsClicked -= HandleCollectionsClick;
-        MenuView.OnBackClicked -= HandleBackClick;
 
-    }
 
     private void PopulateCollectionsView()
     {

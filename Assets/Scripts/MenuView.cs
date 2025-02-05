@@ -11,6 +11,7 @@ public class MenuView : MonoBehaviour
 {
 
     public static event Action<Vector2, Vector2> AwardRequested;
+    public static event Action CircleClicked;
 
     private VisualElement _root;
     private Label _levelNumberLbl;
@@ -76,7 +77,7 @@ public class MenuView : MonoBehaviour
     private int _currentStampPage;
 
     [SerializeField] BacktraceClient _backtraceClient;
-
+    private VisualElement _circle;
 
     private void Awake()
     {
@@ -270,12 +271,13 @@ public class MenuView : MonoBehaviour
         _timeBtn = _root.Q<Button>("time-btn");
         _timeBtn.clicked += HandleTimeBtn;
 
-
+        _circle = _root.Q<VisualElement>("circle");
+        _circle.RegisterCallback<ClickEvent>(evt =>
+        {
+            CircleClicked?.Invoke();
+        });
 
     }
-
-
-
 
     private void HandleTimeBtn()
     {
@@ -284,8 +286,8 @@ public class MenuView : MonoBehaviour
 
     private void ShowSettings()
     {
-        InitCrash();
-        //  _plateView.ShowPlate(Plate.Settings);
+        // InitCrash();
+        _plateView.ShowPlate(Plate.Settings);
     }
 
     private void InitCrash()
@@ -364,7 +366,6 @@ public class MenuView : MonoBehaviour
             btn.AddToClassList(GIFT_PICK_HIDE);
         }
         _giftCloseBtn.Toggle(false);
-
     }
 
     [ContextMenu("Log dimensions")]
@@ -511,6 +512,11 @@ public class MenuView : MonoBehaviour
     {
         _content.Add(page);
         _stampPages.Add(page);
+    }
+
+    internal void ToggleProcessPanel(bool state)
+    {
+       _shopView.ToggleProcessPanel(state);
     }
 }
 

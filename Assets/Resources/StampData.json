@@ -70,90 +70,54 @@
         },
         {
             "Season": 18,
-            "Name": "Yellowstone Park Geysers, USA"
-        },
-        {
-            "Season": 19,
             "Name": "Victoria Falls, Zambia/Zimbabwe "
         },
         {
-            "Season": 20,
-            "Name": "Senso-ji Temple, Japan "
-        },
-        {
-            "Season": 21,
+            "Season": 19,
             "Name": "The Canals of Amsterdam, the Netherlands"
         },
         {
-            "Season": 22,
-            "Name": "Opera in Sydney, Australia "
-        },
-        {
-            "Season": 23,
+            "Season": 20,
             "Name": "Mount Mulanje, Malawi"
         },
         {
-            "Season": 24,
-            "Name": "Antelope Canyon, USA"
-        },
-        {
-            "Season": 25,
-            "Name": "Mont Saint Michel Monastery, France "
-        },
-        {
-            "Season": 26,
+            "Season": 21,
             "Name": "Park Guell, Spain "
         },
         {
-            "Season": 27,
+            "Season": 22,
             "Name": "St. Basil's Cathedral, Russia "
         },
         {
-            "Season": 28,
+            "Season": 23,
             "Name": "Canaima National Park, Venezuela "
         },
         {
-            "Season": 29,
+            "Season": 24,
             "Name": "Himeji Castle, Japan "
         },
         {
-            "Season": 30,
+            "Season": 25,
             "Name": "Sigiriya Rock, Sri Lanka"
         },
         {
-            "Season": 31,
+            "Season": 26,
             "Name": "Burj Khalifa, UAE "
         },
         {
-            "Season": 32,
-            "Name": "The Red Caves of Petra, Jordan "
-        },
-        {
-            "Season": 33,
-            "Name": "Guggenheim Museum, Spain "
-        },
-        {
-            "Season": 34,
+            "Season": 27,
             "Name": "Perito Moreno Glacier, Argentina "
         },
         {
-            "Season": 35,
+            "Season": 28,
             "Name": "Masai Mara, Kenya "
         },
         {
-            "Season": 36,
-            "Name": "Golden Gate Bridge, USA"
-        },
-        {
-            "Season": 37,
+            "Season": 29,
             "Name": "Palenque Temple Complex, Mexico "
         },
         {
-            "Season": 38,
-            "Name": "Bayon Temple, Cambodia "
-        },
-        {
-            "Season": 39,
+            "Season": 30,
             "Name": "Banff National Park, Canada"
         }
     ]

@@ -21,7 +21,7 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
     [SerializeField] private LevelView _levelView;
     [SerializeField] BacktraceClient _backtraceClient;
 
-
+    public static event Action FirePurchaseFailed;
 
     private async void Awake()
     {
@@ -91,6 +91,7 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
             yield return new WaitForSeconds(0.1f);
         }
         FillUpShopItems(shopItems);
+        RestorePurchases();
 
     }
 
@@ -188,15 +189,15 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
             if (item.type == ProductType.Consumable)
             {
                 Balance.AddBalance(payout);
+                KeitaroSender.SendPurchase(item.id);
                 OnPurchasedCoins?.Invoke((int)payout);
             }
             else
             {
                 Session.NoAds = true;
                 var adsController = AdsController.Instance;
-
+                KeitaroSender.SendPurchase(item.id);
                 adsController?.RemoveBanner();
-
             }
 
             AudioManager.Instance.PlaySound(Sound.Coins);
@@ -219,6 +220,7 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
     {
         Debug.Log($"IAP Purchase Failed: {p}");
         _backtraceClient.Send(new Exception($"IAP Purchase Failed: {p}"));
+        FirePurchaseFailed?.Invoke();
     }
 
     /// <summary>

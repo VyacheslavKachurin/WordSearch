@@ -39,7 +39,7 @@ public static class Session
         set
         {
             PlayerPrefs.SetInt(IS_GAME_WON, value ? 1 : 0);
-            if (value) EventSender.SendGamePassed();
+            if (value) AppMetricaService.SendGamePassed();
         }
     }
 

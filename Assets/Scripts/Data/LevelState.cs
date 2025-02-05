@@ -1,38 +1,28 @@
 
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Scripting;
 
-[Preserve]
+
 public class LevelState
 {
-    [Preserve]
-    public int Level;
-    [Preserve]
-    public bool FakeLettersRemoved;
-    [Preserve]
-    public List<Point> FirstLetters;
-    [Preserve]
-    public List<string> FoundWords;
-    [Preserve]
-    public List<Point> FoundLetters;
-    [Preserve]
-    public List<LineState> Lines;
-    [Preserve]
-    public List<Point> OpenLetters;
-    [Preserve]
-    public List<Point> RevealedFakeLetters;
-    [Preserve]
 
-    public LevelState(bool fakeLettersRemoved, List<Point> firstLetters, List<string> foundWords, List<Point> foundLetters, List<LineState> lines, List<Point> openLetters, int level)
+    public bool FakeLettersRemoved { get; set; }
+    public List<Point> ActiveFirstLetters { get; set; }
+    public List<Point> RevealedFakeLetters { get; set; }
+    public List<RevealedLetter> RevealedFirstLetters { get; set; }
+
+    public List<FoundWord> FoundWords { get; set; }
+
+
+    public LevelState(bool fakeLettersRemoved, List<Point> firstLetters)
     {
         FakeLettersRemoved = fakeLettersRemoved;
-        FirstLetters = firstLetters;
-        FoundWords = foundWords;
-        FoundLetters = foundLetters;
-        Lines = lines;
-        OpenLetters = openLetters;
-        Level = level;
+        ActiveFirstLetters = firstLetters;
+        FoundWords = new List<FoundWord>();
+        RevealedFakeLetters = new List<Point>();
+        RevealedFirstLetters = new List<RevealedLetter>();
     }
 
 }

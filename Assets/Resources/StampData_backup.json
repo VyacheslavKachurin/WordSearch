@@ -1,0 +1,160 @@
+{
+    "Seasons": [
+        {
+            "Season": 1,
+            "Name": "The Great Wall of China, China "
+        },
+        {
+            "Season": 2,
+            "Name": "The city of Cusco, Peru"
+        },
+        {
+            "Season": 3,
+            "Name": "Eiffel Tower, France "
+        },
+        {
+            "Season": 4,
+            "Name": "Grand Canyon, USA "
+        },
+        {
+            "Season": 5,
+            "Name": "The Taj Mahal, India "
+        },
+        {
+            "Season": 6,
+            "Name": "Pyramids of Giza, Egypt "
+        },
+        {
+            "Season": 7,
+            "Name": "Great Barrier Reef, Australia "
+        },
+        {
+            "Season": 8,
+            "Name": "Petra, Jordan "
+        },
+        {
+            "Season": 9,
+            "Name": "Colosseum, Italy "
+        },
+        {
+            "Season": 10,
+            "Name": "Statue of Christ the Redeemer, Brazil "
+        },
+        {
+            "Season": 11,
+            "Name": "Stonehenge, United Kingdom "
+        },
+        {
+            "Season": 12,
+            "Name": "Angkor Wat, Cambodia "
+        },
+        {
+            "Season": 13,
+            "Name": "Blue Lagoon, Iceland "
+        },
+        {
+            "Season": 14,
+            "Name": "Acropolis, Greece "
+        },
+        {
+            "Season": 15,
+            "Name": "Borobudur, Indonesia "
+        },
+        {
+            "Season": 16,
+            "Name": "Serengeti Safari, Tanzania "
+        },
+        {
+            "Season": 17,
+            "Name": "Neuschwanstein Castle, Germany "
+        },
+        {
+            "Season": 18,
+            "Name": "Yellowstone Park Geysers, USA"
+        },
+        {
+            "Season": 19,
+            "Name": "Victoria Falls, Zambia/Zimbabwe "
+        },
+        {
+            "Season": 20,
+            "Name": "Senso-ji Temple, Japan "
+        },
+        {
+            "Season": 21,
+            "Name": "The Canals of Amsterdam, the Netherlands"
+        },
+        {
+            "Season": 22,
+            "Name": "Opera in Sydney, Australia "
+        },
+        {
+            "Season": 23,
+            "Name": "Mount Mulanje, Malawi"
+        },
+        {
+            "Season": 24,
+            "Name": "Antelope Canyon, USA"
+        },
+        {
+            "Season": 25,
+            "Name": "Mont Saint Michel Monastery, France "
+        },
+        {
+            "Season": 26,
+            "Name": "Park Guell, Spain "
+        },
+        {
+            "Season": 27,
+            "Name": "St. Basil's Cathedral, Russia "
+        },
+        {
+            "Season": 28,
+            "Name": "Canaima National Park, Venezuela "
+        },
+        {
+            "Season": 29,
+            "Name": "Himeji Castle, Japan "
+        },
+        {
+            "Season": 30,
+            "Name": "Sigiriya Rock, Sri Lanka"
+        },
+        {
+            "Season": 31,
+            "Name": "Burj Khalifa, UAE "
+        },
+        {
+            "Season": 32,
+            "Name": "The Red Caves of Petra, Jordan "
+        },
+        {
+            "Season": 33,
+            "Name": "Guggenheim Museum, Spain "
+        },
+        {
+            "Season": 34,
+            "Name": "Perito Moreno Glacier, Argentina "
+        },
+        {
+            "Season": 35,
+            "Name": "Masai Mara, Kenya "
+        },
+        {
+            "Season": 36,
+            "Name": "Golden Gate Bridge, USA"
+        },
+        {
+            "Season": 37,
+            "Name": "Palenque Temple Complex, Mexico "
+        },
+        {
+            "Season": 38,
+            "Name": "Bayon Temple, Cambodia "
+        },
+        {
+            "Season": 39,
+            "Name": "Banff National Park, Canada"
+        }
+    ]
+}

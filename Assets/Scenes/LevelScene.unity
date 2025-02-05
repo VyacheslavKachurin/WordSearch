@@ -150,8 +150,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _letter1: {fileID: 0}
   _letter2: {fileID: 0}
-  _triggerPrefab: {fileID: 0}
-  _triggerSpeed: 1
+  _triggerPrefab: {fileID: 4379342638207532924, guid: 0759ba2eef8e747489872de20acf7bb4, type: 3}
+  _triggerSpeed: 0
 --- !u!4 &25732378
 Transform:
   m_ObjectHideFlags: 0
@@ -834,6 +834,54 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38e62ee88ccc04234ace23dd4d76f3e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1072345910
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1072345912}
+  - component: {fileID: 1072345911}
+  m_Layer: 0
+  m_Name: InputMock
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1072345911
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1072345910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4784e488bc3ee441e8b32696e6af2f07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _letter1: {fileID: 0}
+  _letter2: {fileID: 0}
+  _triggerPrefab: {fileID: 4379342638207532924, guid: 0759ba2eef8e747489872de20acf7bb4, type: 3}
+  _triggerSpeed: 50
+--- !u!4 &1072345912
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1072345910}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1148785180 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7295536969090361296, guid: 1b0b483e238b44b25b28c6fced1dac6a, type: 3}
@@ -981,6 +1029,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _menuView: {fileID: 0}
   _levelView: {fileID: 1148785180}
+  _backtraceClient: {fileID: 0}
 --- !u!4 &2066536711
 Transform:
   m_ObjectHideFlags: 0
@@ -1130,6 +1179,10 @@ PrefabInstance:
       value: LevelLogic
       objectReference: {fileID: 0}
     - target: {fileID: 7508644550789951793, guid: d21a5ff31f2c647b68d33541c6086c2c, type: 3}
+      propertyPath: _winFX
+      value: 
+      objectReference: {fileID: 687783264}
+    - target: {fileID: 7508644550789951793, guid: d21a5ff31f2c647b68d33541c6086c2c, type: 3}
       propertyPath: _canvas
       value: 
       objectReference: {fileID: 332169769}
@@ -1184,11 +1237,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 653042333132667601, guid: 17a33570626f24b789e8d24a2885aba7, type: 3}
       propertyPath: _season
-      value: 38
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 653042333132667601, guid: 17a33570626f24b789e8d24a2885aba7, type: 3}
       propertyPath: _episode
-      value: 7
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 653042333132667601, guid: 17a33570626f24b789e8d24a2885aba7, type: 3}
       propertyPath: _gameBoard
@@ -1483,7 +1536,7 @@ PrefabInstance:
       objectReference: {fileID: 687783264}
     - target: {fileID: 7295536969090361296, guid: 1b0b483e238b44b25b28c6fced1dac6a, type: 3}
       propertyPath: _fillAdd
-      value: 0.1
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7295536969090361296, guid: 1b0b483e238b44b25b28c6fced1dac6a, type: 3}
       propertyPath: _fxScale
@@ -1529,6 +1582,10 @@ PrefabInstance:
       propertyPath: _coinsFX_Handler
       value: 
       objectReference: {fileID: 245393402}
+    - target: {fileID: 7295536969090361296, guid: 1b0b483e238b44b25b28c6fced1dac6a, type: 3}
+      propertyPath: _sliderFillDelay
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 7295536969090361296, guid: 1b0b483e238b44b25b28c6fced1dac6a, type: 3}
       propertyPath: _letterAnimDuration
       value: 1
@@ -1690,3 +1747,4 @@ SceneRoots:
   - {fileID: 25732378}
   - {fileID: 659600967}
   - {fileID: 2066536711}
+  - {fileID: 1072345912}

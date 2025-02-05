@@ -122,7 +122,8 @@ public class AdsController : MonoBehaviour, IUnityAdsInitializationListener, IUn
 
     private void OnBannerShown()
     {
-        Debug.Log($"Banner Shown");
+        if (SceneManager.GetActiveScene().buildIndex == 0)
+            RemoveBanner();
     }
 
     private void OnBannerHidden()
