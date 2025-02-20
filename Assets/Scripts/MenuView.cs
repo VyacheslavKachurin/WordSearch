@@ -1,14 +1,18 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
+using Backtrace.Unity;
+using Backtrace.Unity.Model;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class MenuView : MonoBehaviour
 {
-
     public static event Action<Vector2, Vector2> AwardRequested;
+    public static event Action RemoveAdsClicked;
+    public static event Action CircleClicked;
 
     private VisualElement _root;
     private Label _levelNumberLbl;
@@ -26,6 +30,7 @@ public class MenuView : MonoBehaviour
     private const string GIFT_PICK_HIDE = "gift-pick-hide";
     private const string GIFT_PICK_WIN = "gift-pick-win";
 
+
     private Button _classicBtn;
     private Button _giftBtn;
     private Button _settingsBtn;
@@ -34,7 +39,6 @@ public class MenuView : MonoBehaviour
     private VisualElement _interactionDiv;
     private Label _newGiftTimerLbl;
     private Button _giftCloseBtn;
-    private VisualElement _shopBg;
     private Button _adsBtn;
     private CoinsView _coinsView;
     private PlateView _plateView;
@@ -73,21 +77,25 @@ public class MenuView : MonoBehaviour
     private List<VisualElement> _stampPages = new();
     private int _currentStampPage;
 
-    private void Awake()
+    [SerializeField] BacktraceClient _backtraceClient;
+    private VisualElement _circle;
+    private MessageView _messageView;
+    private Label _messageLbl;
+
+    public void Init()
     {
         _root = GetComponent<UIDocument>().rootVisualElement;
+        _messageView = _root.Q<MessageView>();
 
         InitMenuDiv();
         InitGiftView();
         InitOverlayFx();
-        //
         InitShopBtn();
         InitShopView();
         InitBackBtn();
         InitCollectionsView();
 
         _blurPnl = _root.Q<VisualElement>("blur-panel");
-
         _coinsView = _root.Q<CoinsView>();
 
         _plateView = _root.Q<PlateView>();
@@ -95,14 +103,37 @@ public class MenuView : MonoBehaviour
 
         _menuDiv = _root.Q<VisualElement>("menu-div");
 
-        _adsBtn.clicked += BuyNoAds;
 
+        EventManager.RemoveAdsClicked += ShowPurchaseMessage;
+        EventManager.PurchaseClicked += ShowPurchaseMessage;
+        EventManager.AdsRemoved += HideAdsBtn;
+
+    }
+
+    private void ShowPurchaseMessage(int obj)
+    {
+        ShowMessage("Processing purchase...");
+    }
+
+    private void ShowPurchaseMessage()
+    {
+        ShowMessage("Processing purchase...");
+    }
+
+    public void ShowMessage(string message)
+    {
+        _messageView.Toggle(true);
+        _messageView.ShowMessage(message);
+    }
+
+    public void HideMessage()
+    {
+        _messageView.HideMessage();
     }
 
     private void InitCollectionsView()
     {
         _collectionsView = _root.Q("collections-view");
-        // _collectionsView.RemoveFromClassList(PANEL_ANIM_IN);
         _collectionsView.RemoveFromClassList("PANEL_ANIM");
         _collectionsNextBtn = _root.Q<Button>("next-btn");
         _collectionsBackBtn = _collectionsView.Q<Button>("back-btn");
@@ -204,13 +235,14 @@ public class MenuView : MonoBehaviour
 
     }
 
-    private void InitShopBtn()
+    public void InitShopBtn()
     {
         _shopBtn = _root.Q<ShopBtn>();
         _shopBtn.SetRoot(_root);
-        _shopBtn.InitBalance();
         ShopBtn.ShopClicked += ShowShopView;
+
     }
+
 
     private void ShowShopView()
     {
@@ -249,6 +281,8 @@ public class MenuView : MonoBehaviour
     private void InitMenuDiv()
     {
         _adsBtn = _root.Q<Button>("ads-btn");
+        _adsBtn.clicked += HandleRemoveAdsClick;
+
         _giftBtn = _root.Q<Button>("gift-btn");
         _giftBtn.clicked += ShowGiftView;
 
@@ -262,51 +296,66 @@ public class MenuView : MonoBehaviour
         _classicBtn.clicked += HandleClassicClick;
 
         _timeBtn = _root.Q<Button>("time-btn");
-        _timeBtn.clicked += HandleTimeBtn;
+        _timeBtn.clicked += HandleTimeClick;
 
-
+        _circle = _root.Q<VisualElement>("circle");
+        _circle.RegisterCallback<ClickEvent>(evt =>
+        {
+            CircleClicked?.Invoke();
+        });
 
     }
 
-
-
-
-    private void HandleTimeBtn()
+    private void HandleTimeClick()
     {
         PlayClicked?.Invoke(false);
     }
 
     private void ShowSettings()
     {
+        // InitCrash();
         _plateView.ShowPlate(Plate.Settings);
     }
 
+    private void InitCrash()
+    {
 
-    public void SetBackPicture()
+        try
+        {
+            int[] a = new int[0];
+            Debug.Log(a[1]);
+        }
+        catch (Exception e)
+        {
+            _backtraceClient.Send(e);
+        }
+
+    }
+
+    public void SetBackPicture(int season)
     {
         var bg = _root.Q<VisualElement>("bg");
         var bgController = GameObject.Find("BGController").GetComponent<BgController>();
-        var bgStyle = new StyleBackground(bgController.GetBackView());
-        bg.style.backgroundImage = bgStyle;
+        var bgStyle = new StyleBackground(Extensions.GetTexture(season));
+        if (bgStyle != null)
+            bg.style.backgroundImage = bgStyle;
 
-        _shopBg.style.backgroundImage = bgStyle;
     }
 
     [ContextMenu("Remove banner")]
     private void TryRemoveBanner()
     {
-        AdsController.Instance?.RemoveBanner();
+        AdsController.Instance?.HideBanner();
     }
 
     public void HideAdsBtn()
     {
         _adsBtn.style.visibility = Visibility.Hidden;
-        //AdsController.Instance?.RemoveBanner();
     }
 
-    private void BuyNoAds()
+    private void HandleRemoveAdsClick()
     {
-        _shopView.InitRemoveAds();
+        EventManager.TriggerEvent(Event.RemoveAdsRequest);
     }
 
     private void HandleClassicClick()
@@ -316,8 +365,14 @@ public class MenuView : MonoBehaviour
 
     void OnDestroy()
     {
-        _adsBtn.clicked -= BuyNoAds;
+        _adsBtn.clicked -= HandleRemoveAdsClick;
         ShopBtn.ShopClicked -= ShowShopView;
+        EventManager.AdsRemoved -= HideAdsBtn;
+
+        EventManager.RemoveAdsClicked -= ShowPurchaseMessage;
+        EventManager.PurchaseClicked -= ShowPurchaseMessage;
+
+
     }
 
 
@@ -327,7 +382,7 @@ public class MenuView : MonoBehaviour
         var element = _shopView.BuyBtn;
         var pos = element.worldBound.position;
         _coinsView.ShowCoinsLbl(pos, prize);
-        AudioManager.Instance.PlaySound(Sound.Coins);
+
         var worldPos = element.GetWorldPosition(_root);
         _shopView.BuyBtn = null;
         return worldPos;
@@ -343,7 +398,6 @@ public class MenuView : MonoBehaviour
             btn.AddToClassList(GIFT_PICK_HIDE);
         }
         _giftCloseBtn.Toggle(false);
-
     }
 
     [ContextMenu("Log dimensions")]
@@ -469,14 +523,17 @@ public class MenuView : MonoBehaviour
 
     }
 
-    internal void SetLevelData(int lastLevel, int lastEpisode, int lastTotalEpisodes)
+    public void SetLevelData(int lastLevel, int lastEpisode, int lastTotalEpisodes)
     {
+        HideMessage();
         _levelNumberLbl.text = lastLevel.ToString();
         float percentWidth = 0;
         if (lastEpisode > 1)
             percentWidth = (lastEpisode - 1) / (float)lastTotalEpisodes * 100;
 
         _sliderFill.style.width = new StyleLength(new Length(percentWidth, LengthUnit.Percent));
+
+
     }
 
     public ViewOpen GetCurrentView()
@@ -490,6 +547,91 @@ public class MenuView : MonoBehaviour
     {
         _content.Add(page);
         _stampPages.Add(page);
+    }
+
+    public void PopulateCollectionsView(List<StampItem> seasons)
+    {
+
+
+        var index = 0;
+        VisualElement page = null;
+        VisualElement firstRow = null;
+        VisualElement secondRow = null;
+        VisualElement targetRow = null;
+
+        for (int i = 0; i < seasons.Count; i++)
+        {
+            if (index == 0)
+            {
+                page = GetPage();
+                firstRow = page.Q<VisualElement>("first-row");
+                secondRow = page.Q<VisualElement>("second-row");
+            }
+            targetRow = index <= 3 ? firstRow : secondRow;
+            var season = seasons[i];
+
+            var stampItem = new PlaceStamp();
+            var caption = season.Name;
+            caption = caption.Replace(",", ",\n");
+            stampItem.SetCaption(caption);
+
+            var texture = Extensions.GetTexture(season.Season, true);
+            stampItem.SetImage(texture);
+            stampItem.Unlock(season.IsUnlocked);
+            targetRow.Add(stampItem);
+            index++;
+            if (index == 8)
+            {
+                AddPage(page);
+                index = 0;
+            }
+
+        }
+        ShowStampPage(0);
+    }
+
+
+
+    private VisualElement GetPage()
+    {
+        var page = new VisualElement
+        {
+            name = "page"
+        };
+        page.style.flexGrow = 1;
+        page.style.flexDirection = FlexDirection.Column;
+        var row1 = GetRow("first-row");
+        var row2 = GetRow("second-row");
+        page.Add(row1);
+        page.Add(row2);
+        return page;
+    }
+
+
+    private VisualElement GetRow(string name)
+    {
+        var row = new VisualElement
+        {
+            name = name,
+            style = { flexDirection = FlexDirection.Row }
+        };
+        row.AddToClassList("collections-row");
+        return row;
+    }
+
+
+
+    internal void RequireConnection(bool isConnected)
+    {
+        if (!isConnected)
+            _messageView.ShowMessage("You need to enable internet connection to play the game.");
+        else _messageView.HideMessage();
+    }
+
+    internal void HideAdsOffer()
+    {
+        _shopView.HideAdsOffer();
+
     }
 }
 

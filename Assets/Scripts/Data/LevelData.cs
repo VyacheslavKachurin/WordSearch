@@ -1,40 +1,19 @@
-
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 using UnityEngine.Scripting;
 
 [Preserve]
 public class LevelData
 {
+    public string Subject { get; set; }
+    public WordData[] Words { get; set; }
+    public char[,] Matrix { get; set; }
+    public int Width { get; set; }
+    public int Height { get; set; }
+    public List<Point> FakeLetters { get; set; }
+    public char this[int x, int y] => Matrix[x, y];
 
     [Preserve]
-    public string Subject;
-    [Preserve]
-    public List<string> Words;
-    [Preserve]
-    public char[,] Matrix;
-    [Preserve]
-    public int Width;
-    [Preserve]
-    public int Height;
-
-    [Preserve]
-    public char this[int y, int x] => Matrix[y, x];
-    [Preserve]
-    public List<Point> FakeLetters;
-    [Preserve]
-    public List<Point> FirstLetters;
-
-    [Preserve]
-    public List<Point> LastLetters;
-
-
-
-
-    [Preserve]
-    public LevelData(string subject, List<string> words, char[,] matrix, int width, int height, List<Point> fakeLetters, List<Point> firstLetters, List<Point> lastLetters)
+    public LevelData(string subject, WordData[] words, char[,] matrix, int width, int height, List<Point> fakeLetters)
     {
         Subject = subject;
         Words = words;
@@ -42,33 +21,57 @@ public class LevelData
         Width = width;
         Height = height;
         FakeLetters = fakeLetters;
-        FirstLetters = firstLetters;
-        LastLetters = lastLetters;
     }
-
-    [Preserve]
-    public LevelData() { }
-
 }
 
 [Preserve]
-public class Point
+public class WordData
 {
     [Preserve]
+    public WordData(string word, Point firstLetter, Point lastLetter)
+    {
+        Word = word;
+        FirstLetter = firstLetter;
+        LastLetter = lastLetter;
+    }
+
+    public string Word { get; set; }
+    public Point FirstLetter { get; set; }
+    public Point LastLetter { get; set; }
+}
+
+public struct Point
+{
     public int X { get; set; }
-    [Preserve]
     public int Y { get; set; }
-    [Preserve]
     public Point(int x, int y)
     {
         X = x;
         Y = y;
     }
 
-    public Vector2 GetVector()
+    public static bool operator ==(Point a, Point b)
     {
-        return new Vector2(X, Y);
+        return a.X == b.X && a.Y == b.Y;
     }
 
+    public static bool operator !=(Point a, Point b)
+    {
+        return a.X != b.X || a.Y != b.Y;
+    }
+
+    public override bool Equals(object obj)
+    {
+        if (obj is Point other)
+        {
+            return this == other;
+        }
+        return false;
+    }
+
+    public override int GetHashCode()
+    {
+        return X.GetHashCode() ^ Y.GetHashCode();
+    }
 
 }

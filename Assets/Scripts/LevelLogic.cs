@@ -12,6 +12,7 @@ public class LevelLogic : MonoBehaviour
     [SerializeField] LineProvider _lineProvider;
     [SerializeField] private int _prizeAmount = 25;
     [SerializeField] private ParticleSystem _winFX;
+    [SerializeField] AdsController _adsController;
 
     private AudioManager _audio;
     private bool _isFirstLetter = true;
@@ -37,13 +38,14 @@ public class LevelLogic : MonoBehaviour
     [SerializeField] private int _editorTotalEpisodes;
 #endif
 
-    [SerializeField] private float _msForWord = 4000f;
+    [SerializeField] private float _msForWord = 8000f;
     private bool _isTimerRunning;
     private Coroutine _timerCoroutine;
     [SerializeField] private float _timerStep = 0.1f;
     private string _targetWord;
     [SerializeField] private float _pauseTimerDelay = 5;
     private float _timeLeft;
+    [SerializeField] private int _finishDelay = 2000;
 
     private void Start()
     {
@@ -52,19 +54,42 @@ public class LevelLogic : MonoBehaviour
         InputHandler.OnTriggerMove += HandleTriggerMove;
         InputHandler.OnLetterDeselect += HandleLetterDeselect;
 
-
-
         _audio = AudioManager.Instance;
         // _inputHandler.SetLetterUnits(_tryWordLetterUnits);
         _shouldCheckForFinish = true;
 
-        LevelView.OnGameViewToggle += HideGameObjects;
+        LevelView.OnGameViewToggle += ToggleGameObjects;
         LevelView.OnBackClicked += HandleBackClick;
         AbilityLogic.OnFreezeRequested += FreezeTimer;
         LevelView.OnSettingsClicked += HandleSettingsClick;
         PlateView.OnCloseClicked += HandleCloseClicked;
         ShopView.OnShopClicked += HandleShopClick;
         LevelView.OnPauseNeeded += HandlePauseNeeded;
+
+        LevelView.FinishLevelClicked += FinishLevelImmediate;
+
+        if (Services.HasFullAccess())
+        {
+            _levelView.ShowControlBtns();
+        }
+
+    }
+
+    private void OnDestroy()
+    {
+        InputHandler.OnInputStop -= CheckWord;
+        InputTrigger.OnLetterEnter -= HandleLetterEnter;
+        InputHandler.OnTriggerMove -= HandleTriggerMove;
+        InputHandler.OnLetterDeselect -= HandleLetterDeselect;
+        LevelView.OnGameViewToggle -= ToggleGameObjects;
+        AbilityLogic.OnFreezeRequested -= FreezeTimer;
+        LevelView.OnSettingsClicked -= HandleSettingsClick;
+        ShopView.OnShopClicked -= HandleShopClick;
+        LevelView.OnPauseNeeded -= HandlePauseNeeded;
+        LevelView.OnBackClicked -= HandleBackClick;
+        PlateView.OnCloseClicked -= HandleCloseClicked;
+        LevelView.FinishLevelClicked -= FinishLevelImmediate;
+        _adsController.HideBanner();
 
     }
 
@@ -117,32 +142,24 @@ public class LevelLogic : MonoBehaviour
         _isTimerRunning = true;
     }
 
-    public void HideGameObjects(bool isVisible)
+    public void ToggleGameObjects(bool isVisible)
     {
+        if (_canvas == null) _canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
         _canvas.sortingOrder = isVisible ? 0 : 999;
     }
 
-    private void OnDestroy()
-    {
-        InputHandler.OnInputStop -= CheckWord;
-        InputTrigger.OnLetterEnter -= HandleLetterEnter;
-        InputHandler.OnTriggerMove -= HandleTriggerMove;
-        InputHandler.OnLetterDeselect -= HandleLetterDeselect;
-        LevelView.OnGameViewToggle -= HideGameObjects;
-        AbilityLogic.OnFreezeRequested -= FreezeTimer;
-        LevelView.OnSettingsClicked -= HandleSettingsClick;
-        ShopView.OnShopClicked -= HandleShopClick;
-        LevelView.OnPauseNeeded -= HandlePauseNeeded;
 
-    }
 
 
     [ContextMenu("Check if level done")]
-    private void CheckFinishCondition()
+    private async void CheckFinishConditionAsync()
     {
         if (!_shouldCheckForFinish) return;
         if (_words.Count == 0)
+        {
+            if (Session.IsClassicGame) await Task.Delay(_finishDelay);
             FinishLevel();
+        }
         else if (!Session.IsClassicGame)
         {
             SetTimeWord();
@@ -157,38 +174,37 @@ public class LevelLogic : MonoBehaviour
 
     private async void FinishLevel()
     {
+
+        if (!Session.IsClassicGame)
+            StopTimer();
         Session.IsSelecting = false;
-        var episode = GameDataService.GameData.Episode;
-        var totalEpisodes = GameDataService.GameData.TotalEpisodes;
+        var finishedEpisode = ProgressService.Progress.Episode;
+        var totalEpisodes = ProgressService.Progress.TotalEpisodes;
 
 #if UNITY_EDITOR
         if (_useTestData)
         {
-            episode = _editorEpisode;
+            finishedEpisode = _editorEpisode;
             totalEpisodes = _editorTotalEpisodes;
         }
 #endif
-        var isStageCompleted = episode == totalEpisodes;
-        HideGameObjects(false);
-        await _levelView.ShowFinishView(episode, totalEpisodes);
+        var isStageCompleted = finishedEpisode == totalEpisodes;
+        ToggleGameObjects(false);
+        await _levelView.ShowFinishView(finishedEpisode, totalEpisodes);
 
         if (isStageCompleted)
         {
-            var stampPic = MenuController.GetTexture(episode + 1);
-           await _levelView.ShowStageFinish(_prizeAmount, stampPic);
+            var season = ProgressService.Progress.Season;
+            var title = ProgressService.GetStampTitle(season);
+            var stampPic = Extensions.GetTexture(season + 1);
+            await _levelView.ShowStageFinish(_prizeAmount, stampPic, title);
             AudioManager.Instance.PlaySound(Sound.StageCompleted);
             Balance.AddBalance(_prizeAmount);
             _winFX.Play();
-
         }
-
+        await ProgressService.FinishLevel();
         _levelView.ShowNextLvlBtn();
-
         _shouldCheckForFinish = false;
-
-
-        if (!Session.IsClassicGame)
-            StopTimer();
 
     }
 
@@ -204,21 +220,24 @@ public class LevelLogic : MonoBehaviour
         SaveState();
     }
 
-    private void HandleBackClick()
+    private async void HandleBackClick()
     {
         AudioManager.Instance.PlaySound(Sound.Click);
 
-        var isShopOpen = _levelView.HideShopView();
+        var isShopOpen = _levelView.IsShopOpen;
         if (isShopOpen)
         {
             Session.IsSelecting = true;
-            HideGameObjects(true);
+
+            await _levelView.HideShopView();
+            ToggleGameObjects(true);
         }
         else
         {
             var adsController = AdsController.Instance;
-            adsController.RemoveBanner();
+            adsController.HideBanner();
             LevelStateService.SaveState();
+            await Resources.UnloadUnusedAssets();
             SceneManager.LoadScene(0);
         }
     }
@@ -271,11 +290,8 @@ public class LevelLogic : MonoBehaviour
         if (isWord)
         {
             RemoveWord();
-            if (Session.IsClassicGame)
-            {
-                LevelStateService.State.OpenLetters.Add(_tryWordLetterUnits[0].Point);
-                LevelStateService.State.FirstLetters.Remove(_tryWordLetterUnits[0].Point);
-            }
+            LevelStateService.AddFoundWord(_tryWord, _tryWordLetterUnits, LineProvider.LastColor);
+
         }
         else
             foreach (var letter in _tryWordLetterUnits)
@@ -285,20 +301,13 @@ public class LevelLogic : MonoBehaviour
 
         _tryWord = string.Empty;
 
+
     }
 
-    [ContextMenu("Log Found Letters")]
-    private void LogFoundLetters()
+    [ContextMenu("Add Word")]
+    private void AddWord()
     {
-        foreach (var point in LevelStateService.State.FoundLetters)
-            Debug.Log($"Found Letters: {point.GetVector()}");
-    }
-
-    [ContextMenu("Log Open letters")]
-    private void LogOpenLetters()
-    {
-        foreach (var point in LevelStateService.State.OpenLetters)
-            Debug.Log($"Open Letters: {point.GetVector()}");
+        LevelStateService.AddWord(_tryWord);
     }
 
     private void RemoveWord()
@@ -312,16 +321,12 @@ public class LevelLogic : MonoBehaviour
 
         var linePositions = new List<Vector2>() { _tryWordLetterUnits[0].transform.position, _tryWordLetterUnits[^1].transform.position };
 
-        var lineState = new LineState(linePositions, _tryWordLetterUnits[0].GetColor());
-        LevelStateService.AddFoundWord(_tryWord, _tryWordLetterUnits, lineState);
 
         if (Session.IsClassicGame)
         {
             _levelView.AnimateWord(_tryWordLetterUnits);
-            ParticleProvider.IsAnimating = true;
         }
-
-        CheckFinishCondition();
+        CheckFinishConditionAsync(); //TODO: should be done outside of this method
 
     }
 
@@ -331,14 +336,6 @@ public class LevelLogic : MonoBehaviour
             _levelView.DisableLighting();
     }
 
-    [ContextMenu("Log First Active letters")]
-    private void LogFirstActiveLetters()
-    {
-        Debug.Log($"Active First Letters: {LevelStateService.State.FirstLetters.Count}");
-        foreach (var letter in LevelStateService.State.FirstLetters)
-            Debug.Log($"Letter: {letter.GetVector()}");
-    }
-
 
     private void HandleLetterEnter(LetterUnit letter)
     {
@@ -346,13 +343,14 @@ public class LevelLogic : MonoBehaviour
         letter.AnimateScale();
         if (_isFirstLetter)
         {
-            var lineColor = letter.GetColor();
-            _lineProvider.CreateLine(letter.transform.position, lineColor);
+            var revealedLetter = LevelStateService.State.RevealedFirstLetters.FirstOrDefault(x => x.Point == letter.Point);
+            var color = revealedLetter == null ? default : revealedLetter.Color;
+            color = _lineProvider.CreateLine(letter.transform.position, color);
             _tryWord = letter.Letter.ToString();
             _tryWordLetterUnits.Add(letter);
             _isFirstLetter = false;
             _levelView.AddLetter(letter.Letter);
-            _levelView.ToggleWord(true, lineColor);
+            _levelView.ToggleWord(true, color);
             _audio.PlayLetter(_tryWordLetterUnits.Count);
         }
         else
@@ -376,9 +374,9 @@ public class LevelLogic : MonoBehaviour
 
     internal void SetData(LevelData levelData)
     {
-        HideGameObjects(true);
-        var gameData = GameDataService.GameData;
-        _words = levelData.Words.ToList();
+        ToggleGameObjects(true);
+        var gameData = ProgressService.Progress;
+        _words = levelData.Words.Select(x => x.Word).ToList();
         // Stage = levelData.Stage;
         //   Step = levelData.Step;
         TotalSteps = gameData.TotalEpisodes;
@@ -391,13 +389,14 @@ public class LevelLogic : MonoBehaviour
         for (int i = 0; i < levelState.FoundWords.Count; i++)
         {
             var word = levelState.FoundWords[i];
-            _words.Remove(word);
+            _words.Remove(word.Word);
         }
     }
 
     public void SetTimeMode()
     {
         _levelView.SetTimeMode();
+
         Session.IsSelecting = true;
         SetTimeWord();
         StartTimer();
@@ -440,8 +439,8 @@ public class LevelLogic : MonoBehaviour
                 yield return new WaitForEndOfFrame();
             }
 
-            yield return new WaitForSeconds(_timerStep);
-            _timeLeft -= 1000 * _timerStep;
+            yield return new WaitForSeconds(_timerStep/3);
+            _timeLeft -= 1000 * _timerStep/3;
             var percent = (_timeLeft / _msForWord) * 100;
             _levelView.UpdateTimer(percent);
             CheckTimeCondition(_timeLeft);

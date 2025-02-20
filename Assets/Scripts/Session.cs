@@ -6,7 +6,7 @@ public static class Session
     public static event Action<bool> OnMusicChange;
     public static event Action<bool> OnSoundChange;
 
-    public static event Action AdsRemoved;
+    //public static event Action AdsRemoved;
 
     private const string LAST_CLASSIC_LEVEL = "last-classic-level";
     private const string IS_FIRST_TIME = "is-first-time";
@@ -39,53 +39,24 @@ public static class Session
         set
         {
             PlayerPrefs.SetInt(IS_GAME_WON, value ? 1 : 0);
-            if (value) EventSender.SendGamePassed();
+            if (value) AppMetricaService.SendGamePassed();
         }
     }
 
-    /*
-        public static int LastStage
-        {
-            get
-            {
-                return PlayerPrefs.GetInt(STAGE_KEY, 1);
-            }
-            set
-            {
-                PlayerPrefs.SetInt(STAGE_KEY, value);
-            }
-        }
-        */
 
     public static bool IsSelecting = false;
     public static int RewardAmount = 25;
-    /*
-        private static int LastClassicLevel
-        {
-            get
-            {
-                return PlayerPrefs.GetInt(LAST_CLASSIC_LEVEL, 1);
-            }
-            set
-            {
-                PlayerPrefs.SetInt(LAST_CLASSIC_LEVEL, value);
-            }
-        }
-        */
 
-    /*
-        public static int GetLastLevel()
-        {
-            return LastClassicLevel;
-        }
-        */
+    static Session()
+    {
+        
+    }
 
-    /*
-        public static void SetLastLevel(int level)
-        {
-            LastClassicLevel = level;
-        }
-        */
+    public static void Unsubscribe()
+    {
+
+    }
+
 
     public static bool IsMusicOn
     {
@@ -130,19 +101,6 @@ public static class Session
         PlayerPrefs.DeleteKey(TIMESTAMP_KEY);
     }
 
-    public static bool NoAds
-    {
-        get
-        {
-            return PlayerPrefs.GetInt("no_ads", 0) == 1;
-        }
-        set
-        {
-            PlayerPrefs.SetInt("no_ads", value ? 1 : 0);
-            if (value) AdsRemoved?.Invoke();
-        }
-    }
-
     public static string AppId = "6736460315";
 
     public static string GiftTimeLeft()
@@ -155,10 +113,5 @@ public static class Session
         return answer;
     }
 
-    /*
-        internal static int GetLastStage()
-        {
-            return LastStage;
-        }
-        */
+
 }

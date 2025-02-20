@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Io.AppMetrica;
 using Io.AppMetrica.Push;
 using UnityEngine;
@@ -8,26 +9,17 @@ public static class AppMetricaActivator
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Activate()
     {
+        Services.InitUserId();
+
         AppMetrica.Activate(new AppMetricaConfig(APIKey)
         {
-            FirstActivationAsUpdate = !IsFirstLaunch(),
+            FirstActivationAsUpdate = !Session.IsFirstTime
         });
 
-        Debug.Log("AppMetrica activated");
         if (Session.IsFirstTime)
+        {
             Session.IsFirstTime = false;
-        AppMetricaPush.Activate();
-
-
-    }
-
-    private static bool IsFirstLaunch()
-    {
-        // Implement logic to detect whether the app is opening for the first time.
-        // For example, you can check for files (settings, databases, and so on),
-        // which the app creates on its first launch.
-
-        return Session.IsFirstTime;
-
+            KeitaroSender.SendInstall();
+        }
     }
 }

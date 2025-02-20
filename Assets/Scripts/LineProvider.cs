@@ -6,22 +6,30 @@ using UnityEngine;
 public class LineProvider : MonoBehaviour
 {
     [SerializeField] LineRenderer _linePrefab;
-
+    [SerializeField] ColorData _colorData;
     [SerializeField] float _lineRendererDrawStep = 0.1f;
     private LineRenderer _line = null;
-
+    public static Color LastColor;
     private float _lineSize;
     [SerializeField] private float _lineSizeMultiplier = 1.2f;
     private List<LineRenderer> _lines = new();
 
-    public static Color? LastColor;
 
     private int _startDrawOrder = 10;
     private int _currentDrawOrder;
 
+    // public static List<Color> UsedColors = new();
+    private List<Color> _activeColors = new();
+
     private void Awake()
     {
         _currentDrawOrder = _startDrawOrder;
+        SetColors();
+    }
+
+    public void SetColors()
+    {
+        _activeColors = _colorData.Colors.ToList();
     }
 
     internal void Append(Vector2 point)
@@ -33,9 +41,9 @@ public class LineProvider : MonoBehaviour
     }
 
 
-    internal void CreateLine(Vector3 point, Color color)
+    public Color CreateLine(Vector3 point, Color color = default)
     {
-
+        color = color == default ? GetRandomColor() : color;
         LineRenderer line;
         line = Instantiate(_linePrefab, point, Quaternion.identity);
         line.startWidth = _lineSize;
@@ -51,6 +59,16 @@ public class LineProvider : MonoBehaviour
 
         _lines.Add(line);
         _line = line;
+        LastColor = color;
+        return color;
+    }
+
+    private Color GetRandomColor()
+    {
+        if (_activeColors.Count == _colorData.Colors.Length) _activeColors = _colorData.Colors.ToList();
+        if (_activeColors.Count == 0) SetColors();
+        var color = _activeColors[UnityEngine.Random.Range(0, _activeColors.Count)];
+        return color;
     }
 
     internal void Draw(Vector2 point, Direction direction, Vector2 lastLetterPos, int letterCount)
@@ -95,8 +113,7 @@ public class LineProvider : MonoBehaviour
         }
         else
         {
-            if (_line != null)
-                LastColor = _line.startColor;
+            _activeColors.Remove(LastColor);
         }
         if (keepLine && correctLastPos) CorrectLastPosition(letters);
         _line = null;
@@ -126,6 +143,7 @@ public class LineProvider : MonoBehaviour
 
     private void CorrectLastPosition(List<LetterUnit> letters)
     {
+        if (letters == null) return;
         if (_line.positionCount > letters.Count) _line.positionCount = letters.Count;
         _line.SetPosition(_line.positionCount - 1, letters[^1].transform.position);
     }
@@ -133,35 +151,32 @@ public class LineProvider : MonoBehaviour
     internal void SetState(LevelState levelState, LetterUnit[,] letters)
     {
 
-        for (int i = 0; i < levelState.Lines.Count; i++)
+        for (int i = 0; i < levelState.FoundWords.Count; i++)
         {
+            var word = levelState.FoundWords[i];
+            var linePos1 = letters[word.Points[0].Y, word.Points[0].X].Pos;
+            var linePos2 = letters[word.Points[^1].Y, word.Points[^1].X].Pos;
+
 
             var line = Instantiate(_linePrefab);
             line.positionCount = 2;
-            line.SetPosition(0, levelState.Lines[i].Positions[0]);
-            line.SetPosition(1, levelState.Lines[i].Positions[1]);
-            line.startColor = levelState.Lines[i].color;
-            line.endColor = levelState.Lines[i].color;
+            line.SetPosition(0, linePos1);
+            line.SetPosition(1, linePos2);
+            line.startColor = word.Color;
+            line.endColor = word.Color;
             line.sortingOrder = _currentDrawOrder++;
             _lines.Add(line);
         }
 
-        for (int i = 0; i < levelState.OpenLetters.Count; i++)
+        for (int i = 0; i < levelState.RevealedFirstLetters.Count; i++)
         {
-            var point = levelState.OpenLetters[i];
-            var vector = new Vector2(point.X, point.Y);
+            var letter = levelState.RevealedFirstLetters[i];
+            var color = letter.Color;
+            var point = letter.Point;
 
-            // if (!_lines.Any(x => x.GetPosition(0) == (Vector3)vector)) continue;
-            // open letters are the ones that found and the ones that revealed with abilitys
-            //we need to skip the ones that found
-            var isThere = levelState.FoundLetters.Any(x => x.X == point.X && x.Y == point.Y);
-            if (isThere)
-            {
-                continue;
-            }
+            var letterPos = letters[point.Y, point.X];
 
-            var letter = letters[point.Y, point.X];
-            CreateLine(letter.transform.position, letter.GetColor());
+            CreateLine(letterPos.transform.position, color);
 
         }
     }
@@ -180,7 +195,6 @@ public class LineProvider : MonoBehaviour
     [ContextMenu("Reset State")]
     public void ResetState()
     {
-        Debug.Log($"Reset state called");
         if (_lines.Count == 0) return;
         foreach (var line in _lines)
         {
@@ -189,6 +203,7 @@ public class LineProvider : MonoBehaviour
         }
         _currentDrawOrder = _startDrawOrder;
         _lines.Clear();
+        _activeColors = _colorData.Colors.ToList();
     }
 
     [ContextMenu("Log Lines")]

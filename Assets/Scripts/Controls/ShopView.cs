@@ -7,35 +7,26 @@ using UnityEngine.UIElements;
 [UxmlElement]
 public partial class ShopView : VisualElement, IShopItems
 {
-    // private List<Button> _buyBtns;
+
     private Button _removeAdsBtn;
     private VisualElement _itemsDiv;
     private VisualElement _noAdsDiv;
-
-    public static event Action OnRemoveAdsClicked;
-    public static event Action<int> OnPurchaseInit;
-    public static event Action OnRestoreClicked;
 
     public VisualElement BuyBtn = null;
     private VisualElement _networkDiv;
     private Button _restoreBtn;
     private VisualElement _removedAdsDiv;
-
     private VisualElement _adsOfferDiv;
-
-
     private VisualTreeAsset _purchaseBtnTemplate;
     private List<Button> _buyBtns = new();
-
     public static event Action<bool> OnShopClicked;
-    //public static event Action<int, Button> OnBtnClicked;
 
     public ShopView()
     {
         var template = Resources.Load<VisualTreeAsset>("ShopView");
         var instance = template.Instantiate();
         instance.style.flexGrow = 1;
-        // instance.pickingMode = PickingMode.Ignore;
+        instance.pickingMode = PickingMode.Ignore;
         Add(instance);
 
         _purchaseBtnTemplate = Resources.Load<VisualTreeAsset>("PurchaseBtnTemplate");
@@ -51,29 +42,24 @@ public partial class ShopView : VisualElement, IShopItems
 
         _adsOfferDiv = this.Q<VisualElement>("ads-offer-div");
 
-        _removeAdsBtn.clicked += () =>
-        {
-            Debug.Log($"Remove Ads Btn Clicked ");
-            Services.IsNetworkAvailable((result) =>
-            {
-                if (result)
-                    OnRemoveAdsClicked?.Invoke();
-                else
-                {
-                    RequireNetwork();
-                }
-            });
-        };
+        _removeAdsBtn.clicked += HandleRemoveAdsClick;
 
         _noAdsDiv = this.Q<VisualElement>("ads-div");
         _removedAdsDiv = this.Q<VisualElement>("ads-removed-div");
-        if (Session.NoAds) HideAdsOffer();
-        Session.AdsRemoved += HideAdsOffer;
 
-        this.RegisterCallback<DetachFromPanelEvent>((evt) => Unsubscribe());
+        EventManager.AdsRemoved += HideAdsOffer;
+
         _networkDiv = this.Q<VisualElement>("network-div");
         _restoreBtn = this.Q<Button>("restore-purchase-btn");
         _restoreBtn.clicked += AskRestorePurchase;
+
+        this.RegisterCallback<DetachFromPanelEvent>((evt) => Unsubscribe());
+    }
+
+
+    private void HandleRemoveAdsClick()
+    {
+        EventManager.TriggerEvent(Event.RemoveAdsRequest);
     }
 
     public void AddItem(int index, int coinsAmount, string price)
@@ -93,51 +79,30 @@ public partial class ShopView : VisualElement, IShopItems
             var pointer = index;
             var btn = _buyBtns[pointer];
             BuyBtn = btn;
-            Services.IsNetworkAvailable((result) =>
-            {
-                if (result)
-                {
-                    OnPurchaseInit?.Invoke(index);
-
-                }
-                else
-                {
-                    RequireNetwork();
-                }
-            });
-
-
+            RequestPurchase(pointer);
         };
     }
 
+    private void RequestPurchase(int index)
+    {
+        EventManager.TriggerPurchase(index);
+    }
 
 
     private void AskRestorePurchase()
     {
-        Services.IsNetworkAvailable((result) =>
-            {
-                if (result)
-                    OnRestoreClicked?.Invoke();
-                else
-                {
-                    RequireNetwork();
-                }
-            });
-
-
+        EventManager.TriggerEvent(Event.RestoreClick);
     }
-
-
 
     private void Unsubscribe()
     {
-
-        Session.AdsRemoved -= HideAdsOffer;
+        EventManager.AdsRemoved -= HideAdsOffer;
+        _removeAdsBtn.clicked -= HandleRemoveAdsClick;
     }
 
     public void InitRemoveAds()
     {
-        OnRemoveAdsClicked?.Invoke();
+        EventManager.TriggerEvent(Event.RemoveAdsRequest);
     }
 
 
@@ -145,24 +110,6 @@ public partial class ShopView : VisualElement, IShopItems
     {
         _adsOfferDiv.Toggle(false);
         _removedAdsDiv.Toggle(true);
-    }
-
-    private void RequireNetwork()
-    {
-        Debug.Log($"Require Network");
-        return;
-        var go = AudioManager.Instance;
-        go.PlaySound(Sound.WrongWord);
-        go.StartCoroutine(NetworkCoroutine());
-    }
-
-
-
-    private IEnumerator NetworkCoroutine()
-    {
-        _networkDiv.Toggle(true);
-        yield return new WaitForSeconds(3);
-        _networkDiv.Toggle(false);
     }
 
 

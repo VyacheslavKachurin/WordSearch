@@ -2,7 +2,7 @@
     <Style src="project://database/Assets/UI/GameStyle.uss?fileID=7433441132597879392&amp;guid=52f028e2a9bbb43c6985398e87d12d27&amp;type=3#GameStyle" />
     <Style src="project://database/Assets/UI/MenuStyle.uss?fileID=7433441132597879392&amp;guid=9d73d88b2ea5d4de08746f3f52fbf9a3&amp;type=3#MenuStyle" />
     <Style src="project://database/Assets/UI/PlaceStampStyle.uss?fileID=7433441132597879392&amp;guid=dd7cdd25ec95c40edb37c0789325483d&amp;type=3#PlaceStampStyle" />
-    <engine:VisualElement name="bg" class="view" style="flex-grow: 1; display: flex; background-image: resource(&apos;BG/1&apos;);" />
+    <engine:VisualElement name="bg" class="view" style="flex-grow: 1; display: flex; background-image: resource(&apos;1&apos;);" />
     <engine:VisualElement name="top-row" style="flex-grow: 0; margin-top: 118px; padding-left: 57px; padding-right: 66px; flex-direction: row;">
         <engine:VisualElement name="back-div" style="flex-grow: 0; align-items: center; justify-content: center; padding-right: 51px; display: none;">
             <engine:Button name="back-btn" style="background-image: url(&quot;project://database/Assets/Sprites/BackBtn.png?fileID=2800000&amp;guid=8ea480486dcfc4824a5b9bf4ff7fdbc3&amp;type=3#BackBtn&quot;); margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; width: 82px; height: 98px;" />
@@ -18,8 +18,8 @@
     <engine:VisualElement name="menu-div" style="flex-grow: 1; height: 100%; display: flex;">
         <engine:VisualElement name="logo-div" style="flex-grow: 0; margin-top: 0; padding-top: 165px; padding-bottom: 138px;">
             <engine:VisualElement name="logo-bg" style="flex-grow: 0; width: 100%; height: 354px; background-color: rgb(191, 245, 30); align-items: center; justify-content: center;">
-                <engine:VisualElement name="text-img" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/MainLogo.png?fileID=2800000&amp;guid=5dc7034e2eb084940aa992b4c91b7f76&amp;type=3#MainLogo&quot;); width: 1118px; height: 196px; flex-shrink: 1;">
-                    <engine:VisualElement name="magnifier" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/Enlarger.png?fileID=2800000&amp;guid=cb3b04f8552d04f99a6b2829c458df40&amp;type=3#Enlarger&quot;); width: 102px; height: 102px; position: absolute; bottom: -27px; right: 369px;">
+                <engine:VisualElement name="text-img" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/logo.png?fileID=2800000&amp;guid=58a74aaef54774d8192bfa1b8564a5a7&amp;type=3#logo&quot;); width: 1118px; height: 196px; flex-shrink: 1;">
+                    <engine:VisualElement name="magnifier" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/Enlarger.png?fileID=2800000&amp;guid=cb3b04f8552d04f99a6b2829c458df40&amp;type=3#Enlarger&quot;); width: 102px; height: 102px; position: absolute; bottom: -27px; right: 369px; display: none;">
                         <engine:VisualElement name="map" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/World.png?fileID=2800000&amp;guid=a28e01846a568488a8e977ef830235b2&amp;type=3#World&quot;); width: 72px; height: 81px; position: absolute; top: -13px; left: -5px;" />
                     </engine:VisualElement>
                 </engine:VisualElement>
@@ -90,7 +90,7 @@
             <engine:VisualElement name="content" style="flex-grow: 1; margin-top: 95px; padding-bottom: 0; margin-bottom: 50px; margin-left: 56px; margin-right: 56px; overflow: hidden;" />
         </engine:VisualElement>
     </engine:VisualElement>
-    <ShopView enabled="true" usage-hints="None" tabindex="0" focusable="false" language-direction="Inherit" style="display: none;" />
+    <ShopView enabled="true" usage-hints="None" tabindex="0" focusable="false" language-direction="Inherit" picking-mode="Ignore" name="ShopView" style="display: none; position: absolute; margin-top: 0;" />
     <engine:VisualElement name="blur-panel" class="view" style="flex-grow: 1; color: rgba(0, 0, 0, 0.54); background-color: rgb(0, 0, 0); opacity: 0.5; display: none;" />
     <engine:VisualElement name="gift-view" class="view" style="flex-grow: 1; position: absolute; align-items: center; justify-content: flex-start; display: none;">
         <engine:VisualElement name="gift-div" class="panel-anim panel-anim-in" style="display: flex; height: 735px; background-image: url(&quot;project://database/Assets/Sprites/giftBg.png?fileID=2800000&amp;guid=89902daa521654e02a0ce1f75eb49f2f&amp;type=3#giftBg&quot;); width: 1080px; top: 32%; position: absolute; padding-top: 56px; padding-bottom: 59px; padding-right: 55px; padding-left: 60px;">
@@ -124,4 +124,5 @@
     <PlateView picking-mode="Ignore" class="view" style="display: none;" />
     <CoinsView picking-mode="Ignore" style="position: absolute; width: 100%; height: 100%; display: none;" />
     <engine:Image name="overlay-fx" picking-mode="Ignore" class="view" style="flex-grow: 1; top: 0; left: 0; display: none;" />
+    <MessageView style="width: 100%; height: 100%;" />
 </engine:UXML>

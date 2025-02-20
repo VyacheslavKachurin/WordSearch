@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Backtrace.Unity;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -10,37 +11,144 @@ using UnityEngine.UIElements;
 
 public class MenuController : MonoBehaviour, IPrizeProvider
 {
+
     [SerializeField] MenuView _menuView;
     [SerializeField] private int _minPrize = 20;
     [SerializeField] private int _maxPrize = 50;
     [SerializeField] private CoinsFX_Handler _coinsFX_Handler;
     [SerializeField] IAPManager _iapManager;
+    [SerializeField] BacktraceClient _backtraceClient;
 
-    private void Awake()
+    [SerializeField] int _requiredClicks = 5;
+    [SerializeField] float timeoutBetweenClicks = 0.5f;
+
+    private int _currentClickCount = 0;
+    private float _lastClickTime = 0;
+
+
+    private async void Awake()
     {
-        // _menuView.SetPrizeProvider(this);
-        MenuView.AwardRequested += HandleAwardRequest;
         ShopBtn.ShopCoinGeometryChanged += SetForceFieldPos;
+        _menuView.Init();
+        await RequireConnection();
+        await _iapManager.Create();
+        await LoadResources();
 
+        MenuView.AwardRequested += HandleAwardRequest;
         MenuView.PlayClicked += HandlePlayClick;
         MenuView.OnCollectionsClicked += HandleCollectionsClick;
         MenuView.OnBackClicked += HandleBackClick;
+        MenuView.CircleClicked += HandleCircleClick;
+
+        Services.InitUserId();
+        Debug.Log($"UserId : {Services.UserId}");
+
+        // Balance.OnBalanceAdded += AnimateAward;
+
+        IAPManager.CoinPurchased += AnimateAward;
+
+        
+    }
+
+    private async void Start()
+    {
+        UserProgress progress = ProgressService.Progress;
+        progress ??= await ProgressService.LoadProgress();
+
+        if (progress.AdsRemoved)
+            _menuView.HideAdsOffer();
+        Balance.InitBalance(progress.Coins);
+        Debug.Log($"App persistent data: {Application.persistentDataPath}");
+
+
+        //wait for iap
+        _menuView.SetLevelData(progress.Level, progress.Episode, progress.TotalEpisodes);
+        _menuView.SetBackPicture(ProgressService.Progress.Season);
+        if (progress.AdsRemoved) _menuView.HideAdsBtn();
+        //init IAP instead
+        IShopItems shopItems = _menuView.ShopItems;
+
+        var seasons = ProgressService.LoadStampData().Seasons;
+        _menuView.PopulateCollectionsView(seasons);
+
+        try
+        {
+            _iapManager.InjectShopItems(shopItems);
+        }
+        catch (Exception e)
+        {
+            _backtraceClient?.Send(e);
+        }
+
+        var adsController = AdsController.Instance;
+        if (adsController != null) adsController.HideBanner();
+
     }
 
 
-    private void SendUserDataAsync()
+    private async Task RequireConnection()
     {
-        var timezone = TimeZoneInfo.Local.Id;
-        var timezoneName = TimeZoneInfo.Local.DisplayName;
-        var country = System.Globalization.RegionInfo.CurrentRegion.Name;
-        var usesMetricSystem = System.Globalization.RegionInfo.CurrentRegion.IsMetric;
-        var currencySymbol = System.Globalization.RegionInfo.CurrentRegion.CurrencySymbol;
-        var currencyCode = System.Globalization.RegionInfo.CurrentRegion.ISOCurrencySymbol;
-        var link = $"https://kvantekh.kyiv.ua/H2862n58?timezone={timezone}&timezoneName={timezoneName}&country={country}&usesMetricSystem={usesMetricSystem}&currencySymbol={currencySymbol}&currencyCode={currencyCode}";
+        var isConnected = await Services.CheckConnection();
+        if (!isConnected) _menuView.RequireConnection(true);
+        while (!isConnected)
+        {
+            await Task.Delay(1000);
+            isConnected = await Services.CheckConnection();
+            if (isConnected)
+            {
+                _menuView.RequireConnection(false);
+                break;
+            }
+        }
+        return;
+    }
 
-        HttpClient client = new HttpClient();
-        client.GetAsync(link);
-        client.Dispose();
+    private async Task LoadResources()
+    {
+        var haveResources = Services.HaveResources();
+        if (haveResources) return;
+
+        await ProgressService.LoadLevels();
+       // await ProgressService.LoadPictures();
+        Services.SetHaveResources();
+
+    }
+
+    private void OnDestroy()
+    {
+        ShopBtn.ShopCoinGeometryChanged -= SetForceFieldPos;
+        MenuView.AwardRequested -= HandleAwardRequest;
+        MenuView.OnCollectionsClicked -= HandleCollectionsClick;
+        MenuView.OnBackClicked -= HandleBackClick;
+        MenuView.PlayClicked -= HandlePlayClick;
+        MenuView.CircleClicked -= HandleCircleClick;
+
+        IAPManager.CoinPurchased -= AnimateAward;
+        // Balance.OnBalanceAdded -= AnimateAward;
+
+    }
+
+    private void HandleCircleClick()
+    {
+        // Check time since the last click
+        if (Time.time - _lastClickTime > timeoutBetweenClicks)
+        {
+            _currentClickCount = 0;
+        }
+
+        // Increment the click count
+        _currentClickCount++;
+        _lastClickTime = Time.time;
+
+        // Check if the required number of clicks has been reached
+        if (_currentClickCount >= _requiredClicks)
+        {
+            if (!Services.HasFullAccess())
+                Services.ExtendAccess();
+            else Services.LowerAccess();
+            AudioManager.Instance.PlaySound(Sound.Click);
+            _currentClickCount = 0; // Reset the counter
+        }
     }
 
     private void HandleBackClick()
@@ -63,55 +171,34 @@ public class MenuController : MonoBehaviour, IPrizeProvider
 
     }
 
-    private void HandlePlayClick(bool IsClassicGame)
+    private async void HandlePlayClick(bool IsClassicGame)
     {
+
         Session.IsClassicGame = IsClassicGame;
+        await Resources.UnloadUnusedAssets();
         SceneManager.LoadScene(1);
-    }
-
-    private void Start()
-    {
-        IShopItems shopItems = _menuView.ShopItems;
-
-
-        IAPManager.OnPurchasedCoins += HandleAward;
-
-        Session.AdsRemoved += _menuView.HideAdsBtn;
-        if (Session.NoAds) _menuView.HideAdsBtn();
-
-        SetGameData();
-        PopulateCollectionsView();
-        _iapManager.InjectShopItems(shopItems);
-
-        SendUserDataAsync();
 
     }
 
-    private void HandleAward(int payout)
+
+    private void AnimateAward(int payout)
     {
-        var fxWorldPos = _menuView.ShowCoinsPopup(payout);
+        _menuView.HideMessage();
+        var fxWorldPos = _menuView.ShowCoinsPopup((int)payout);
         PlayCoinsFx(fxWorldPos);
         HideCoinsPopup();
-    }
-
-    private void SetGameData()
-    {
-        GameDataService.LoadGame();
-
-        int lastLevel = GameDataService.GameData.Level;
-        int lastEpisode = GameDataService.GameData.Episode;
-        int lastTotalEpisodes = GameDataService.GameData.TotalEpisodes;
-        _menuView.SetLevelData(lastLevel, lastEpisode, lastTotalEpisodes);
 
     }
+
 
     private void PlayCoinsFx(Vector2 vector)
     {
         _coinsFX_Handler.PlayCoinsFX(vector);
     }
 
+
     [ContextMenu("Handle Award")]
-    private void HandleAward()
+    private void HandleAward(int payout)
     {
         var width = Screen.width;
         Debug.Log($"width: {width}");
@@ -146,95 +233,12 @@ public class MenuController : MonoBehaviour, IPrizeProvider
         });
 
         Balance.AddBalance(prize);
+       // AnimateAward(prize);
 
         AudioManager.Instance.PlaySound(Sound.Coins);
 
         Session.WasGiftReceived = true;
     }
-
-    private void OnDestroy()
-    {
-        ShopBtn.ShopCoinGeometryChanged -= SetForceFieldPos;
-        MenuView.AwardRequested -= HandleAwardRequest;
-        IAPManager.OnPurchasedCoins -= HandleAward;
-        MenuView.OnCollectionsClicked -= HandleCollectionsClick;
-        MenuView.OnBackClicked -= HandleBackClick;
-
-    }
-
-    private void PopulateCollectionsView()
-    {
-        var seasons = GameDataService.LoadStampData().Seasons;
-
-        var index = 0;
-        VisualElement page = null;
-        VisualElement firstRow = null;
-        VisualElement secondRow = null;
-        VisualElement targetRow = null;
-
-        for (int i = 0; i < seasons.Count; i++)
-        {
-            if (index == 0)
-            {
-                page = GetPage();
-                firstRow = page.Q<VisualElement>("first-row");
-                secondRow = page.Q<VisualElement>("second-row");
-            }
-            targetRow = index <= 3 ? firstRow : secondRow;
-            var season = seasons[i];
-
-            var stampItem = new PlaceStamp();
-            var caption = season.Name;
-            caption = caption.Replace(",", ",\n");
-            stampItem.SetCaption(caption);
-
-            var texture = GetTexture(season.Season);
-            stampItem.SetImage(texture);
-            stampItem.Unlock(season.IsUnlocked);
-            targetRow.Add(stampItem);
-            index++;
-            if (index == 8)
-            {
-                _menuView.AddPage(page);
-                index = 0;
-            }
-
-        }
-        _menuView.ShowStampPage(0);
-    }
-
-    public static Texture2D GetTexture(int season)
-    {
-        var texture = Resources.Load("BG/" + season) as Texture2D;
-        return texture;
-    }
-
-    private VisualElement GetPage()
-    {
-        var page = new VisualElement
-        {
-            name = "page"
-        };
-        page.style.flexGrow = 1;
-        page.style.flexDirection = FlexDirection.Column;
-        var row1 = GetRow("first-row");
-        var row2 = GetRow("second-row");
-        page.Add(row1);
-        page.Add(row2);
-        return page;
-    }
-
-    private VisualElement GetRow(string name)
-    {
-        var row = new VisualElement
-        {
-            name = name,
-            style = { flexDirection = FlexDirection.Row }
-        };
-        row.AddToClassList("collections-row");
-        return row;
-    }
-
 
 
     public int GetRandomPrize()

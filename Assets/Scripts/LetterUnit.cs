@@ -10,7 +10,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class LetterUnit : MonoBehaviour
 {
-    [SerializeField] ColorData _colorData;
+
     [SerializeField] Color _disableColor = new(0.5f, 0.5f, 0.5f, 0.5f);
     [SerializeField] Color _activeColor = new(0, 0, 0, 1);
     [SerializeField] Color _foundColor = new(1, 1, 1, 1);
@@ -128,13 +128,6 @@ public class LetterUnit : MonoBehaviour
         transform.DOScale(_animScaleUp, _animScaleDuration).SetEase(Ease.InOutSine).OnComplete(() => transform.DOScale(_baseScale, _animScaleDuration).SetEase(Ease.InOutSine));
     }
 
-    internal Color GetColor()
-    {
-
-        _lineColor = _colorData.GetRandom();
-   
-        return (Color)_lineColor;
-    }
 
     public static Vector2 operator -(LetterUnit a, LetterUnit b) => a.transform.position - b.transform.position;
 

@@ -16,22 +16,17 @@ public class ParticleProvider : MonoBehaviour
     }
 
 
-    [ContextMenu("Log particles")]
-    private void LogParticles()
-    {
-
-        Debug.Log($"Active particles: {IsAnimating}");
-    }
-
     private void RemoveWordFX()
     {
         IsAnimating = false;
+        Debug.Log($"animating done");
     }
 
     void OnDestroy()
     {
         LevelView.OnWordFound -= PlayWordFoundFX;
         WordFX.OnAnimDone -= RemoveWordFX;
+        IsAnimating = false;
     }
 
     private void PlayWordFoundFX(Vector2 worldPos)

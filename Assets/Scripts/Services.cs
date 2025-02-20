@@ -1,23 +1,39 @@
 using System;
 using System.Collections;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.Scripting;
 
 
 
 
 public class Services : MonoBehaviour
 {
-
-    // private IAPManager _iAPManager;
     public static Services Instance;
+    const string FULL_ACCESS_KEY = "FULL_ACCESS_KEY";
+    const string USER_ID = "USER_ID";
+
+    const string HAVE_RESOURCES = "HAVE_RESOURCES";
+    public static string UserId;
+    private static string _hostUrl;
 
     private void Awake()
     {
         Instance = this;
-        // InitPurchases();
     }
+
+    public static string GetHostUrl()
+    {
+        if (string.IsNullOrEmpty(_hostUrl))
+        {
+            var hostData = Resources.Load<HostData>("HostData");
+            _hostUrl = hostData.Host;
+        }
+        return _hostUrl;
+    }
+
 
 
     public static void IsNetworkAvailable(Action<bool> syncResult)
@@ -29,19 +45,16 @@ public class Services : MonoBehaviour
             syncResult(result);
         }
         ));
-
-
     }
 
 
     public static IEnumerator CheckInternetConnection(Action<bool> syncResult)
     {
-        const string echoServer = "https://google.com";
+        string echoServer = GetHostUrl();
 
         bool result;
         using (var request = UnityWebRequest.Get(echoServer))
         {
-
             request.timeout = 3;
             yield return request.SendWebRequest();
             //  result = !request.isNetworkError && !request.isHttpError && request.responseCode == 200;
@@ -56,96 +69,41 @@ public class Services : MonoBehaviour
         LevelStateService.DeleteState();
     }
 
-    //[ContextMenu("Init Purchases")]
-    // public async void InitPurchases()
-    //   {
-    //  await InitUGS();
-    //    InitIAPManager();
-    //  LogStoreItems();
-    /*
-            ShopView.OnPurchaseInit += BuyCoins;
-            ShopView.OnRemoveAdsClicked += RemoveAds;
-            ShopView.OnRestoreClicked += RestorePurchases;
-            */
-    //  }
-
-    /*
-        [ContextMenu("Log Store Items")]
-        private void LogStoreItems()
-        {
-            _iAPManager.LogStoreItems();
-        }
-        */
-
-    /*
-        [ContextMenu("Buy Coins")]
-        private void BuyCoins(int i)
-        {
-            _iAPManager.BuyCoins(i);
-        }
-        */
-
     private void OnDestroy()
     {
-        /*
-        ShopView.OnPurchaseInit -= BuyCoins;
-        ShopView.OnRemoveAdsClicked -= RemoveAds;
-        ShopView.OnRestoreClicked -= RestorePurchases;
-        */
         Instance = null;
-
     }
 
-    /*
-        private void RemoveAds()
-        {
-            Debug.Log($"Remove Ads");
-            _iAPManager.RemoveAds();
-        }
-        */
 
-    /*
-        private void InitIAPManager()
-        {
-            _iAPManager = new IAPManager();
-        }
-        */
-
-    [ContextMenu("Remove ads purchase")]
-    public void RemoveAdsPurchase()
+    [ContextMenu("Delete Have Resources")]
+    private void DeleteHaveResources()
     {
-        Session.NoAds = false;
-    }
-
-    [ContextMenu("Clear Level Progress")]
-    public void ClearLevelProgress()
-    {
-        // Session.SetLastLevel(1);
-    }
-
-    [ContextMenu("Clear coins data")]
-    public void ClearCoinsData()
-    {
-        Balance.ClearBalance();
+        PlayerPrefs.DeleteKey(HAVE_RESOURCES);
     }
 
     [ContextMenu("Clear All Data")]
     public void ClearAllData()
     {
-        ClearLevelProgress();
-        ClearCoinsData();
-        RemoveAdsPurchase();
+
         ClearGiftData();
-        // Session.LastStage = 1;
-        // Session.SetLastLevel(1);
         DeleteState();
-        GameDataService.ClearProgress();
-        GameDataService.DeleteGame();
+        ProgressService.ClearProgress();
+        ProgressService.ClearProgress();
         Session.IsGameWon = false;
         Session.IsFirstTime = true;
-        GameDataService.DeleteStampData();
+        ProgressService.DeleteStampData();
 
-        
+    }
+
+    public static void ClearLevelData()
+    {
+        Session.IsGameWon = false;
+        Session.IsFirstTime = true;
+
+        ProgressService.ClearProgress();
+        ProgressService.ClearProgress();
+
+        LevelStateService.DeleteState();
     }
 
     [ContextMenu("Clear Gift Data")]
@@ -154,6 +112,99 @@ public class Services : MonoBehaviour
         Session.ClearGift();
     }
 
+    public static void ExtendAccess()
+    {
+        PlayerPrefs.SetInt(FULL_ACCESS_KEY, 1);
+    }
 
+    public static bool HasFullAccess()
+    {
+        return PlayerPrefs.GetInt(FULL_ACCESS_KEY, 0) == 1;
+    }
 
+    internal static void LowerAccess()
+    {
+        PlayerPrefs.SetInt(FULL_ACCESS_KEY, 0);
+    }
+
+    internal static void InitUserId()
+    {
+        if (UserId != null) return;
+        KeyChainJson storedJson = null;
+        try
+        {
+            storedJson = JsonConvert.DeserializeObject<KeyChainJson>(KeyChain.BindGetKeyChainUser());
+        }
+        catch
+        {
+            storedJson = null;
+        }
+
+        var id = PlayerPrefs.GetString(USER_ID, storedJson?.uuid ?? "");
+        if (string.IsNullOrWhiteSpace(id))
+            id = CreateUserId();
+        UserId = id;
+    }
+
+    private static string CreateUserId()
+    {
+        var uuid = SystemInfo.deviceUniqueIdentifier;
+#if !UNITY_EDITOR
+        KeyChain.BindSetKeyChainUser("0", uuid);
+#endif
+        PlayerPrefs.SetString(USER_ID, uuid);
+        return uuid;
+    }
+
+    private static string GetUserProgress()
+    {
+        return "";
+    }
+
+    internal static void DeleteStoredFiles()
+    {
+        // LevelStateService.DeleteState();
+        ProgressService.ClearProgress();
+        ProgressService.ClearProgress();
+    }
+
+    public static async Task<bool> CheckConnection()
+    {
+        using (var request = UnityWebRequest.Get(GetHostUrl()))
+        {
+            request.timeout = 5;
+            var result = request.SendWebRequest();
+            while (!result.isDone)
+                await Task.Yield();
+            return request.result == UnityWebRequest.Result.Success;
+        }
+    }
+
+    internal static bool HaveResources()
+    {
+        return PlayerPrefs.GetInt(HAVE_RESOURCES, 0) == 1;
+    }
+
+    internal static void SetHaveResources()
+    {
+        PlayerPrefs.SetInt(HAVE_RESOURCES, 1);
+    }
+}
+
+[Preserve]
+public class KeyChainJson
+{
+    [Preserve]
+    public string userId { get; set; }
+    [Preserve]
+    public string uuid { get; set; }
+    [Preserve]
+    public KeyChainJson() { }
+
+    [Preserve]
+    public KeyChainJson(string userId, string uuid)
+    {
+        this.userId = userId;
+        this.uuid = uuid;
+    }
 }

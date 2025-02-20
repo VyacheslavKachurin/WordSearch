@@ -45,4 +45,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _linePrefab: {fileID: 6416335901612813488, guid: 8f668b45031ca4a44991d5105a1e4857, type: 3}
+  _colorData: {fileID: 11400000, guid: 207f4ed6f6c0d4703916c5e9ca87ff72, type: 2}
   _lineRendererDrawStep: 0.1
+  _lineSizeMultiplier: 1.2

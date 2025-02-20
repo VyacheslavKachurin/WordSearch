@@ -7,102 +7,37 @@ using Debug = UnityEngine.Debug;
 
 public static class Balance
 {
-    public static event Action<decimal> OnBalanceChanged;
-
-    private const string BALANCE_KEY = "balance";
-    private const int STARTING_BALANCE = 300;
+    public static event Action<int> OnBalanceChanged;
     private static int _balance;
-
-    private static readonly string PATH = Application.persistentDataPath + "/Balance.json";
-    private static BalanceData _balanceData;
+    public static int BalanceValue => _balance;
 
     public static bool UseAbility(int price)
     {
         if (_balance < price) return false;
+
         _balance -= price;
         OnBalanceChanged?.Invoke(_balance);
+
         Save();
         return true;
     }
 
-    public static decimal GetBalance()
+    public static void InitBalance(int balance)
     {
-        if (_balanceData == null) Load();
-        return _balance;
+        _balance = balance;
+        OnBalanceChanged?.Invoke(_balance);
     }
 
-    public static void Load()
+    public static void AddBalance(int amount)
     {
-        //check if file exists
-        if (System.IO.File.Exists(PATH))
-        {
-            var txt = System.IO.File.ReadAllText(PATH);
-            if (txt != null)
-            {
-                var jsonData = txt.ToString();
-                _balanceData = JsonConvert.DeserializeObject<BalanceData>(jsonData);
-                _balance = _balanceData.Balance;
-            }
-        }
-        else
-        {
-            _balance = STARTING_BALANCE;
-            Save();
-        }
-    }
-
-    public static void AddBalance(double amount)
-    {
-        Debug.Log($"Adding {amount}");
-        // AnimateBalance((int)amount, delay);
-        _balance += (int)amount;
-
+        _balance += amount;
         OnBalanceChanged?.Invoke(_balance);
         Save();
-
-
     }
-
-    private static async void AnimateBalance(int amount, int delay)
-    {
-        var targetBalance = _balance + amount;
-        while (_balance != targetBalance)
-        {
-            _balance++;
-            OnBalanceChanged?.Invoke(_balance);
-            await Task.Delay(delay);
-        }
-
-        Save();
-    }
-
-    public static void ClearBalance()
-    {
-         if (System.IO.File.Exists(PATH))
-        {
-            System.IO.File.Delete(PATH);
-        }
-
-    }
-
 
     private static void Save()
     {
-
-        Debug.Log($"Saving balance: {_balance}");
-        var balanceData = new BalanceData(_balance);
-        var jsonData = JsonConvert.SerializeObject(balanceData);
-        System.IO.File.WriteAllText(PATH, jsonData);
+        ProgressService.SaveCoins(_balance);
     }
 
-}
-
-public class BalanceData
-{
-    public int Balance { get; set; }
-
-    public BalanceData(int balance)
-    {
-        Balance = balance;
-    }
 }
