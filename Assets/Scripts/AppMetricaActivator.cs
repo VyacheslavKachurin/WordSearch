@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Io.AppMetrica;
 using Io.AppMetrica.Push;
 using UnityEngine;
@@ -8,26 +9,17 @@ public static class AppMetricaActivator
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Activate()
     {
+        Services.InitUserId();
 
         AppMetrica.Activate(new AppMetricaConfig(APIKey)
         {
-            FirstActivationAsUpdate = !IsFirstLaunch(),
+            FirstActivationAsUpdate = !Session.IsFirstTime
         });
 
         if (Session.IsFirstTime)
         {
-            Services.ClearLevelData();
             Session.IsFirstTime = false;
             KeitaroSender.SendInstall();
         }
-        AppMetricaPush.Activate();
-
-
-    }
-
-    private static bool IsFirstLaunch()
-    {
-        return Session.IsFirstTime;
-
     }
 }

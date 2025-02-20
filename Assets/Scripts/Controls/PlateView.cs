@@ -97,6 +97,7 @@ public partial class PlateView : VisualElement
     private void Unsubscribe()
     {
         AdsController.RewardedAdWatched -= HandleReward;
+        _adBtn.clicked -= HandleAdBtn;
     }
 
     private void HandleReward()

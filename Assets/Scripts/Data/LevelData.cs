@@ -1,40 +1,19 @@
-
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 using UnityEngine.Scripting;
 
 [Preserve]
 public class LevelData
 {
+    public string Subject { get; set; }
+    public WordData[] Words { get; set; }
+    public char[,] Matrix { get; set; }
+    public int Width { get; set; }
+    public int Height { get; set; }
+    public List<Point> FakeLetters { get; set; }
+    public char this[int x, int y] => Matrix[x, y];
 
     [Preserve]
-    public string Subject;
-    [Preserve]
-    public List<string> Words;
-    [Preserve]
-    public char[,] Matrix;
-    [Preserve]
-    public int Width;
-    [Preserve]
-    public int Height;
-
-    [Preserve]
-    public char this[int y, int x] => Matrix[y, x];
-    [Preserve]
-    public List<Point> FakeLetters;
-    [Preserve]
-    public List<Point> FirstLetters;
-
-    [Preserve]
-    public List<Point> LastLetters;
-
-
-
-
-    [Preserve]
-    public LevelData(string subject, List<string> words, char[,] matrix, int width, int height, List<Point> fakeLetters, List<Point> firstLetters, List<Point> lastLetters)
+    public LevelData(string subject, WordData[] words, char[,] matrix, int width, int height, List<Point> fakeLetters)
     {
         Subject = subject;
         Words = words;
@@ -42,20 +21,28 @@ public class LevelData
         Width = width;
         Height = height;
         FakeLetters = fakeLetters;
-        FirstLetters = firstLetters;
-        LastLetters = lastLetters;
+    }
+}
+
+[Preserve]
+public class WordData
+{
+    [Preserve]
+    public WordData(string word, Point firstLetter, Point lastLetter)
+    {
+        Word = word;
+        FirstLetter = firstLetter;
+        LastLetter = lastLetter;
     }
 
-    [Preserve]
-    public LevelData() { }
-
+    public string Word { get; set; }
+    public Point FirstLetter { get; set; }
+    public Point LastLetter { get; set; }
 }
 
 public struct Point
 {
-
     public int X { get; set; }
-
     public int Y { get; set; }
     public Point(int x, int y)
     {
@@ -86,8 +73,5 @@ public struct Point
     {
         return X.GetHashCode() ^ Y.GetHashCode();
     }
-
-
-
 
 }

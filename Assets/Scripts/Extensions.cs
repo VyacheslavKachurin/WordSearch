@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -10,9 +11,48 @@ public static class Extensions
         element.style.display = value ? DisplayStyle.Flex : DisplayStyle.None;
     }
 
+    public static Texture2D GetTexture(int season, bool isSmall = false)
+    {
+        /*
+        var texturePath = Path.Combine(Application.persistentDataPath, "Pictures", season + ".jpg");
+        Texture2D texture = null;
+        if (File.Exists(texturePath))
+        {
+            var format = isSmall ? TextureFormat.PVRTC_RGB2 : TextureFormat.ASTC_6x6;
+            byte[] fileData = File.ReadAllBytes(texturePath);
+            texture = new Texture2D(2, 2, format, false);
+            texture.LoadImage(fileData);
+
+        }
+        */
+
+        var texture = Resources.Load<Texture2D>($"Pictures/{season}");
+        return texture;
+    }
+
+
     public static Vector2 Pos(this Transform trans)
     {
         return trans.position;
+    }
+
+    public static void DeleteDirectory(string target_dir)
+    {
+        string[] files = Directory.GetFiles(target_dir);
+        string[] dirs = Directory.GetDirectories(target_dir);
+
+        foreach (string file in files)
+        {
+            //  File.SetAttributes(file, FileAttributes.Normal);
+            File.Delete(file);
+        }
+
+        foreach (string dir in dirs)
+        {
+            DeleteDirectory(dir);
+        }
+
+        Directory.Delete(target_dir, false);
     }
 
     // Gets screen coordinates from a UI Toolkit ClickEvent position.
@@ -109,5 +149,5 @@ public static class Extensions
 
         return closestPoint;
     }
-    
+
 }

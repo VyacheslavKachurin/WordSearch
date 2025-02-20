@@ -7,7 +7,7 @@ using UnityEngine.Scripting;
 
 public class LevelState
 {
-
+    public int CurrentLevel { get; set; } = 0;
     public bool FakeLettersRemoved { get; set; }
     public List<Point> ActiveFirstLetters { get; set; }
     public List<Point> RevealedFakeLetters { get; set; }

@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using UnityEditor;
 using System.IO;
 using UnityEngine.Advertisements;
+using System.Threading.Tasks;
+using Unity.VisualScripting;
 
 public class LevelBuilder : MonoBehaviour
 {
@@ -14,7 +16,7 @@ public class LevelBuilder : MonoBehaviour
     [SerializeField] LevelView _levelView;
     [SerializeField] LevelLogic _levelLogic;
     [SerializeField] AbilityLogic _abilityLogic;
-    [SerializeField] AdsController _adsController;
+
     [SerializeField] BgController _bgController;
     [SerializeField] private LineProvider _lineProvider;
     [SerializeField] InputHandler _inputHandler;
@@ -30,49 +32,39 @@ public class LevelBuilder : MonoBehaviour
     [SerializeField] private int _season;
 #endif
 
+
+
     void Awake()
     {
-        Session.IsClassicGame = true;
 
-        _adsController.Init();
         PlateView.OnReplayRequested += CreateLevel;
     }
 
-    private void Start()
+
+    private async void Start()
     {
-        CreateLevel();
+        try
+        {
+            CreateLevel();
+        }
+        catch (Exception e)
+        {
+            Debug.Log($"Error in Start: {e}");
+        }
 
         LevelView.NextLevelClicked += LoadNextLevel;
 
         IShopItems shopItems = _levelView.ShopItems;
+        await _iapManager.Create();
         _iapManager.InjectShopItems(shopItems);
+   //     AdsController.Instance.InitializeAds();
 
     }
 
-    [ContextMenu("Build Level")]
-    private void StartBuildLevel()
-    {
-        // StartCoroutine(BuildLevel());
-    }
-
-    /*
-        private IEnumerator BuildLevel()
-        {
-            do
-            {
-                ClearLines();
-                CreateLevel();
-                DrawLines();
-                MakeScreenShot();
-                yield return new WaitForSeconds(0.1f);
-            }
-            while (GameDataService.IncreaseLevel());
-        }
-        */
     private void MakeScreenShot()
     {
-        var season = GameDataService.GameData.Season;
-        var episode = GameDataService.GameData.Episode;
+        var season = ProgressService.Progress.Season;
+        var episode = ProgressService.Progress.Episode;
         var subject = _levelData.Subject;
         var path = $"Pics/S{season}_E{episode}_{subject}.png";
         Debug.Log($"Screenshot path: {path}");
@@ -88,10 +80,11 @@ public class LevelBuilder : MonoBehaviour
 
     private void DrawLines()
     {
-        for (int i = 0; i < _levelData.FirstLetters.Count; i++)
+        for (int i = 0; i < _levelData.Words.Length; i++)
         {
-            var firstLetter = _levelData.FirstLetters[i];
-            var lastLetter = _levelData.LastLetters[i];
+            var wordData = _levelData.Words[i];
+            var firstLetter = wordData.FirstLetter;
+            var lastLetter = wordData.LastLetter;
             var firstUnit = _gameBoard.Letters[firstLetter.Y, firstLetter.X];
             var lastUnit = _gameBoard.Letters[lastLetter.Y, lastLetter.X];
             _lineProvider.CreateLine(firstUnit.transform.position);
@@ -123,8 +116,9 @@ public class LevelBuilder : MonoBehaviour
     }
 
     [ContextMenu("Create Level")]
-    public void CreateLevel()
+    public async void CreateLevel()
     {
+        _inputHandler.FinishSelecting();
         var IsClassicGame = Session.IsClassicGame;
 
         if (!IsClassicGame)
@@ -133,22 +127,14 @@ public class LevelBuilder : MonoBehaviour
         _lineProvider.ResetState();
         Session.IsSelecting = true;
 
-        var path = GameDataService.GetPathToLevel();
+        // await ProgressService.LoadProgress();
+        var season = ProgressService.Progress.Season;
+        var episode = ProgressService.Progress.Episode;
+        _levelData = GetLevelData(season, episode);
 
-#if UNITY_EDITOR
-        if (_loadTargetLevel)
-        {
-            path = $"LevelData/Season {_season}/LevelData {_episode}";
-            // GameDataService.CreateGame();
-            var episodes = GameDataService.CountEpisodes(_season);
-            GameDataService.GameData = new GameData(_season, 1, episodes, _episode);
-        }
-#endif
 
-        _levelDataAsset = Resources.Load<TextAsset>(path);
-        Debug.Log($"Loading textAsset: {path}");
 
-        _levelData = JsonConvert.DeserializeObject<LevelData>(_levelDataAsset.text);
+        //  _levelData = JsonConvert.DeserializeObject<LevelData>(_levelDataAsset.text);
 
         _gameBoard.BuildBoard(_levelData);
         var letterDistances = _gameBoard.GetLetterDistances();
@@ -165,23 +151,33 @@ public class LevelBuilder : MonoBehaviour
         if (IsClassicGame)
             LoadState();
         else
+        {
+            LevelStateService.CreateState(_levelData);
             _levelLogic.SetTimeMode();
+        }
 
-        _levelView.InitProgressBar(GameDataService.GameData.Episode, GameDataService.GameData.TotalEpisodes);
+        _levelView.InitProgressBar(ProgressService.Progress.Episode, ProgressService.Progress.TotalEpisodes);
 
         SetBg();
 
-        var gameData = GameDataService.GameData;
+        var gameData = ProgressService.Progress;
 
         if (Session.IsGameWon)
         {
             _levelView.ShowGameOver();
-            _levelLogic.HideGameObjects(false);
+            _levelLogic.ToggleGameObjects(false);
         }
         else
         {
             AppMetricaService.SendLevelReached(gameData.Season, gameData.Episode, gameData.Level);
         }
+    }
+
+    private LevelData GetLevelData(int season, int episode)
+    {
+        var levelPath = Path.Combine(Application.persistentDataPath, "Levels", $"Season {season}", $"LevelData {episode}.json");
+        var levelData = JsonConvert.DeserializeObject<LevelData>(File.ReadAllText(levelPath));
+        return levelData;
     }
 
     private void SetBg()
@@ -200,7 +196,7 @@ public class LevelBuilder : MonoBehaviour
 
     public void LoadState()
     {
-        Debug.Log($"Load state called");
+
         if (LevelStateService.LoadState(out var levelState))
         {
             _levelView.SetState(levelState);
@@ -209,12 +205,13 @@ public class LevelBuilder : MonoBehaviour
             _abilityLogic.SetState(levelState);
             _levelLogic.SetState(levelState);
 
-            if (levelState.FoundWords.Count == _levelData.Words.Count)
+            if (levelState.FoundWords.Count == _levelData.Words.Length)
             {
                 Debug.Log($"Level done");
-                _levelView.ShowFinishView(GameDataService.GameData.Episode, GameDataService.GameData.TotalEpisodes);
-            }
 
+                _levelView.ShowFinishView(ProgressService.Progress.Episode, ProgressService.Progress.TotalEpisodes);
+                _levelView.ShowNextLvlBtn();
+            }
         }
         else
         {

@@ -107,6 +107,7 @@ public class LevelView : MonoBehaviour, IAdsRequest
     [SerializeField] private int _playAwardDelay = 2000;
     [SerializeField] private int _sliderFillDelay = 1;
     private Button _finishBtn;
+    private MessageView _messageView;
 
     public bool IsBlinking
     {
@@ -141,6 +142,7 @@ public class LevelView : MonoBehaviour, IAdsRequest
 
         _coinsView = _root.Q<CoinsView>();
         _gameOverView = _root.Q<VisualElement>("game-over-view");
+        _messageView = _root.Q<MessageView>();
 
         InitRenderTexture();
 
@@ -164,9 +166,9 @@ public class LevelView : MonoBehaviour, IAdsRequest
         _checkUpdatesBtn = _root.Q<Button>("check-updates-btn");
         _removeAdsBtn = _root.Q<Button>("remove-ads-btn");
 
-        if (Session.NoAds) RemoveAdsBtn();
+        if (ProgressService.AdsRemoved) RemoveAdsBtn();
         else _removeAdsBtn.clicked += InitNoAdsPurchase;
-        Session.AdsRemoved += RemoveAdsBtn;
+        EventManager.AdsRemoved += RemoveAdsBtn;
 
         _plateView = _root.Q<PlateView>();
         _plateView.Toggle(true);
@@ -178,7 +180,7 @@ public class LevelView : MonoBehaviour, IAdsRequest
 
         AdsController.RewardedAdWatched += RewardForAds;
 
-        IAPManager.OnPurchasedCoins += AnimatePurchasedCoins;
+        IAPManager.CoinPurchased += AnimatePurchasedCoins;
 
         _adsBtn = _root.Q<Button>("ads-btn");
         _adsBtn.clicked += RequestAds;
@@ -192,6 +194,20 @@ public class LevelView : MonoBehaviour, IAdsRequest
         InitFinishView();
         InitGameModes();
 
+
+        EventManager.RemoveAdsClicked += ShowPurchaseMessage;
+        EventManager.PurchaseClicked += ShowPurchaseMessage;
+    }
+
+    private void ShowPurchaseMessage(int obj)
+    {
+        _messageView.ShowMessage("Processing purchase...");
+
+    }
+
+    private void ShowPurchaseMessage()
+    {
+        _messageView.ShowMessage("Processing purchase...");
     }
 
     private void HandleFirstLettersRemoved(int amount)
@@ -221,6 +237,9 @@ public class LevelView : MonoBehaviour, IAdsRequest
     public void UpdateTimer(float percent)
     {
         _timeFill.style.width = new StyleLength(new Length(percent, LengthUnit.Percent));
+
+        //lerp it
+
     }
 
     private void InitFinishView()
@@ -256,10 +275,9 @@ public class LevelView : MonoBehaviour, IAdsRequest
 
     private void InitShopBtn()
     {
-
         _shopBtn = _root.Q<ShopBtn>();
         _shopBtn.SetRoot(_root);
-        _shopBtn.InitBalance();
+        _shopBtn.InitBalance(ProgressService.Progress.Coins);
         ShopBtn.ShopClicked += ShowShopView;
         _shopBtn.RegisterCallback<GeometryChangedEvent>(SetCoinsAnimation);
     }
@@ -267,7 +285,6 @@ public class LevelView : MonoBehaviour, IAdsRequest
     private async void ShowShopView()
     {
         Session.IsSelecting = false;
-        Debug.Log($"Show Shop View");
         _levelView.Toggle(false);
         while (_levelView.resolvedStyle.width > 0)
             await Task.Yield();
@@ -297,9 +314,9 @@ public class LevelView : MonoBehaviour, IAdsRequest
 
     private void AnimatePurchasedCoins(int payout)
     {
-        _shopView.ToggleProcessPanel(false);
+        _messageView.HideMessage();
         Debug.Log($"Animate Purchased Coins: {payout}");
-        PlayAward(payout, _shopView.BuyBtn, _shopView.BuyBtn, true);
+        PlayAward((int)payout, _shopView.BuyBtn, _shopView.BuyBtn, true);
         _coinsView.HideAsync();
         _shopView.BuyBtn = null;
 
@@ -307,6 +324,7 @@ public class LevelView : MonoBehaviour, IAdsRequest
 
     private void RewardForAds()
     {
+        _messageView.HideMessage();
         PlayAward(Session.RewardAmount, _adsBtn, _adsBtn);
         Balance.AddBalance(Session.RewardAmount);
         Session.IsSelecting = true;
@@ -329,7 +347,7 @@ public class LevelView : MonoBehaviour, IAdsRequest
     {
 
         AdsController.RewardedAdWatched -= RewardForAds;
-        IAPManager.OnPurchasedCoins -= AnimatePurchasedCoins;
+        IAPManager.CoinPurchased += AnimatePurchasedCoins;
 
         ShopBtn.ShopClicked -= ShowShopView;
 
@@ -371,23 +389,12 @@ public class LevelView : MonoBehaviour, IAdsRequest
 
 
 
-    /*
-        public void SetBackPicture()
-        {
-            var bgController = GameObject.Find("BgController").GetComponent<BgController>();
-            var bgStyle = new StyleBackground(bgController.GetBackView());
-            _shopBg.style.backgroundImage = bgStyle;
-            _finishView.style.backgroundImage = bgStyle;
-        }
-        */
-
-
     public async Task ShowFinishView(int episode, int totalEpisodes)
     {
         Debug.Log($"show finish view");
         _backBtn.Toggle(false);
         var adsController = AdsController.Instance;
-        adsController.RemoveBanner();
+        adsController.HideBanner();
 
         _progressDiv.Toggle(true);
 
@@ -541,12 +548,13 @@ public class LevelView : MonoBehaviour, IAdsRequest
         _levelView.Toggle(true);
         if (Session.IsClassicGame)
         {
-            FillWords(data.Words);
+            var words = data.Words.Select(x => x.Word).ToList();
+            FillWords(words);
             _abilityBtns[Ability.Freeze].Toggle(false);
         }
 
 
-        _levelLbl.text = $"Level: {GameDataService.GameData.Level}";
+        _levelLbl.text = $"Level: {ProgressService.Progress.Level}";
         ResetBtns();
         _backBtn.Toggle(true);
         //SetBackPicture();
@@ -555,8 +563,6 @@ public class LevelView : MonoBehaviour, IAdsRequest
         // level
         // words
 
-        var adsController = AdsController.Instance;
-        adsController.LoadBanner();
     }
 
     public void AnimateWord(List<LetterUnit> letterUnits)
@@ -766,7 +772,7 @@ public class LevelView : MonoBehaviour, IAdsRequest
     {
         AbilityLogic.OnFakeLettersRemoved -= DisableMagnet;
         LevelStateService.OnActiveFirstLetterRemoved -= HandleFirstLettersRemoved;
-        Session.AdsRemoved -= RemoveAdsBtn;
+        EventManager.AdsRemoved -= RemoveAdsBtn;
         RootHeight = 0;
 
         _adsBtn.clicked -= RequestAds;
@@ -774,17 +780,14 @@ public class LevelView : MonoBehaviour, IAdsRequest
     }
 
 
+    public bool IsShopOpen => _shopView.style.display == DisplayStyle.Flex;
 
-    internal bool HideShopView()
+    internal async Task HideShopView()
     {
-        if (_shopView.style.display == DisplayStyle.Flex)
-        {
-            _shopView.Hide();
-
-            _levelView.Toggle(true);
-            return true;
-        }
-        return false;
+        _levelView.Toggle(true);
+        while (_levelView.resolvedStyle.display != DisplayStyle.Flex)
+            await Task.Yield();
+        _shopView.Hide();
     }
 
     internal void SetTimeMode()

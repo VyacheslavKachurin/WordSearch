@@ -38,7 +38,7 @@ public class LevelLogic : MonoBehaviour
     [SerializeField] private int _editorTotalEpisodes;
 #endif
 
-    [SerializeField] private float _msForWord = 4000f;
+    [SerializeField] private float _msForWord = 8000f;
     private bool _isTimerRunning;
     private Coroutine _timerCoroutine;
     [SerializeField] private float _timerStep = 0.1f;
@@ -58,7 +58,7 @@ public class LevelLogic : MonoBehaviour
         // _inputHandler.SetLetterUnits(_tryWordLetterUnits);
         _shouldCheckForFinish = true;
 
-        LevelView.OnGameViewToggle += HideGameObjects;
+        LevelView.OnGameViewToggle += ToggleGameObjects;
         LevelView.OnBackClicked += HandleBackClick;
         AbilityLogic.OnFreezeRequested += FreezeTimer;
         LevelView.OnSettingsClicked += HandleSettingsClick;
@@ -81,7 +81,7 @@ public class LevelLogic : MonoBehaviour
         InputTrigger.OnLetterEnter -= HandleLetterEnter;
         InputHandler.OnTriggerMove -= HandleTriggerMove;
         InputHandler.OnLetterDeselect -= HandleLetterDeselect;
-        LevelView.OnGameViewToggle -= HideGameObjects;
+        LevelView.OnGameViewToggle -= ToggleGameObjects;
         AbilityLogic.OnFreezeRequested -= FreezeTimer;
         LevelView.OnSettingsClicked -= HandleSettingsClick;
         ShopView.OnShopClicked -= HandleShopClick;
@@ -89,7 +89,7 @@ public class LevelLogic : MonoBehaviour
         LevelView.OnBackClicked -= HandleBackClick;
         PlateView.OnCloseClicked -= HandleCloseClicked;
         LevelView.FinishLevelClicked -= FinishLevelImmediate;
-        _adsController.RemoveBanner();
+        _adsController.HideBanner();
 
     }
 
@@ -142,7 +142,7 @@ public class LevelLogic : MonoBehaviour
         _isTimerRunning = true;
     }
 
-    public void HideGameObjects(bool isVisible)
+    public void ToggleGameObjects(bool isVisible)
     {
         if (_canvas == null) _canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
         _canvas.sortingOrder = isVisible ? 0 : 999;
@@ -157,7 +157,7 @@ public class LevelLogic : MonoBehaviour
         if (!_shouldCheckForFinish) return;
         if (_words.Count == 0)
         {
-            await Task.Delay(_finishDelay);
+            if (Session.IsClassicGame) await Task.Delay(_finishDelay);
             FinishLevel();
         }
         else if (!Session.IsClassicGame)
@@ -174,35 +174,35 @@ public class LevelLogic : MonoBehaviour
 
     private async void FinishLevel()
     {
-        GameDataService.IncreaseLevel();
+
         if (!Session.IsClassicGame)
             StopTimer();
         Session.IsSelecting = false;
-        var episode = GameDataService.GameData.Episode;
-        var totalEpisodes = GameDataService.GameData.TotalEpisodes;
+        var finishedEpisode = ProgressService.Progress.Episode;
+        var totalEpisodes = ProgressService.Progress.TotalEpisodes;
 
 #if UNITY_EDITOR
         if (_useTestData)
         {
-            episode = _editorEpisode;
+            finishedEpisode = _editorEpisode;
             totalEpisodes = _editorTotalEpisodes;
         }
 #endif
-        var isStageCompleted = episode == totalEpisodes;
-        HideGameObjects(false);
-        await _levelView.ShowFinishView(episode, totalEpisodes);
+        var isStageCompleted = finishedEpisode == totalEpisodes;
+        ToggleGameObjects(false);
+        await _levelView.ShowFinishView(finishedEpisode, totalEpisodes);
 
         if (isStageCompleted)
         {
-            var season = GameDataService.GameData.Season;
-            var title = GameDataService.GetStampTitle(season);
-            var stampPic = MenuController.GetTexture(season + 1);
+            var season = ProgressService.Progress.Season;
+            var title = ProgressService.GetStampTitle(season);
+            var stampPic = Extensions.GetTexture(season + 1);
             await _levelView.ShowStageFinish(_prizeAmount, stampPic, title);
             AudioManager.Instance.PlaySound(Sound.StageCompleted);
             Balance.AddBalance(_prizeAmount);
             _winFX.Play();
         }
-
+        await ProgressService.FinishLevel();
         _levelView.ShowNextLvlBtn();
         _shouldCheckForFinish = false;
 
@@ -220,21 +220,24 @@ public class LevelLogic : MonoBehaviour
         SaveState();
     }
 
-    private void HandleBackClick()
+    private async void HandleBackClick()
     {
         AudioManager.Instance.PlaySound(Sound.Click);
 
-        var isShopOpen = _levelView.HideShopView();
+        var isShopOpen = _levelView.IsShopOpen;
         if (isShopOpen)
         {
             Session.IsSelecting = true;
-            HideGameObjects(true);
+
+            await _levelView.HideShopView();
+            ToggleGameObjects(true);
         }
         else
         {
             var adsController = AdsController.Instance;
-            adsController.RemoveBanner();
+            adsController.HideBanner();
             LevelStateService.SaveState();
+            await Resources.UnloadUnusedAssets();
             SceneManager.LoadScene(0);
         }
     }
@@ -371,9 +374,9 @@ public class LevelLogic : MonoBehaviour
 
     internal void SetData(LevelData levelData)
     {
-        HideGameObjects(true);
-        var gameData = GameDataService.GameData;
-        _words = levelData.Words.ToList();
+        ToggleGameObjects(true);
+        var gameData = ProgressService.Progress;
+        _words = levelData.Words.Select(x => x.Word).ToList();
         // Stage = levelData.Stage;
         //   Step = levelData.Step;
         TotalSteps = gameData.TotalEpisodes;
@@ -393,6 +396,7 @@ public class LevelLogic : MonoBehaviour
     public void SetTimeMode()
     {
         _levelView.SetTimeMode();
+
         Session.IsSelecting = true;
         SetTimeWord();
         StartTimer();
@@ -435,8 +439,8 @@ public class LevelLogic : MonoBehaviour
                 yield return new WaitForEndOfFrame();
             }
 
-            yield return new WaitForSeconds(_timerStep);
-            _timeLeft -= 1000 * _timerStep;
+            yield return new WaitForSeconds(_timerStep/3);
+            _timeLeft -= 1000 * _timerStep/3;
             var percent = (_timeLeft / _msForWord) * 100;
             _levelView.UpdateTimer(percent);
             CheckTimeCondition(_timeLeft);

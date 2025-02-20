@@ -2,7 +2,7 @@
     <Style src="project://database/Assets/UI/GameStyle.uss?fileID=7433441132597879392&amp;guid=52f028e2a9bbb43c6985398e87d12d27&amp;type=3#GameStyle" />
     <Style src="project://database/Assets/UI/MenuStyle.uss?fileID=7433441132597879392&amp;guid=9d73d88b2ea5d4de08746f3f52fbf9a3&amp;type=3#MenuStyle" />
     <Style src="project://database/Assets/UI/PlaceStampStyle.uss?fileID=7433441132597879392&amp;guid=dd7cdd25ec95c40edb37c0789325483d&amp;type=3#PlaceStampStyle" />
-    <engine:VisualElement name="bg" class="view" style="flex-grow: 1; display: flex; background-image: resource(&apos;BG/1&apos;);" />
+    <engine:VisualElement name="bg" class="view" style="flex-grow: 1; display: flex; background-image: resource(&apos;1&apos;);" />
     <engine:VisualElement name="top-row" style="flex-grow: 0; margin-top: 118px; padding-left: 57px; padding-right: 66px; flex-direction: row;">
         <engine:VisualElement name="back-div" style="flex-grow: 0; align-items: center; justify-content: center; padding-right: 51px; display: none;">
             <engine:Button name="back-btn" style="background-image: url(&quot;project://database/Assets/Sprites/BackBtn.png?fileID=2800000&amp;guid=8ea480486dcfc4824a5b9bf4ff7fdbc3&amp;type=3#BackBtn&quot;); margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; width: 82px; height: 98px;" />
@@ -124,4 +124,5 @@
     <PlateView picking-mode="Ignore" class="view" style="display: none;" />
     <CoinsView picking-mode="Ignore" style="position: absolute; width: 100%; height: 100%; display: none;" />
     <engine:Image name="overlay-fx" picking-mode="Ignore" class="view" style="flex-grow: 1; top: 0; left: 0; display: none;" />
+    <MessageView style="width: 100%; height: 100%;" />
 </engine:UXML>

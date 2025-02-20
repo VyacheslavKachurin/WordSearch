@@ -195,7 +195,6 @@ public class LineProvider : MonoBehaviour
     [ContextMenu("Reset State")]
     public void ResetState()
     {
-        Debug.Log($"Reset state called");
         if (_lines.Count == 0) return;
         foreach (var line in _lines)
         {

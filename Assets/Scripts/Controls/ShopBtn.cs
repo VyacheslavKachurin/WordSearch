@@ -34,12 +34,14 @@ public partial class ShopBtn : Button
         _root = root;
         if (Application.isPlaying)
             _shopCoinIcon.RegisterCallback<GeometryChangedEvent>(NotifyShopCoinGeometry);
+        Balance.OnBalanceChanged += UpdateBalanceLbl;
+        
     }
 
 
     private void Unsubscribe()
     {
-        Balance.OnBalanceChanged -= SetBalance;
+        Balance.OnBalanceChanged -= UpdateBalanceLbl;
         _shopCoinIcon.UnregisterCallback<GeometryChangedEvent>(NotifyShopCoinGeometry);
         _shopBtn.clicked -= HandleShopClick;
     }
@@ -63,10 +65,10 @@ public partial class ShopBtn : Button
 
     }
 
-    public void InitBalance()
+    public void InitBalance(int balance)
     {
-        SetBalance(Balance.GetBalance());
-        Balance.OnBalanceChanged += SetBalance;
+        UpdateBalanceLbl(balance);
+
     }
 
 
@@ -75,7 +77,7 @@ public partial class ShopBtn : Button
         ShopClicked?.Invoke();
     }
 
-    public void SetBalance(decimal balance)
+    public void UpdateBalanceLbl(int balance)
     {
         string text = balance < 1000 ? balance.ToString("F0") : (balance / 1000).ToString("0.#") + " K";
         _balanceLbl.text = text;

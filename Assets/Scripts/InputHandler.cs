@@ -117,7 +117,8 @@ public class InputHandler : MonoBehaviour
         }
     }
 
-    public void ToggleInput(bool enable){
+    public void ToggleInput(bool enable)
+    {
         _isSelecting = enable;
     }
 
@@ -208,7 +209,7 @@ public class InputHandler : MonoBehaviour
 
     }
 
-    private void FinishSelecting()
+    public void FinishSelecting()
     {
         StopSelecting();
         //    DeletePositions();
@@ -361,7 +362,8 @@ public class InputHandler : MonoBehaviour
     {
         _isSelecting = false;
         OnInputStop?.Invoke();
-        Destroy(_trigger.gameObject);
+        if (_trigger != null)
+            Destroy(_trigger.gameObject);
         _trigger = null;
         _direction = Direction.None;
 

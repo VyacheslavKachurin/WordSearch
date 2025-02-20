@@ -32,6 +32,13 @@ public class LevelStateService
             string json = System.IO.File.ReadAllText(_prePath + _fileName);
             levelState = JsonConvert.DeserializeObject<LevelState>(json);
             State = levelState;
+
+            if (levelState.CurrentLevel == 0|| levelState.CurrentLevel != ProgressService.Progress.Level)
+            {
+                Debug.Log($"Level State deleted");
+                DeleteState();
+                return false;
+            }
             return true;
         }
         Debug.Log($"Level State not found");
@@ -64,8 +71,10 @@ public class LevelStateService
 
     public static void CreateState(LevelData levelData)
     {
-        var level = GameDataService.GameData.Level;
-        State = new(false, levelData.FirstLetters);
+        var level = ProgressService.Progress.Level;
+        var firstLetters = levelData.Words.Select(x => x.FirstLetter).ToList();
+        State = new(false, firstLetters);
+        State.CurrentLevel=ProgressService.Progress.Level;
     }
 
     internal static void AddFoundWord(string word, List<LetterUnit> foundLetters, Color color)

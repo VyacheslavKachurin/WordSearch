@@ -19,6 +19,7 @@ public class GameBoard : MonoBehaviour
     [ContextMenu("Build Board")]
     public void BuildBoard(LevelData data)
     {
+       // Debug.Log($"");
         ClearBoard();
         var boardSize = GetSize(data.Width, data.Height);
         _letters = new LetterUnit[data.Height, data.Width];

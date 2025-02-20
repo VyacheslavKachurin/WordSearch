@@ -2,6 +2,7 @@ using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public static class KeitaroSender
 {
@@ -34,27 +35,30 @@ public static class KeitaroSender
 
     private static string GetUserId()
     {
-        var userId = PlayerPrefs.GetString(USER_ID_KEY, "");
-        if (string.IsNullOrEmpty(userId))
-        {
-            userId = Guid.NewGuid().ToString();
-            PlayerPrefs.SetString(USER_ID_KEY, userId);
-        }
-        return userId;
+        return Services.UserId;
     }
 
     private static async void SendRequest(string url)
     {
-        #if !UNITY_EDITOR
-        var userId = GetUserId();
-        url += "&user_id=" + userId;
-        Debug.Log($"Sending request: {url} with user id: {userId}");
-        HttpClient client = new();
-        var result = await client.GetAsync(url);
-        Debug.Log($"Result: {result.StatusCode}, {result.Content.ReadAsStringAsync().Result}");
-        client.Dispose();
-        #endif
+#if !UNITY_EDITORF
+        try
+        {
+            var userId = GetUserId();
+            url += "&user_id=" + userId;
+            Debug.Log($"Sending request: {url} with user id: {userId}");
+            using UnityWebRequest www = UnityWebRequest.Get(url);
+            www.timeout = 5;
+            await www.SendWebRequest();
+        }
+        catch (Exception e)
+        {
+            Debug.Log($"Failed to send request: {url}, error: {e}");
+        }
+#endif
     }
+
+
+
 
 }
 

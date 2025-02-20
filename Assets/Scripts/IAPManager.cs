@@ -9,11 +9,11 @@ using UnityEngine.Purchasing.Extension;
 
 public class IAPManager : MonoBehaviour, IDetailedStoreListener
 {
+    public static event Action<int> CoinPurchased;
 
     private IStoreController _controller;
     private IExtensionProvider _extensions;
     private ProductCatalog _catalog;
-    public static event Action<int> OnPurchasedCoins;
 
     private IAppleExtensions _appleExtensions;
     private IShopItems _shopItems;
@@ -21,25 +21,22 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
     [SerializeField] private LevelView _levelView;
     [SerializeField] BacktraceClient _backtraceClient;
 
-    public static event Action FirePurchaseFailed;
 
-    private async void Awake()
+    public async Task Create()
     {
-
         await InitUGS();
         Init();
 
-        ShopView.OnPurchaseInit += BuyCoins;
-        ShopView.OnRemoveAdsClicked += RemoveAds;
-        ShopView.OnRestoreClicked += RestorePurchases;
+        EventManager.PurchaseClicked += BuyCoins;
+        EventManager.RemoveAdsClicked += RemoveAds;
+        EventManager.RestoreClicked += RestorePurchases;
     }
 
     private void OnDestroy()
     {
-        ShopView.OnPurchaseInit -= BuyCoins;
-        ShopView.OnRemoveAdsClicked -= RemoveAds;
-        ShopView.OnRestoreClicked -= RestorePurchases;
-
+        EventManager.PurchaseClicked -= BuyCoins;
+        EventManager.RemoveAdsClicked -= RemoveAds;
+        EventManager.RestoreClicked -= RestorePurchases;
     }
 
     private void Init()
@@ -91,7 +88,7 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
             yield return new WaitForSeconds(0.1f);
         }
         FillUpShopItems(shopItems);
-        RestorePurchases();
+        // RestorePurchases();
 
     }
 
@@ -188,16 +185,15 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
 
             if (item.type == ProductType.Consumable)
             {
-                Balance.AddBalance(payout);
+                Balance.AddBalance((int)payout);
+                CoinPurchased?.Invoke((int)payout);
                 KeitaroSender.SendPurchase(item.id);
-                OnPurchasedCoins?.Invoke((int)payout);
             }
             else
             {
-                Session.NoAds = true;
-                var adsController = AdsController.Instance;
+                ProgressService.SetAdsRemovedAsync();
+                EventManager.TriggerEvent(Event.AdsRemoved);
                 KeitaroSender.SendPurchase(item.id);
-                adsController?.RemoveBanner();
             }
 
             AudioManager.Instance.PlaySound(Sound.Coins);
@@ -218,9 +214,8 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
     /// </summary>
     public void OnPurchaseFailed(Product i, PurchaseFailureReason p)
     {
-        Debug.Log($"IAP Purchase Failed: {p}");
+        EventManager.TriggerEvent(Event.PurchaseFailed);
         _backtraceClient.Send(new Exception($"IAP Purchase Failed: {p}"));
-        FirePurchaseFailed?.Invoke();
     }
 
     /// <summary>
@@ -229,13 +224,14 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
     public void OnPurchaseFailed(Product i, PurchaseFailureDescription p)
     {
         Debug.Log($"IAP Purchase Failed: {p.reason} - {p.message}");
-        _backtraceClient.Send(new Exception($"IAP Purchase Failed: {p.reason} - {p.message}"));
+        //_backtraceClient.Send(new Exception($"IAP Purchase Failed: {p.reason} - {p.message}"));
+        EventManager.TriggerEvent(Event.PurchaseFailed);
     }
 
     public void OnInitializeFailed(InitializationFailureReason error, string message)
     {
         Debug.Log($"IAP Initialize Failed: {error} - {message}");
-        _backtraceClient.Send(new Exception($"IAP Initialize Failed: {error} - {message}"));
+      //  _backtraceClient.Send(new Exception($"IAP Initialize Failed: {error} - {message}"));
     }
 
     internal void LogStoreItems()
@@ -248,7 +244,7 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
     }
 
 
-    private void FillUpShopItems(IShopItems shopItems)
+    public void FillUpShopItems(IShopItems shopItems)
     {
         shopItems ??= GetShopItems();
         var items = _catalog.allValidProducts.Where(x => x.type == ProductType.Consumable).ToList();

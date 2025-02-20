@@ -1,4 +1,5 @@
 
+using System.IO;
 using UnityEngine;
 
 public class BgController : MonoBehaviour
@@ -8,15 +9,22 @@ public class BgController : MonoBehaviour
 
     public Texture2D GetBackView()
     {
-        var texture = Resources.Load("BG/" + GameDataService.GameData.Season) as Texture2D;
+        var texturePath = Path.Combine(Application.persistentDataPath, "Pictures", ProgressService.Progress.Season + ".jpg");
+        Texture2D texture = null;
+        if (File.Exists(texturePath))
+        {
+            byte[] fileData = File.ReadAllBytes(texturePath);
+            texture = new Texture2D(2, 2);
+            texture.LoadImage(fileData);
+        }
         return texture;
     }
 
     public void CreateBackView()
     {
         var mainCamera = Camera.main;
-        var texture = Resources.Load("BG/" + GameDataService.GameData.Season) as Texture2D;
-        var screenWidth = Screen.width;
+
+        var texture = Extensions.GetTexture(ProgressService.Progress.Season);
 
         RectTransform canvasRect = _canvas.GetComponent<RectTransform>();
 
@@ -24,8 +32,6 @@ public class BgController : MonoBehaviour
         float width = height * mainCamera.aspect;
         canvasRect.sizeDelta = new Vector2(width, height);
         _image.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-
-
 
     }
 
