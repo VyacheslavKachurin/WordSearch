@@ -16,7 +16,7 @@ public static class AppMetricaService
         if (!AppMetrica.IsActivated()) return;
         string data = "{\"season\":\"" + season + "\",\"episode\":\"" + episode + "\",\"level\":\"" + level + "\"}";
         AppMetrica.ReportEvent("Level reached", data);
-        KeitaroSender.SendLevelReached(season, episode, level);
+       // KeitaroSender.SendLevelReached(season, episode, level);
     }
 
     public static void SendGamePassed()

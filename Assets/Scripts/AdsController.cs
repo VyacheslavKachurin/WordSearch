@@ -18,9 +18,7 @@ public class AdsController : MonoBehaviour, IUnityAdsInitializationListener, IUn
 
     private bool _rewardedAdLoaded = false;
 
-
     public static AdsController Instance;
-
 
 
     void OnDestroy()
@@ -43,26 +41,20 @@ public class AdsController : MonoBehaviour, IUnityAdsInitializationListener, IUn
 
     private void Init()
     {
-
         Instance = this;
         EventManager.AdsRemoved += HideBanner;
-        //  DontDestroyOnLoad(this);
-        // }
-        //   else if (Instance != this)
-        //   {
-        //     Debug.Log($"Ads Controller Destroyed");
-        //   Destroy(gameObject);
-        //}
 
     }
 
 
     public void InitializeAds()
     {
-
         _gameId = _iOSGameId;
         if (!Advertisement.isInitialized && Advertisement.isSupported)
         {
+            MetaData gdprMetaData = new MetaData("gdpr");
+            gdprMetaData.Set("consent", "false");
+            Advertisement.SetMetaData(gdprMetaData);
             Advertisement.Initialize(_gameId, _testMode, this);
         }
         LoadBanner();

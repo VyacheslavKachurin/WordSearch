@@ -41,7 +41,7 @@ MonoBehaviour:
     - line: '|   useOnDemandResources: 0'
     - line: '|   accelerometerFrequency: 0'
     - line: '|   companyName: KVANTUM'
-    - line: '|   productName: Play & Learn. Word  Search'
+    - line: '|   productName: Wordscapes. Word Search'
     - line: '|   defaultCursor: {instanceID: 0}'
     - line: '|   cursorHotspot: {x: 0, y: 0}'
     - line: '|   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b:
@@ -172,7 +172,7 @@ MonoBehaviour:
     - line: '|   loadStoreDebugModeEnabled: 0'
     - line: '|   visionOSBundleVersion: 1.0'
     - line: '|   tvOSBundleVersion: 1.0'
-    - line: '|   bundleVersion: 2.1.10'
+    - line: '|   bundleVersion: 2.1.13'
     - line: '|   preloadedAssets: []'
     - line: '|   metroInputSource: 0'
     - line: '|   wsaTransparentSwapchain: 0'
@@ -201,7 +201,7 @@ MonoBehaviour:
     - line: '|     Bratwurst: 0'
     - line: '|     Standalone: 0'
     - line: '|     VisionOS: 0'
-    - line: '|     iPhone: 2'
+    - line: '|     iPhone: 1'
     - line: '|     tvOS: 0'
     - line: '|   overrideDefaultApplicationIdentifier: 1'
     - line: '|   AndroidBundleVersionCode: 1'
@@ -324,7 +324,7 @@ MonoBehaviour:
     - line: '|   - m_BuildTarget: '
     - line: '|     m_Icons:'
     - line: '|     - serializedVersion: 2'
-    - line: '|       m_Icon: {fileID: 2800000, guid: 2d93c3122ff2840aba9232b1fa67b98c,
+    - line: '|       m_Icon: {fileID: 2800000, guid: ed0853105e6334f9b8c9e4797c4aa5f1,
         type: 3}'
     - line: '|       m_Width: 128'
     - line: '|       m_Height: 128'
