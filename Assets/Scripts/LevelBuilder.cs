@@ -57,7 +57,7 @@ public class LevelBuilder : MonoBehaviour
         IShopItems shopItems = _levelView.ShopItems;
         await _iapManager.Create();
         _iapManager.InjectShopItems(shopItems);
-   //     AdsController.Instance.InitializeAds();
+        //     UnityAdsController.Instance.InitializeAds();
 
     }
 
@@ -98,6 +98,8 @@ public class LevelBuilder : MonoBehaviour
     {
         LevelView.NextLevelClicked -= LoadNextLevel;
         PlateView.OnReplayRequested -= CreateLevel;
+        AdsController.Instance.HideBanners();
+        AdsController.Instance = null;
     }
 
     private void LoadNextLevel()

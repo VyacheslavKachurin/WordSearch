@@ -12,7 +12,6 @@ public class LevelLogic : MonoBehaviour
     [SerializeField] LineProvider _lineProvider;
     [SerializeField] private int _prizeAmount = 25;
     [SerializeField] private ParticleSystem _winFX;
-    [SerializeField] AdsController _adsController;
 
     private AudioManager _audio;
     private bool _isFirstLetter = true;
@@ -89,7 +88,7 @@ public class LevelLogic : MonoBehaviour
         LevelView.OnBackClicked -= HandleBackClick;
         PlateView.OnCloseClicked -= HandleCloseClicked;
         LevelView.FinishLevelClicked -= FinishLevelImmediate;
-        _adsController.HideBanner();
+
 
     }
 
@@ -235,7 +234,7 @@ public class LevelLogic : MonoBehaviour
         else
         {
             var adsController = AdsController.Instance;
-            adsController.HideBanner();
+            adsController.HideBanners();
             LevelStateService.SaveState();
             await Resources.UnloadUnusedAssets();
             SceneManager.LoadScene(0);

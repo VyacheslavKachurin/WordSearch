@@ -47,16 +47,21 @@ public class MenuController : MonoBehaviour, IPrizeProvider
 
         IAPManager.CoinPurchased += AnimateAward;
 
-        
+
     }
 
     private async void Start()
     {
         UserProgress progress = ProgressService.Progress;
+
+
         progress ??= await ProgressService.LoadProgress();
+
 
         if (progress.AdsRemoved)
             _menuView.HideAdsOffer();
+
+
         Balance.InitBalance(progress.Coins);
         Debug.Log($"App persistent data: {Application.persistentDataPath}");
 
@@ -81,7 +86,7 @@ public class MenuController : MonoBehaviour, IPrizeProvider
         }
 
         var adsController = AdsController.Instance;
-        if (adsController != null) adsController.HideBanner();
+        if (adsController != null) adsController.HideBanners();
 
     }
 
@@ -109,7 +114,7 @@ public class MenuController : MonoBehaviour, IPrizeProvider
         if (haveResources) return;
 
         await ProgressService.LoadLevels();
-       // await ProgressService.LoadPictures();
+        // await ProgressService.LoadPictures();
         Services.SetHaveResources();
 
     }
@@ -233,7 +238,7 @@ public class MenuController : MonoBehaviour, IPrizeProvider
         });
 
         Balance.AddBalance(prize);
-       // AnimateAward(prize);
+        // AnimateAward(prize);
 
         AudioManager.Instance.PlaySound(Sound.Coins);
 

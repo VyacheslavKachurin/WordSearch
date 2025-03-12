@@ -59,7 +59,7 @@ public partial class ShopView : VisualElement, IShopItems
 
     private void HandleRemoveAdsClick()
     {
-        EventManager.TriggerEvent(Event.RemoveAdsRequest);
+        EventManager.TriggerEvent(EventType.RemoveAdsRequest);
     }
 
     public void AddItem(int index, int coinsAmount, string price)
@@ -91,7 +91,7 @@ public partial class ShopView : VisualElement, IShopItems
 
     private void AskRestorePurchase()
     {
-        EventManager.TriggerEvent(Event.RestoreClick);
+        EventManager.TriggerEvent(EventType.RestoreClick);
     }
 
     private void Unsubscribe()
@@ -102,7 +102,7 @@ public partial class ShopView : VisualElement, IShopItems
 
     public void InitRemoveAds()
     {
-        EventManager.TriggerEvent(Event.RemoveAdsRequest);
+        EventManager.TriggerEvent(EventType.RemoveAdsRequest);
     }
 
 

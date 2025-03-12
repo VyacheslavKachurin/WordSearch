@@ -178,7 +178,7 @@ public class LevelView : MonoBehaviour, IAdsRequest
 
         _root.RegisterCallback<DetachFromPanelEvent>(e => Unsubscribe());
 
-        AdsController.RewardedAdWatched += RewardForAds;
+        YandexAds.RewardedAdWatched += RewardForAds;
 
         IAPManager.CoinPurchased += AnimatePurchasedCoins;
 
@@ -346,7 +346,7 @@ public class LevelView : MonoBehaviour, IAdsRequest
     private void OnDestroy()
     {
 
-        AdsController.RewardedAdWatched -= RewardForAds;
+        YandexAds.RewardedAdWatched -= RewardForAds;
         IAPManager.CoinPurchased += AnimatePurchasedCoins;
 
         ShopBtn.ShopClicked -= ShowShopView;
@@ -393,8 +393,8 @@ public class LevelView : MonoBehaviour, IAdsRequest
     {
         Debug.Log($"show finish view");
         _backBtn.Toggle(false);
-        var adsController = AdsController.Instance;
-        adsController.HideBanner();
+
+        AdsController.Instance.HideBanners();
 
         _progressDiv.Toggle(true);
 

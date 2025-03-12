@@ -192,7 +192,7 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
             else
             {
                 ProgressService.SetAdsRemovedAsync();
-                EventManager.TriggerEvent(Event.AdsRemoved);
+                EventManager.TriggerEvent(EventType.AdsRemoved);
                 KeitaroSender.SendPurchase(item.id);
             }
 
@@ -214,7 +214,7 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
     /// </summary>
     public void OnPurchaseFailed(Product i, PurchaseFailureReason p)
     {
-        EventManager.TriggerEvent(Event.PurchaseFailed);
+        EventManager.TriggerEvent(EventType.PurchaseFailed);
         _backtraceClient.Send(new Exception($"IAP Purchase Failed: {p}"));
     }
 
@@ -225,7 +225,7 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
     {
         Debug.Log($"IAP Purchase Failed: {p.reason} - {p.message}");
         //_backtraceClient.Send(new Exception($"IAP Purchase Failed: {p.reason} - {p.message}"));
-        EventManager.TriggerEvent(Event.PurchaseFailed);
+        EventManager.TriggerEvent(EventType.PurchaseFailed);
     }
 
     public void OnInitializeFailed(InitializationFailureReason error, string message)

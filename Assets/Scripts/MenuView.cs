@@ -342,11 +342,6 @@ public class MenuView : MonoBehaviour
 
     }
 
-    [ContextMenu("Remove banner")]
-    private void TryRemoveBanner()
-    {
-        AdsController.Instance?.HideBanner();
-    }
 
     public void HideAdsBtn()
     {
@@ -355,7 +350,7 @@ public class MenuView : MonoBehaviour
 
     private void HandleRemoveAdsClick()
     {
-        EventManager.TriggerEvent(Event.RemoveAdsRequest);
+        EventManager.TriggerEvent(EventType.RemoveAdsRequest);
     }
 
     private void HandleClassicClick()

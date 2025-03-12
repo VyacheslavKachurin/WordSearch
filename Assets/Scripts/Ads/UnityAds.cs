@@ -4,9 +4,10 @@ using UnityEngine;
 using UnityEngine.Advertisements;
 using UnityEngine.SceneManagement;
 
-public class AdsController : MonoBehaviour, IUnityAdsInitializationListener, IUnityAdsShowListener, IUnityAdsLoadListener
+public class UnityAds : MonoBehaviour, IUnityAdsInitializationListener, IUnityAdsShowListener, IUnityAdsLoadListener, IAdsProvider
 {
-    public static event Action RewardedAdWatched;
+   // public static event Action RewardedAdWatched;
+
     const string _iOSGameId = "5713743";
     const bool _testMode = false;
     private string _gameId;
@@ -17,34 +18,6 @@ public class AdsController : MonoBehaviour, IUnityAdsInitializationListener, IUn
     [SerializeField] BannerPosition _bannerPosition = BannerPosition.BOTTOM_CENTER;
 
     private bool _rewardedAdLoaded = false;
-
-    public static AdsController Instance;
-
-
-    void OnDestroy()
-    {
-        Debug.Log($"Ads Controller Destroyed");
-        if (Instance == this)
-        {
-            HideBanner();
-            Instance = null;
-            EventManager.AdsRemoved -= HideBanner;
-
-        }
-    }
-
-    void Awake()
-    {
-        Init();
-        InitializeAds();
-    }
-
-    private void Init()
-    {
-        Instance = this;
-        EventManager.AdsRemoved += HideBanner;
-
-    }
 
 
     public void InitializeAds()
@@ -57,61 +30,35 @@ public class AdsController : MonoBehaviour, IUnityAdsInitializationListener, IUn
             Advertisement.SetMetaData(gdprMetaData);
             Advertisement.Initialize(_gameId, _testMode, this);
         }
-        LoadBanner();
+
     }
 
     public void LoadBanner()
     {
-        if (ProgressService.Progress.AdsRemoved) return;
-
         BannerLoadOptions options = new BannerLoadOptions
         {
-            loadCallback = OnBannerLoaded,
+            loadCallback = OnBannerLoadedCallback,
             errorCallback = OnBannerError
         };
-
-        if (Advertisement.Banner.isLoaded)
-            Advertisement.Banner.Show(_bannerID);
-        else
-        {
-            Advertisement.Banner.Load(_bannerID, options);
-            Advertisement.Banner.SetPosition(_bannerPosition);
-        }
-
-
+        Advertisement.Banner.Load(_bannerID, options);
     }
 
     private void OnBannerError(string message)
     {
         Debug.Log($"Banner Error: {message}");
+        OnBannerLoadFailed();
     }
 
-    private void OnBannerLoaded()
+    private void OnBannerLoadedCallback()
     {
-        if (ProgressService.AdsRemoved || SceneManager.GetActiveScene().buildIndex == 0)
-        {
-            HideBanner();
-            return;
-        }
-
-        BannerOptions options = new BannerOptions
-        {
-            clickCallback = OnBannerClicked,
-            hideCallback = OnBannerHidden,
-            showCallback = OnBannerShown
-        };
-
-
-        Advertisement.Banner.Show(_bannerID, options);
-
+        OnBannerLoaded();
     }
-
 
     public void HideBanner()
     {
         if (Advertisement.Banner.isLoaded)
         {
-            Advertisement.Banner.Hide();
+            Advertisement.Banner.Hide(true);
         }
     }
 
@@ -155,7 +102,7 @@ public class AdsController : MonoBehaviour, IUnityAdsInitializationListener, IUn
         Debug.Log("Unity Ads initialization complete.");
 
         LoadInterstitialAd();
-        LoadRewardedAd();
+     //   LoadRewardedAd();
     }
 
     public void OnInitializationFailed(UnityAdsInitializationError error, string message)
@@ -185,7 +132,7 @@ public class AdsController : MonoBehaviour, IUnityAdsInitializationListener, IUn
         if (placementId == _rewardedID && showCompletionState == UnityAdsShowCompletionState.COMPLETED)
         {
             Debug.Log($"Reward Ad Completed; Grant a reward");
-            RewardedAdWatched?.Invoke();
+           // RewardedAdWatched?.Invoke();
         }
 
 
@@ -217,5 +164,28 @@ public class AdsController : MonoBehaviour, IUnityAdsInitializationListener, IUn
     public void OnUnityAdsFailedToLoad(string placementId, UnityAdsLoadError error, string message)
     {
         Debug.Log($"OnUnityAdsFailedToLoad: {placementId} - {error.ToString()} - {message}");
+    }
+
+    public void ShowBanner()
+    {
+        Advertisement.Banner.SetPosition(_bannerPosition);
+        BannerOptions options = new BannerOptions
+        {
+            clickCallback = OnBannerClicked,
+            hideCallback = OnBannerHidden,
+            showCallback = OnBannerShown
+        };
+
+        Advertisement.Banner.Show(_bannerID, options);
+    }
+
+    public void OnBannerLoaded()
+    {
+        AdsEventManager.TriggerEvent(AdsEvent.BannerLoaded, this);
+    }
+
+    public void OnBannerLoadFailed()
+    {
+        AdsEventManager.TriggerEvent(AdsEvent.BannerFailed, this);
     }
 }
