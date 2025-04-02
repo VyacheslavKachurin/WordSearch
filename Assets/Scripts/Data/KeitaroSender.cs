@@ -21,9 +21,27 @@ public static class KeitaroSender
         SendRequest(url);
     }
 
+    public static void SendCoinsPurchase(int amount)
+    {
+        var url = URL + "?action=purchase_" + amount;
+        SendRequest(url);
+    }
+
+    public static void SendNoAdsPurchase()
+    {
+        var url = URL + "?action=purchase_no_ads";
+        SendRequest(url);
+    }
+
     internal static void SendAbility(Ability ability)
     {
         var url = URL + "?action=ability_used" + "&ability=" + ability.ToString();
+        SendRequest(url);
+    }
+
+    internal static void SendLevel10Reached(int season, int episode, int level)
+    {
+        var url = URL + "?action=level_reached10";
         SendRequest(url);
     }
 
@@ -40,7 +58,7 @@ public static class KeitaroSender
 
     private static async void SendRequest(string url)
     {
-#if !UNITY_EDITORF
+
         try
         {
             var userId = GetUserId();
@@ -49,12 +67,18 @@ public static class KeitaroSender
             using UnityWebRequest www = UnityWebRequest.Get(url);
             www.timeout = 5;
             await www.SendWebRequest();
+            var result = www.result;
+            var cookies = www.GetResponseHeader("Set-Cookie");
+            //var indexOfCookies = cookies.IndexOf("_subid");
+            //var subId = cookies.Substring(indexOfCookies - 1);
+
+            Debug.Log($"Request result: {result}, cookie: {cookies}");
         }
         catch (Exception e)
         {
             Debug.Log($"Failed to send request: {url}, error: {e}");
         }
-#endif
+
     }
 
 

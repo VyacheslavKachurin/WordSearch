@@ -187,13 +187,14 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
             {
                 Balance.AddBalance((int)payout);
                 CoinPurchased?.Invoke((int)payout);
-                KeitaroSender.SendPurchase(item.id);
+
+                KeitaroSender.SendCoinsPurchase((int)payout);
             }
             else
             {
                 ProgressService.SetAdsRemovedAsync();
                 EventManager.TriggerEvent(EventType.AdsRemoved);
-                KeitaroSender.SendPurchase(item.id);
+                KeitaroSender.SendNoAdsPurchase();
             }
 
             AudioManager.Instance.PlaySound(Sound.Coins);
@@ -231,7 +232,7 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
     public void OnInitializeFailed(InitializationFailureReason error, string message)
     {
         Debug.Log($"IAP Initialize Failed: {error} - {message}");
-      //  _backtraceClient.Send(new Exception($"IAP Initialize Failed: {error} - {message}"));
+        //  _backtraceClient.Send(new Exception($"IAP Initialize Failed: {error} - {message}"));
     }
 
     internal void LogStoreItems()

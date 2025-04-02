@@ -18,7 +18,7 @@ MonoBehaviour:
   m_PlatformId: ad48d16a66894befa4d8181998c3cb09
   m_PlatformBuildProfile:
     rid: 8296355806537842689
-  m_OverrideGlobalSceneList: 0
+  m_OverrideGlobalSceneList: 1
   m_Scenes:
   - m_enabled: 1
     m_path: Assets/Scenes/MenuScene.unity
@@ -54,7 +54,7 @@ MonoBehaviour:
     - line: '|   m_SplashScreenDrawMode: 0'
     - line: '|   m_SplashScreenBackgroundAnimationZoom: 1'
     - line: '|   m_SplashScreenLogoAnimationZoom: 1'
-    - line: '|   m_SplashScreenBackgroundLandscapeAspect: 1'
+    - line: '|   m_SplashScreenBackgroundLandscapeAspect: 0.46142578'
     - line: '|   m_SplashScreenBackgroundPortraitAspect: 1'
     - line: '|   m_SplashScreenBackgroundLandscapeUvs:'
     - line: '|     serializedVersion: 2'
@@ -172,7 +172,7 @@ MonoBehaviour:
     - line: '|   loadStoreDebugModeEnabled: 0'
     - line: '|   visionOSBundleVersion: 1.0'
     - line: '|   tvOSBundleVersion: 1.0'
-    - line: '|   bundleVersion: 2.1.16'
+    - line: '|   bundleVersion: 2.1.19'
     - line: '|   preloadedAssets: []'
     - line: '|   metroInputSource: 0'
     - line: '|   wsaTransparentSwapchain: 0'
@@ -222,7 +222,7 @@ MonoBehaviour:
     - line: '|   VertexChannelCompressionMask: 4054'
     - line: '|   iPhoneSdkVersion: 988'
     - line: '|   iOSSimulatorArchitecture: 0'
-    - line: '|   iOSTargetOSVersionString: 13.0'
+    - line: '|   iOSTargetOSVersionString: 14.0'
     - line: '|   tvOSSdkVersion: 0'
     - line: '|   tvOSSimulatorArchitecture: 0'
     - line: '|   tvOSRequireExtendedGameController: 0'
@@ -980,7 +980,13 @@ MonoBehaviour:
     - line: '|   windowsGamepadBackendHint: 0'
     - line: '|   cloudProjectId: 77e8fed9-6775-41e4-a0ce-c69dcf41a485'
     - line: '|   framebufferDepthMemorylessMode: 0'
-    - line: '|   qualitySettingsNames: []'
+    - line: '|   qualitySettingsNames:'
+    - line: '|   - Very Low'
+    - line: '|   - Low'
+    - line: '|   - Medium'
+    - line: '|   - High'
+    - line: '|   - Very High'
+    - line: '|   - Ultra'
     - line: '|   projectName: WordSearch'
     - line: '|   organizationId: dolozin'
     - line: '|   cloudEnabled: 0'

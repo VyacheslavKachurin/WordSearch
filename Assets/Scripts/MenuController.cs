@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Backtrace.Unity;
+using GoogleMobileAds.Ump.Api;
 using Newtonsoft.Json;
+using Unity.Advertisement.IosSupport;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Scripting;
@@ -28,6 +30,7 @@ public class MenuController : MonoBehaviour, IPrizeProvider
 
     private async void Awake()
     {
+        RequestTrackingPermission();
         ShopBtn.ShopCoinGeometryChanged += SetForceFieldPos;
         _menuView.Init();
         await RequireConnection();
@@ -50,6 +53,17 @@ public class MenuController : MonoBehaviour, IPrizeProvider
 
     }
 
+
+
+    private void RequestTrackingPermission()
+    {
+        if (ATTrackingStatusBinding.GetAuthorizationTrackingStatus() == ATTrackingStatusBinding.AuthorizationTrackingStatus.NOT_DETERMINED)
+        {
+            ATTrackingStatusBinding.RequestAuthorizationTracking();
+        }
+    }
+
+
     private async void Start()
     {
         UserProgress progress = ProgressService.Progress;
@@ -57,7 +71,7 @@ public class MenuController : MonoBehaviour, IPrizeProvider
 
         progress ??= await ProgressService.LoadProgress();
 
-
+        ProgressService.Progress.AdsRemoved = false;
         if (progress.AdsRemoved)
             _menuView.HideAdsOffer();
 
@@ -88,6 +102,49 @@ public class MenuController : MonoBehaviour, IPrizeProvider
         var adsController = AdsController.Instance;
         if (adsController != null) adsController.HideBanners();
 
+        ConsentRequestParameters request = new ConsentRequestParameters();
+
+        // Check the current consent information status.
+        ConsentInformation.Update(request, OnConsentInfoUpdated);
+
+
+    }
+
+    private void ShowPrivacyForm()
+    {
+        ConsentForm.ShowPrivacyOptionsForm((FormError formError) =>
+        {
+            if (formError != null)
+            {
+                // Consent gathering failed.
+                UnityEngine.Debug.LogError(formError);
+                return;
+            }
+        });
+    }
+
+    void OnConsentInfoUpdated(FormError consentError)
+    {
+        // If the error is null, the consent information state was updated.
+        if (consentError != null)
+        {
+            // Handle the error.
+            UnityEngine.Debug.LogError(consentError);
+            return;
+        }
+        // If the error is null, the consent information state was updated.
+        // You are now ready to check if a form is available.
+        ConsentForm.LoadAndShowConsentFormIfRequired((FormError formError) =>
+        {
+            if (formError != null)
+            {
+                // Consent gathering failed.
+                UnityEngine.Debug.LogError(consentError);
+                return;
+            }
+
+            // Consent has been gathered.
+        });
     }
 
 

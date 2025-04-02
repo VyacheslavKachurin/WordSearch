@@ -120,6 +120,7 @@ public class LevelBuilder : MonoBehaviour
     [ContextMenu("Create Level")]
     public async void CreateLevel()
     {
+        AdsController.Instance.RevealBanner();
         _inputHandler.FinishSelecting();
         var IsClassicGame = Session.IsClassicGame;
 
@@ -132,6 +133,15 @@ public class LevelBuilder : MonoBehaviour
         // await ProgressService.LoadProgress();
         var season = ProgressService.Progress.Season;
         var episode = ProgressService.Progress.Episode;
+
+        var level = ProgressService.Progress.Level;
+        var gameData = ProgressService.Progress;
+
+        KeitaroSender.SendLevelReached(gameData.Season, gameData.Episode, gameData.Level);
+        if (level == 10)
+            KeitaroSender.SendLevel10Reached(gameData.Season, gameData.Episode, gameData.Level);
+
+
         _levelData = GetLevelData(season, episode);
 
 
@@ -162,7 +172,7 @@ public class LevelBuilder : MonoBehaviour
 
         SetBg();
 
-        var gameData = ProgressService.Progress;
+
 
         if (Session.IsGameWon)
         {

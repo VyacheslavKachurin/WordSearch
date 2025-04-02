@@ -193,6 +193,18 @@ public class LevelLogic : MonoBehaviour
 
         if (isStageCompleted)
         {
+            var adsController = AdsController.Instance;
+
+            if (adsController.IsInterstitialAdReady())
+            {
+                adsController.ShowInterstitialAd();
+                while (!adsController.IsInterstitialShown)
+                    await Task.Yield();
+            }
+
+
+
+
             var season = ProgressService.Progress.Season;
             var title = ProgressService.GetStampTitle(season);
             var stampPic = Extensions.GetTexture(season + 1);
@@ -206,6 +218,7 @@ public class LevelLogic : MonoBehaviour
         _shouldCheckForFinish = false;
 
     }
+
 
     [ContextMenu("Finish Level")]
     private void FinishLevelImmediate()
@@ -438,8 +451,8 @@ public class LevelLogic : MonoBehaviour
                 yield return new WaitForEndOfFrame();
             }
 
-            yield return new WaitForSeconds(_timerStep/3);
-            _timeLeft -= 1000 * _timerStep/3;
+            yield return new WaitForSeconds(_timerStep / 3);
+            _timeLeft -= 1000 * _timerStep / 3;
             var percent = (_timeLeft / _msForWord) * 100;
             _levelView.UpdateTimer(percent);
             CheckTimeCondition(_timeLeft);

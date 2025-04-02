@@ -5,7 +5,7 @@ using YandexMobileAds.Base;
 
 public class YandexAds : MonoBehaviour, IAdsProvider
 {
-    public static event Action RewardedAdWatched;
+    // public static event Action RewardedAdWatched;
     private Banner _banner;
     [SerializeField] private string _testUnitId = "demo-banner-yandex";
     [SerializeField] private string _realUnitId = "R-M-14293027-1";
@@ -68,7 +68,7 @@ public class YandexAds : MonoBehaviour, IAdsProvider
 
     private void HandleRewarded(object sender, Reward e)
     {
-        RewardedAdWatched?.Invoke();
+        AdsEventManager.TriggerEvent(AdsEvent.RewardedAdWatched, this);
         DestroyRewardedAd();
         LoadRewardedAd();
     }
@@ -142,7 +142,6 @@ public class YandexAds : MonoBehaviour, IAdsProvider
     public void LoadBanner()
     {
         //   BannerAdSize bannerMaxSize = BannerAdSize.StickySize(GetScreenWidthDp());
-
 
         AdRequest request = new AdRequest.Builder().Build();
         _banner.LoadAd(request);

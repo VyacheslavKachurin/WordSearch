@@ -79,7 +79,7 @@ public partial class PlateView : VisualElement
 
         SetBtns();
 
-        YandexAds.RewardedAdWatched += HandleReward;
+        AdsEventManager.RewardedAdWatched += HandleReward;
 
         this.RegisterCallback<DetachFromPanelEvent>((evt) =>
         {
@@ -96,11 +96,11 @@ public partial class PlateView : VisualElement
 
     private void Unsubscribe()
     {
-        YandexAds.RewardedAdWatched -= HandleReward;
+        AdsEventManager.RewardedAdWatched -= HandleReward;
         _adBtn.clicked -= HandleAdBtn;
     }
 
-    private void HandleReward()
+    private void HandleReward(IAdsProvider provider)
     {
         Debug.Log($"Handle reward");
         HideAdsOffer();
